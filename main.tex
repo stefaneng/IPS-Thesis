@@ -149,67 +149,41 @@ $$
     \label{fig:discrete_mc_two_contact}
 \end{figure}
 
-Let $S_2 \sim \exp(2)$ and $S_{1 + \lambda} \sim \exp(1 + \lambda)$ be exponential waiting times at node $(1,1)$ and $(1,0)$ respectively.
-Also define $N \sim \text{Geo}(\frac{1}{1 - \lambda})$, the geometric distribution with $N \in \{1,2,\ldots\}$ be the number of times the process waits at node $(1,0)$.
+Let $T_\lambda$ be the time in which we hit $(0,0)$.
+The wait time while in node $(1,1)$ is exponentially distributed with parameter $- q_{(1,1)} = 2$ and similarly the wait time while in node $(1,0)$ or $(0,1)$ is exponentially distributed with parameter $- q_{(1,0)} = 1 + \lambda$.
 
-That is,
+Let $N$ be the number of times that the process wait at node $(1,0)$. Equivalently, it one more than the number of loops the discrete chain does from $(1,0) \to (1,1) \to (1,0)$. TODO: Need to modivate this better...
 $$
 P(N = n) = \left(\frac{\lambda}{1 + \lambda} \right)^{n - 1} \frac{1}{1 + \lambda} \quad n = 1,2,\ldots
 $$
-Let $T_\lambda$ be the time in which we hit $(0,0)$ which can be expressed as
-$$
-T_{\lambda, N} = N (S_2 + S_{1 + \lambda})
-$$
-It follows that
-
-\begin{align*}
-    E[T_\lambda] &= \sum_{n = 1}^\infty n \cdot E[T_{\lambda, N} | N = n] P(N = n)\\
-    &= (E[S_2] + E[S_{1 + \lambda}]) \underbrace{\sum_{n = 1}^\infty n \left(\frac{\lambda}{1 + \lambda} \right)^{n - 1}}_{\text{geometric series derivative}} \frac{1}{1 + \lambda}\\
-    &= \left(\frac{1}{2} + \frac{1}{1 + \lambda} \right) \cdot \left( \frac{1}{1 + \lambda} \right) \cdot (1 + \lambda)^2\\
-    &= \frac{1}{2}(1 + \lambda) + 1\\
-    &= \frac{3}{2} + \frac{\lambda}{2}
-\end{align*}
-
-%\begin{align*}
-%    E[T_\lambda] &= \sum_{n = 0}^\infty E[T_{\lambda, N} | N = n] P(N = n)\\
-%    &= E[S_2] + E[S_{1 + \lambda}] + (E[S_2] + E[S_{1 + \lambda}]) \sum_{n = 1}^\infty n \left(\frac{\lambda}{1 + \lambda} \right)^n \frac{1}{1 + \lambda}\\
-%    &= (E[S_2] + E[S_{1 + \lambda}])\left(1 + \frac{1}{1 + \lambda} \cdot \frac{\lambda}{1 + \lambda} \sum_{n = 1}^\infty n \cdot \left(\frac{\lambda}{1 + \lambda} \right)^{n - 1} \right)\\
-%    &= \left(\frac{1}{2} + \frac{1}{1 + \lambda} \right) \left(
-%        1 + \frac{\lambda}{(1 + \lambda)^2} \cdot (1 + \lambda)^2
-%    \right) \\ %&& \sum_{n = 1}^\infty n \cdot p^{n - 1} = \frac{1}{(1 - p)^2}, |p| < 1 \\
-%    &= \frac{3 + \lambda}{2(1 + \lambda)} (1 + \lambda)\\
-%    &= \frac{\lambda^2 + 4\lambda + 3}{2(1 + \lambda)}\\
-%    &= \frac{(1 + \lambda)(3 + \lambda)}{2 (1 + \lambda)}\\
-%    &= \frac{3}{2} + \frac{1}{2} \lambda
-%\end{align*}
-
-Since $N, S_2, S_{1 + \lambda}$ are independent, then
-$$
-\Var(T_\lambda) = \Var(N(S_2 + S_{1 + \lambda})) = \Var(N S_2) + \Var(N S_{1 + \lambda})
-$$
-
-Note that
+with
 \begin{align*}
     E[N] &= 1 + \lambda\\
-    E[N]^2 &= (1 + \lambda)^2\\
-    \Var(N) &= \frac{\lambda / (1 + \lambda)}{1 / (1 + \lambda)^2} = \lambda \cdot (1 + \lambda)\\
-    E[S_2]^2 &= \Var(S_2) = \frac{1}{4}\\
-    E[S_{1 + \lambda}]^2 &= \Var(S_{1 + \lambda}) =  \frac{1}{(1 + \lambda)^2}\\
+    \Var(N) &= \frac{\lambda/(1 + \lambda)}{1/(1 + \lambda)^2} = \lambda (1 + \lambda)
 \end{align*}
 
-It follows that
+
+Let $X_1, X_2, \ldots$ be iid random variables with $X_i \sim \exp(2) + \exp(1 + \lambda)$, which denotes the wait time for one loop. Since the wait times are independent, then 
+$$
+E[X_i] = \frac{1}{2} + \frac{1}{1 + \lambda} = \frac{3 + \lambda}{2(1 + \lambda)}
+$$
+
+Now we can express $T_\lambda$ as a random sum
+$$
+T_\lambda = \sum_{i = 1}^N X_i
+$$
+
+Using the theory of random sums \cite{Ross97}, we have that
+$$
+E[T_\lambda] = E\left[ \sum_{i = 1}^N X_i \right] = E[X_1] E[N] = \frac{3 + \lambda}{2(1 + \lambda)} \cdot (1 + \lambda)
+$$
+
+Also, the variance of a random sum is defined as
 \begin{align*}
-    \Var(N S_2) &= E[N]^2 \Var(S_2) + E[S_2]^2 \Var(N) + \Var(N) \Var(S_2)\\
-    &= (1 + \lambda)^2 \cdot \frac{1}{4} + \frac{1}{4} \lambda (1 + \lambda) + \lambda  (1 + \lambda) \cdot \frac{1}{4}\\
-    &= \frac{(1 + \lambda)^2 + 2 \lambda ( 1 + \lambda)}{4}\\
-    &= \frac{3\lambda^2 + 4 \lambda + 1}{4}
-\end{align*}
-and similarly
-\begin{align*}
-    \Var(N S_{1 + \lambda}) &= E[N]^2 \Var(S_{1 + \lambda}) + E[S_{1 + \lambda}]^2 \Var(N) + \Var(N) \Var(S_{1 + \lambda})\\
-    &= \frac{(1 + \lambda)^2}{(1 + \lambda)^2} + \frac{\lambda (1 + \lambda)}{(1 + \lambda)^2} + \frac{\lambda (1 + \lambda)}{(1 + \lambda)^2}\\
-    &= 1 + \frac{2 \lambda}{1 + \lambda}\\
-    &= \frac{1 + 3 \lambda}{1 + \lambda}
+    \Var\left( \sum_{i = 1}^N X_i \right) &= E[N]\Var(X) + (E[X])^2 \Var(N)\\
+    &= (1 + \lambda) \frac{(1 + \lambda)^2 + 4}{4(1 + \lambda)^2} + \frac{(3 + \lambda)^2}{4 (1 + \lambda)^2} \lambda (1 + \lambda)^2\\
+    &= \frac{\lambda^3 + 8 \lambda^2 + 17 \lambda + 14}{4(1 + \lambda)}\\
+    &= \frac{\lambda^2 + 7 \lambda + 10}{4} + \frac{1}{1 + \lambda}
 \end{align*}
 
 \subsubsection{Finite State Space}
