@@ -95,7 +95,7 @@ ggplot(res_sum_df) +
 
 ## Limiting distribution
 
-l <- 1000
+l <- 10000
 N <- 2000
 r <- replicate(N, contact_wait2(l))
 lim_res <- cbind(l, r, expected_mean(l), expected_var(l))
@@ -104,7 +104,38 @@ lim_res_df <- data.frame(lim_res)
 colnames(lim_res_df) <- c("lambda", "time", "expected_mean", "expected_var")
 lim_res_df$std_time <- (lim_res_df$time - lim_res_df$expected_mean) / sqrt(lim_res_df$expected_var)
 
+# Standardized time
 ggplot(lim_res_df) +
   geom_histogram(aes(std_time))
 
+exp_rnd <- data.frame(random = rexp(n = N, rate = 2))
+ggplot(lim_res_df) +
+  geom_histogram(aes(time), alpha = 0.5, fill = "blue") +
+  geom_histogram(data = exp_rnd, aes(random), fill = "red", alpha = 0.5)
+
+ggplot(lim_res_df) +
+  geom_histogram(aes(time))
+
 mean(lim_res_df$std_time)
+
+library(libstableR)
+
+#  alpha, beta, sigma and mu estimates for stable distribution
+pars_est_M <- stable_fit_init(lim_res_df$std_time)
+
+pars_est_K <- stable_fit_koutrouvelis(lim_res_df$std_time, pars_est_M)
+# Using maximum likelihood estimator, with McCulloch estimation
+# as a starting point:
+pars_est_ML <- stable_fit_mle(lim_res_df$std_time, pars_est_M)
+# Using modified maximum likelihood estimator (See [1]):
+pars_est_ML2 <- stable_fit_mle2d(lim_res_df$std_time, pars_est_M)
+
+saveRDS(list(pars_est_M = pars_est_M, pars_est_K = pars_est_K, pars_est_ML = pars_est_ML, pars_est_ML2 = pars_est_ML2,
+     N = N, l = l, lim_res_df = lim_res_df), file = paste0("stableEstimates", N, ".rds"))
+
+# stableEst <- readRDS( paste0("stableEstimates", N, ".rds"))
+
+rnd <- data.frame(random = stable_rnd(N, pars_est_M))
+ggplot(lim_res_df) +
+  geom_histogram(aes(std_time), alpha = 0.5, fill = "blue") +
+  geom_histogram(data = rnd, aes(random), fill = "red", alpha = 0.5)
