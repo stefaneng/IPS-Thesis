@@ -1,50 +1,63 @@
 library(ggplot2)
 library(dplyr)
 
-contact_wait2 <- function(lambda, log_times = FALSE) {
-  # 1 = (1,1), 2 = (1,0)/(0,1), 3 = (0,0)
-  t <- 0
-  state_log <- 1
-  wait_log <- 0
-  state <- 1
-  i <- 0
+contact_wait <- function(lambda, n = 1000) {
 
-  while(state != 3) {
-    i <- i + 1
-    if (state == 1) {
-      w <- rexp(1,2)
-      t <- t + w
-      # Go to state 2
-      state <- 2
-    }
-    else if (state == 2) {
-      w1 <- rexp(1, 1)
-      w_lambda <- rexp(1, lambda)
-      if (w1 < w_lambda) {
-        # Go to state 3, finished
-        t <- t + w1
-        w <- w1
-        state <- 3
-      } else {
-        t <- t + w_lambda
-        w <- w_lambda
-        # Go back to beginning
-        state <- 1
-      }
-    }
-
-    if (log_times) {
-      state_log <- c(state_log, state)
-      wait_log <- c(wait_log, w)
-    }
+  res <-rep(0, n)
+  for(i in seq_len(n)) {
+    N <- rgeom(1, 1 / (1 + lambda))
+    S2 <- rexp(N + 1, 2)
+    SL <- rexp(N + 1, 1 + lambda)
+    res[i] <-sum(c(S2, SL))
   }
-
-  if (log_times) {
-    list(time = t, states = state_log, wait_times = wait_log)
-  } else {
-    t
-  }
+  res
 }
+
+# This is the slow but explicit discretization of the markov chain
+# contact_wait2 <- function(lambda, log_times = FALSE) {
+#   # 1 = (1,1), 2 = (1,0)/(0,1), 3 = (0,0)
+#   t <- 0
+#   state_log <- 1
+#   wait_log <- 0
+#   state <- 1
+#   i <- 0
+#
+#   while(state != 3) {
+#     i <- i + 1
+#     if (state == 1) {
+#       w <- rexp(1,2)
+#       t <- t + w
+#       # Go to state 2
+#       state <- 2
+#     }
+#     else if (state == 2) {
+#       w1 <- rexp(1, 1)
+#       w_lambda <- rexp(1, lambda)
+#       if (w1 < w_lambda) {
+#         # Go to state 3, finished
+#         t <- t + w1
+#         w <- w1
+#         state <- 3
+#       } else {
+#         t <- t + w_lambda
+#         w <- w_lambda
+#         # Go back to beginning
+#         state <- 1
+#       }
+#     }
+#
+#     if (log_times) {
+#       state_log <- c(state_log, state)
+#       wait_log <- c(wait_log, w)
+#     }
+#   }
+#
+#   if (log_times) {
+#     list(time = t, states = state_log, wait_times = wait_log)
+#   } else {
+#     t
+#   }
+# }
 
 expected_mean <- function(L) {
   3/2 + L/2
@@ -59,10 +72,10 @@ lambdas <- seq(1, 200, length.out = 25)
 res_sum <- matrix(0, ncol = 3, nrow = length(lambdas))
 res <- NULL
 
-N <- 500
+N <- 1000
 for(i in seq_along(lambdas)) {
   l <- lambdas[i]
-  r <- replicate(N, contact_wait2(l))
+  r <- contact_wait(l, N)
   ro <- cbind(l, r, expected_mean(l), expected_var(l))
 
   res <- rbind(res, ro)
@@ -95,22 +108,27 @@ ggplot(res_sum_df) +
 
 ## Limiting distribution
 
-l <- 10000
+lambda <- 10000
 N <- 2000
-r <- replicate(N, contact_wait2(l))
-lim_res <- cbind(l, r, expected_mean(l), expected_var(l))
+r <- contact_wait(lambda, N)
+lim_res <- cbind(lambda, r, expected_mean(lambda), expected_var(lambda))
 
 lim_res_df <- data.frame(lim_res)
 colnames(lim_res_df) <- c("lambda", "time", "expected_mean", "expected_var")
 lim_res_df$std_time <- (lim_res_df$time - lim_res_df$expected_mean) / sqrt(lim_res_df$expected_var)
 
+ggplot(lim_res_df) +
+  geom_histogram(aes(time), bins = 50)
+
+mean(lim_res_df$time)
+
 # Standardized time
 ggplot(lim_res_df) +
   geom_histogram(aes(std_time))
 
-exp_rnd <- data.frame(random = rexp(n = N, rate = 2))
+exp_rnd <- data.frame(random = rexp(n = N, rate = 1))
 ggplot(lim_res_df) +
-  geom_histogram(aes(time), alpha = 0.5, fill = "blue") +
+  geom_histogram(aes(time * 2 / (1 + lambda)), alpha = 0.5, fill = "blue") +
   geom_histogram(data = exp_rnd, aes(random), fill = "red", alpha = 0.5)
 
 ggplot(lim_res_df) +
@@ -139,3 +157,12 @@ rnd <- data.frame(random = stable_rnd(N, pars_est_M))
 ggplot(lim_res_df) +
   geom_histogram(aes(std_time), alpha = 0.5, fill = "blue") +
   geom_histogram(data = rnd, aes(random), fill = "red", alpha = 0.5)
+
+
+library(MittagLeffleR)
+params <- logMomentEstimator(lim_res_df$time, alpha = 0.05)
+rml(params, params[1], params[2])
+
+
+
+
