@@ -66,19 +66,30 @@
 
 \section{Introduction}
 
-\section{Preliminaries}
-
-\section{Stochastic Processes}
-
-\section{Percolation}
-
 \section{Interacting Particle Systems}
 
-\subsection{Contact Process}
+\subsection{Contact Process on Finite Graphs}
+
+Now we look at a contact process on a finite graph.
+Based on finite Markov chain theory, no matter the initial state, the process will eventually be zero.
+We look at $T_\lambda$, the time until we reach the state zero while keeping the number of nodes fixed as $\lambda$ goes to $\infty$.
+First we investigate the behavior for a complete graph, in which each node is connected to all other nodes and then we look at the one-dimensional lattice, in which each node is connected to at most two neighbors.
 
 \subsection{Two node contact process}
 
 Define a contact process on the finite graph with two nodes and one edge between them.
+
+\begin{figure}
+    \centering
+   \begin{tikzpicture}[auto, node distance=2cm, every loop/.style={}, thick,main node/.style={circle,draw}]
+   \node[main node]  (0) {1};
+   \node[main node]  (1) [left of=0]  {1};
+   
+   \draw (0) edge [left] (1);
+\end{tikzpicture}
+    \caption{Two node contact process starting with both as ones.}
+    \label{fig:two_node_contact}
+\end{figure}
 
 \begin{align}
     1 &\to 0 \text{ at rate } 1\\
@@ -90,12 +101,12 @@ Define a contact process on the finite graph with two nodes and one edge between
 
 Start the process with both nodes at 1.
 Clearly we will eventually reach $(0,0)$.
-We can express the $Q$ matrix as
+We can express the $G$ matrix as
 
 % Info on blockarray
 % https://tex.stackexchange.com/a/59519/41827
 $$
-Q = \begin{blockarray}{ccccc}
+G = \begin{blockarray}{ccccc}
     & (1,1) & (1,0) & (0,1) & (0,0)\\
     \begin{block}{c(cccc)}
         (1,1) & -2 & 1 & 1 & 0\\
@@ -105,54 +116,42 @@ Q = \begin{blockarray}{ccccc}
     \end{block}
 \end{blockarray}
 $$
-which is equivalent to combining the two nodes $(1,0)$ and $(0,1)$, which we will now call $(1,0)$.
-This new node will have a rate of 2. TODO: Explain why?
+which is equivalent to combining the two nodes $(1,0)$ and $(0,1)$, which we will now call this state 1.
+This new node will have a rate of 2.
 $$
-Q = \begin{blockarray}{cccc}
-    & (1,1) & (0,1) & (0,0)\\
+G = \begin{blockarray}{cccc}
+    & 2 & 1 & 0\\
     \begin{block}{c(ccc)}
-        (1,1) & -2 & 2 & 0\\
-        (1,0) & \lambda & - 1 - \lambda & 1\\
-        (0,0) & 0 & 0 & 0\\
+        2 & -2 & 2 & 0\\
+        1 & \lambda & - 1 - \lambda & 1\\
+        0 & 0 & 0 & 0\\
     \end{block}
 \end{blockarray}
 $$
-
 
 \begin{figure}
     \centering
    \begin{tikzpicture}[start chain = going right,
    -Triangle, every loop/.append style = {-Triangle}]
-   \node[state, on chain]  (0) {(1,1)};
-   \node[state, on chain]  (1) {(1,0)};
-   \node[state, on chain]  (2) {(0,0)};
+   \node[state, on chain]  (2) {2};
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (0) {0};
    
    % TODO: Need to add labels
-   \draw (0) edge[bend left] node[yshift=3mm]{$1$} (1);
-   \draw (1) edge[bend left] node[yshift=-3mm]{$\frac{\lambda}{1 + \lambda}$}(0);
-   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$\frac{1}{1 + \lambda}$} (2);
+   \draw (2) edge[bend left] node[yshift=3mm]{$1$} (1);
+   \draw (1) edge[bend left] node[yshift=-3mm]{$\frac{\lambda}{1 + \lambda}$}(2);
+   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$\frac{1}{1 + \lambda}$} (0);
    
-   
-   %\foreach \i in {0,...,2} 
-%     \node[state, on chain]  (\i) {\i};
- %  \foreach \i in {0,...,} {
-  %   \draw let \n1 = { int(\i+1) } in
-   %    (\i)  edge[bend left] (\n1)
-    %   (\n1) edge[bend left] (\i);
-   %}
-   %\foreach \i in {1,...,3}
-    % \draw  (\i) edge[loop below] (\i);
-   %draw    (0)  edge[loop left]   (0);
-   %\draw    (4)  edge[loop right]  (4);
 \end{tikzpicture}
     \caption{Embedded discrete Markov chain for two node contact process}
     \label{fig:discrete_mc_two_contact}
 \end{figure}
 
 Let $T_\lambda$ be the time in which we hit $(0,0)$.
-The wait time while in node $(1,1)$ is exponentially distributed with parameter $- q_{(1,1)} = 2$ and similarly the wait time while in node $(1,0)$ or $(0,1)$ is exponentially distributed with parameter $- q_{(1,0)} = 1 + \lambda$.
+Denote the wait time while in node $(1,1)$ is exponentially distributed random variable $S$ with parameter $- q_{(1,1)} = 2$ and similarly the wait time while in node $(1,0)$ or $(0,1)$ is exponentially distributed with parameter $- q_{(1,0)} = 1 + \lambda$, denoted $T$.
 
-Let $N$ be the number of times that the process wait at node $(1,0)$. Equivalently, it one more than the number of loops the discrete chain does from $(1,0) \to (1,1) \to (1,0)$. TODO: Need to modivate this better...
+Let $N$ be the number of times that the process waits at node $(1,0)$.
+Note that this is equal to the number of times that the process waits at node $(1,1)$ since the transition $(1,1) \to (1,0)$ has probability 1.
 $$
 P(N = n) = \left(\frac{\lambda}{1 + \lambda} \right)^{n - 1} \frac{1}{1 + \lambda} \quad n = 1,2,\ldots
 $$
@@ -162,8 +161,9 @@ with
     \Var(N) &= \frac{\lambda/(1 + \lambda)}{1/(1 + \lambda)^2} = \lambda (1 + \lambda)
 \end{align*}
 
-
-Let $X_1, X_2, \ldots$ be iid random variables with $X_i \sim \exp(2) + \exp(1 + \lambda)$, which denotes the wait time for one loop. Since the wait times are independent, then 
+Let $S_1, S_2, \ldots$ be iid random variables with
+$S_i \sim \exp(2)$ and independent of iid random variables $T_1, T_2, \ldots$ with  $T_i \sim \exp(1 + \lambda)$.
+Denote $X_i \sim S_i + T_i$, Since the wait times are independent, then 
 $$
 E[X_i] = \frac{1}{2} + \frac{1}{1 + \lambda} = \frac{3 + \lambda}{2(1 + \lambda)}
 $$
@@ -173,9 +173,14 @@ $$
 T_\lambda = \sum_{i = 1}^N X_i
 $$
 
-Using the theory of random sums \cite{Ross97}, we have that
+\begin{theorem}
+Let $X \sim \exp(\lambda)$ and $Y \sim \exp(\mu)$ be independent random variables with $T = \min(X,Y)$.
+Then $T | X < Y \sim \exp(\lambda + \mu)$.
+\end{theorem}
+
+Using the theory of random sums \cite{Ross97}, TODO: Need to show that $X_i$ and $N$ are independent. we have that
 $$
-E[T_\lambda] = E\left[ \sum_{i = 1}^N X_i \right] = E[X_1] E[N] = \frac{3 + \lambda}{2(1 + \lambda)} \cdot (1 + \lambda)
+E[T_\lambda] = E\left[ \sum_{i = 1}^N X_i \right] = E[X_1] E[N] = \frac{3 + \lambda}{2(1 + \lambda)} \cdot (1 + \lambda) = \frac{3}{2} + \frac{\lambda}{2}
 $$
 
 Also, the variance of a random sum is defined as
@@ -186,55 +191,114 @@ Also, the variance of a random sum is defined as
     &= \frac{\lambda^2 + 7 \lambda + 10}{4} + \frac{1}{1 + \lambda}
 \end{align*}
 
-\subsubsection{Finite State Space}
-Assume that the state space is finite, e.g. $X = \{ 0,1 \}^{\Z / n}$.
-Each state $i$ is connected to its neighbor $i - 1 \mod n$ and $i + i \mod n$.
+\subsubsection{Limiting Distribution}
 
-\subsubsection{Graphical Representation}
-
-\subsection{Voter Model}
-
-Questions/Exercises to answer from \cite{steif1991}.
-\begin{enumerate}
-    \item In 1 dimension from $\mu_\theta$,
-    $$
-    P(\eta_t(x) \not = \eta_t(x + 1)) \sim \frac{c}{\sqrt{t}}
-    $$
-    Does this imply
-    $$
-    P(\eta_t(x) = \eta_t(x + 1), \forall t \geq T) \quad T \to \infty
-    $$
-    \item Show that starting with $\mu_{1/2}$ ...  ??? Can't read the notes
-    \item In 2-dim starting from $\mu_\theta$
-        $$
-    P(\eta_t(x) \not = \eta_t(x + 1)) \sim \frac{c}{\log{t}}
-    $$
-    (This uses highly non-trivial facts about random walks in 2-dimensions)
-    \item In $d \geq 3$, what type of correlations does $\nu$ have?
-    In other words, does
-    $$
-    E^{\nu_\theta}[\eta(x) \eta(y)] - E^{\nu_\theta}[\eta(x)] E^{\nu_\theta}[\eta(y)] \longrightarrow 0 \quad \text{as } |x - y| \to \infty
-    $$
-    If so, at what rate? Exponential? Power law? Take $\theta = 1/2$ for simplicity.
-\end{enumerate}
-
-\section{Statistical Mechanics}
-
-\begin{defn}[Entropy]
-    The entropy of a discrete random variable $X$ is given by
-    $$
-    H(X) = -E[\log(P(X))]
-    $$
-    where $P$ is the probability distribution function of $X$.
-\end{defn}
-
-\begin{theorem}
-The entropy of a discrete random variable is maximized at the uniform distribution where the entropy is $\log |S|$
+\begin{theorem} \label{thm:geom_sum}
+Let $N$ be geometrically distributed with parameter $p$.
+$P(N = n) = (1 - p)^{n - 1} p$ and $X_1,X_2,\ldots$ iid and independent of $N$ with each $X_i$ exponentially distributed with rate $\lambda$.
+Then,
+$$
+\sum_{i = i}^N X_i \sim \exp(p \lambda)
+$$
 \end{theorem}
 
-\begin{proof}
-TODO: Jenson's inequality
-\end{proof}
+Thus,
+\begin{align*}
+    \sum_{i = 1}^N S_i &\sim \exp( \frac{2}{1 + \lambda})\\
+    \sum_{i = 1}^N T_i &\sim \exp( 1 )
+\end{align*}
+
+Multiplying $T_\lambda$ by $\frac{2}{1 + \lambda}$ and using the scaling property of exponential random variables we have that
+\begin{align*}
+    \frac{2}{1 + \lambda}\sum_{i = 1}^N S_i &\sim \exp( 1 )\\
+    \frac{2}{1 + \lambda}\sum_{i = 1}^N T_i &\sim \exp( \frac{2}{1 + \lambda})
+\end{align*}
+As $\lambda \to \infty$, then $T_\lambda \Rightarrow \exp(1)$
+
+\subsection{Three node contact process}
+Now we look at the three node contract process where all the nodes are connected.
+
+Now let $N_1, N_2, N_3$ be the number of visits to states 1, 2, and 3, respectively.
+Let $X_i^{(1)} \sim \exp(1 + 2\lambda)$ be iid random variables, $X_i^{(2)} \sim \exp(2 + 2\lambda)$ iid and $X_i^{(3)} \sim \exp(3)$ idd.
+Not that these are not independent of each other, but for each $i$ each state is independent of the wait times at the state.
+
+Then the discrete time Markov chain for this process can be expressed as
+$$
+P = \begin{blockarray}{cc|ccc}
+    & 0 & 1 & 2 & 3\\
+    \begin{block}{c(cccc)}
+        0 & 0 & 0 & 0 & 0 \\
+        \hline\\
+        1 & \frac{1}{1 + 2\lambda} & 0 &
+        \frac{2\lambda}{1 + 2\lambda} & 0\\
+        2 & 0 & \frac{2}{2 + 2\lambda} & 0 & \frac{2}{2 + 2\lambda}\\
+        3 & 0 & 0 & 1 & 0
+    \end{block}
+\end{blockarray}
+$$
+Since the discrete Markov chain \cite{grinstead2003}
+
+\begin{figure}
+    \centering
+   \begin{tikzpicture}[auto, node distance=2cm, every loop/.style={}, thick,main node/.style={circle,draw}]
+   \node[main node]  (0) {1};
+   \node[main node]  (1) [below left of=0]  {1};
+   \node[main node]  (2) [below right of=0]  {1};
+   
+   \draw (0) edge [left] (1);
+   \draw (0) edge [left] (2);
+   \draw (1) edge [left] (2);
+\end{tikzpicture}
+    \caption{Three node contact process starting with initial state set as one.}
+    \label{fig:three_node_contact_complete}
+\end{figure}
+
+\begin{figure}
+    \centering
+   \begin{tikzpicture}[start chain = going right,
+   -Triangle, every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (3) {3};
+   \node[state, on chain]  (2) {2};
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (0) {0};
+   
+   \draw (3) edge[bend left] node[yshift=3mm]{$3$} (2);
+   \draw (2) edge[bend left] node[yshift=-3mm]{$\frac{2 \lambda}{2 + 2 \lambda}$}(3);
+   %
+   \draw (2) edge[bend left] node[yshift=3mm]{$2$} (1);
+   \draw (1) edge[bend left] node[yshift=-3mm]{$\frac{2\lambda}{1 + 2 \lambda}$}(2);
+   %
+   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$\frac{1}{1 + 2\lambda}$} (0);
+   
+\end{tikzpicture}
+    \caption{Embedded discrete Markov chain for three node contact process}
+    \label{fig:discrete_mc_three_contact}
+\end{figure}
+
+\subsubsection{Limiting Distribution}
+
+\section{Finite contact process on 1D lattice}
+
+The two node contact process on the lattice is identical to the complete graph.
+
+\subsection{Three node contact process}
+
+\begin{figure}
+    \centering
+   \begin{tikzpicture}[auto, node distance=2cm, every loop/.style={}, thick,main node/.style={circle,draw}]
+   \node[main node]  (0) {1};
+   \node[main node]  (1) [right of=0]  {1};
+   \node[main node]  (2) [right of=1]  {1};
+   
+   \draw (0) edge [left] (1);
+   \draw (1) edge [left] (2);
+\end{tikzpicture}
+    \caption{Three node contact process on 1D lattice}
+    \label{fig:three_node_contact_lattice}
+\end{figure}
+
+
+\subsection{Voter Model}
 
 \bibliographystyle{plainnat}
 \bibliography{references}
