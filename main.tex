@@ -36,6 +36,8 @@
 \newtheorem{note}{Note}
 \newtheorem*{remark}{Remark}
 
+\numberwithin{equation}{section}
+
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Rs}{\mathcal{R}}
 \newcommand{\Gs}{\mathcal{G}}
@@ -756,16 +758,26 @@ Using Wolfram Language we can compute the matrix exponential which is complicate
 \end{align*}
 
 Then the density of $T_\lambda$ is defined as
-\begin{align*}
-f(x) &= \boldsymbol{\alpha} \exp(\mathbf{S} x) \mathbf{s}\\
-&= (1, 0) \exp(\mathbf{S} x) (0,1)^T\\
-&= A_{12}\\
+\begin{align}
+f(x; \lambda) &= \boldsymbol{\alpha} \exp(\mathbf{S} x) \mathbf{s} \nonumber\\
+&= (1, 0) \exp(\mathbf{S} x) (0,1)^T \nonumber\\
+&= A_{12} \nonumber\\
 &= \frac{2 e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6
    \lambda +1}-\lambda -3\right) x}}{\sqrt{\lambda ^2+6 \lambda +1}}-\frac{2
    e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right)
-   x}}{\sqrt{\lambda ^2+6 \lambda +1}}
-\end{align*}
+   x}}{\sqrt{\lambda ^2+6 \lambda +1}} \label{eq:t_density}
+\end{align}
 
+\begin{figure}
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/contact_phase_densities.png}
+   \caption{Density functions for $T_\lambda$ for $\lambda = 1, 2, 5, 15$ on the contact process with two nodes}
+  \label{fig:contact_phase_densities}
+\end{figure}
+
+In Figure \ref{fig:contact_phase_densities} we plot the density from Equation \ref{eq:t_density} for various values of $\lambda$.
+We can see that increasing $\lambda$ very quickly increases the the amount of time that we wait until absorption.
+It is clear that as $\lambda \to \infty$ then $T_\lambda$ approaches infinity in distribution.
 
 \begin{theorem}
 Let $T_\lambda$ be the time in which we hit $(0,0)$.
