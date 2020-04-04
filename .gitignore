@@ -5,3 +5,7 @@
 *.pdf
 *.ps
 *.nb.html
+*.aux
+*.log
+*.out
+*.rds
