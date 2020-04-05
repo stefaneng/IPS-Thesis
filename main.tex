@@ -519,7 +519,7 @@ $$
 where $X^0 = I$, the $n \times n$ identity matrix.
 \end{defn}
 
-\begin{defn}[Phase-shift distribution]
+\begin{defn}[Phase-shift distribution] \cite{mle_phase_type2011}
 Let $(X_t)$ be a continuous-time Markov chain with a finite state space $\Omega$ with exactly one absorbing state and $n$ transient states.
 Let $Q$ be the infinitesimal generator matrix ($n + 1 \times n + 1$) for the process which has the form
 $$
@@ -811,6 +811,20 @@ As $\lambda \to \infty$, then $\frac{2}{1 + \lambda} T_\lambda \Rightarrow \exp(
 Now we look at the three node contract process on a complete graph.
 Again we project the states to the number of ones in the process which will be a Markov chain by Theorem \ref{thm:mc_projection}, as shown in Figure \ref{fig:mc_three_contact}.
 
+\begin{equation}
+Q_{C_3} = \begin{blockarray}{ccccc}
+    & 3 & 2 & 1 & 0\\
+    \begin{block}{c|cccc}
+    \cline{2-5}
+        3 & -3 & 3 & 0 & 0 \\
+        2 & 2\lambda & -(2 + 2 \lambda) &
+        2 & 0\\
+        1 & 0 & 2\lambda & -(1 + 2\lambda) & 1\\
+    0 & 0 & 0 & 0 & 0\\
+    \end{block}
+\end{blockarray}
+\end{equation}
+
 Now let $N_1, N_2, N_3$ be the number of visits to states 1, 2, and 3, respectively.
 Let $X_i^{(1)} \sim \exp(1 + 2\lambda)$ be i.i.d random variables, $X_i^{(2)} \sim \exp(2 + 2\lambda)$ i.i.d and $X_i^{(3)} \sim \exp(3)$ i.d.d.
 Note that $N_1, N_2, N_3$ are not independent of each other, but for each $i$ each state is independent of the waiting times at the state.
@@ -828,7 +842,7 @@ We can again represent $T_\lambda$ as random sums
    \draw (3) edge[bend left] node[yshift=3mm]{rate $3$} (2);
    \draw (2) edge[bend left] node[yshift=-3mm]{$2\lambda$}(3);
    %
-   \draw (2) edge[bend left] node[yshift=3mm]{$1$} (1);
+   \draw (2) edge[bend left] node[yshift=3mm]{$2$} (1);
    \draw (1) edge[bend left] node[yshift=-3mm]{$2\lambda$}(2);
    %
    \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$1$} (0);
@@ -936,6 +950,8 @@ It then follow that
 \end{align*}
 
 \subsubsection{Limiting Distribution}
+TODO: Use R to simulate from the phase-type distribution
+
 \begin{theorem}
 Let $T_\lambda$ be the time in which we hit 0 in the three node complete contact process.
 Then $\frac{3}{2 \lambda^2 + \lambda + 1} T_\lambda$ converges in distribution to an exponential distribution with rate 1.
