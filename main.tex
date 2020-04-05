@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
-\title{Interacting Particle System Thesis}
+\title{Interacting Particle Systems Thesis}
 \author{Stefan Eng}
 \date{2019/2020}
 
@@ -12,6 +12,7 @@
 \usepackage{caption}
 \usepackage{mathrsfs}
 \usepackage{blkarray}
+\usepackage{mathtools}
 
 \usepackage{natbib}
 \usepackage{graphicx}
@@ -32,8 +33,10 @@
 \newtheorem{exercise}{Exercise}
 
 \theoremstyle{remark}
-\newtheorem*{note}{Note}
+\newtheorem{note}{Note}
 \newtheorem*{remark}{Remark}
+
+\numberwithin{equation}{section}
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Rs}{\mathcal{R}}
@@ -69,6 +72,17 @@
 
 \subsection{Probability}
 
+\begin{defn}[Geometric Distribution]
+Let $N$ a non-negative integer random variable with probability density function
+$$
+P(N = n) = (1 - p)^{n - 1} p
+$$
+for $n \in \{1,2,\ldots\}$.
+Then $N$ is geometrically distributed.
+
+Unless otherwise specified, in this paper a geometric distribution is assumed to be supported on $\{1,2,\ldots\}$.
+\end{defn}
+
 \begin{defn}[Exponential Distribution]
 Let $X$ be a random variable.
 If $X$ has a pdf of 
@@ -78,7 +92,7 @@ f(x) = \begin{cases}
     0 & x \leq 0
     \end{cases}
 $$
-then we say that $X$ is exponentially distributed with rate $\lambda$ (denoted as $X \sim \exp(\lambda)$.
+then we say that $X$ is exponentially distributed with rate $\lambda$, denoted as $X \sim \exp(\lambda)$.
 \end{defn}
 
 \begin{theorem}\label{thm:exp_x_less_y}
@@ -115,13 +129,13 @@ So $\min(X,Y) = T \sim \exp(\alpha + \beta)$
 \end{proof}
 
 \begin{theorem} \label{thm:exp_scaling}
-Let $X \sim \exp(\lambda)$ and $c$ be a constant.
+Let $X \sim \exp(\lambda)$ and $c > 0$ be a constant.
 Then $cX \sim \exp(\lambda/c)$.
 \end{theorem}
 
 \begin{proof}
 $$
-    P(cX > y) = P(X > y/c) = e^{-\lambda/c y}
+    P(cX > y) = P(X > y/c) = e^{-y (\lambda/c)} \quad y > 0
 $$
 So $cX \sim \exp(\lambda/c)$ 
 \end{proof}
@@ -129,19 +143,26 @@ So $cX \sim \exp(\lambda/c)$
 \subsubsection{Generating functions and Characteristic Functions}
 
 \begin{defn}[Probability generating function]
-The probability generating function of a discrete random variable $X \in \{0,1,2, \ldots\}$ is defined as $G_X(z) = E[z^X] = \sum_{i = 0}^\infty z^i P(X = i)$.
+The probability generating function of a discrete random variable $X \in \{0,1,2, \ldots\}$ is defined as 
+$$
+G_X(z) = E[z^X] = \sum_{i = 0}^\infty z^i P(X = i)
+$$
+for all $z \in \R$ in which the sum converges.
 \end{defn}
 
-\begin{lemma}
+\begin{note}
 For discrete random variable $X$,
 \begin{itemize}
-    \item $G_X(0) = P(X = 0)$
+    \item $G_X(0) = P(X = 0)$ since $0^0 = 1$
     \item $G_X(1) = 1$
 \end{itemize}
-\end{lemma}
+\end{note}
 
 \begin{defn}[Characteristic function]
-The characteristic function of a random variable $X$ is $\varphi_X(t) = E[e^{itX}]$
+The characteristic function of a random variable $X$ is the function $\varphi : \R \to \Cs$ defined as
+$$
+\varphi_X(t) = E[e^{itX}]
+$$
 \end{defn}
 
 \begin{theorem}[Moments from generating function] \cite{grimmett2001}
@@ -150,6 +171,7 @@ Let $X$ be a random variable and $G_X(z)$ be its generating function
     \item $E[X] = G'(1)$
     \item $E[X (X - 1) \cdots (X - k + 1)] = G^{(k)}(1)$
 \end{itemize}
+Provided the derivatives exist.
 \end{theorem}
 
 \begin{proof}
@@ -161,22 +183,24 @@ If $X$ and $Y$ are independent discrete random variables then
 $$
 G_{X + Y}(z) = G_X(z) G_Y(z)
 $$
+for $z \in \R$ in which the sums converge.
+\end{theorem}
 
-For any random variables $X$ and $Y$, 
+\begin{theorem}
+For any independent random variables $X$ and $Y$, 
 $$
 \varphi_{X + Y}(t) = \varphi_X(t) \varphi_Y(t)
 $$
+for all $t \in \R$.
 \end{theorem}
 
 \begin{proof}
 See \cite{grimmett2001}
 \end{proof}
 
-
-
 \begin{theorem}\label{thm:generating_random_sum}
-Let $X_1, X_2, \ldots$ be iid random variables with common probability generating function $G_X(t)$.
-Let $N$ be another non-negative integer random variable, independent of the sequence $(X_t)$.
+Let $X_1, X_2, \ldots$ be i.i.d random variables with common probability generating function $G_X(z)$.
+Let $N$ be another non-negative integer random variable, independent of the sequence $(X_n)$.
 Let $G_N(z) = E[z^N]$ and $G_X(z)$ be the probability generating functions for $N$ and each $X_i$.
 Let $S = \sum_{i = 1}^N X_i$.
 Then,
@@ -189,16 +213,15 @@ $$
 \begin{align*}
     G_X(z) &= E[ z^S ]\\
     &= E[ E[ z^{\sum_{i = 1}^N X_i} | N ]]\\
-    &= E \left[ \prod_{i = 1}^N E[z^{X_i} | N] \right] && \text{by independence}\\
-    &= E \left[ \prod_{i = 1}^N E[z^{X_i}] \right]\\
+    &= E \left[ \prod_{i = 1}^N E[z^{X_i}] \right] && \text{by independence}\\
     &= E[ G_X(z)^N]\\
     &= G_N(G_X(z))
 \end{align*}
 \end{proof}
 
 \begin{theorem}\label{thm:char_func_random_sum}
-Let $X_1, X_2, \ldots$ be iid random variables with common characteristic function $\varphi_X(t)$.
-Let $N$ be another non-negative integer random variable, independent of the sequence $(X_t)$.
+Let $X_1, X_2, \ldots$ be i.i.d random variables with common characteristic function $\varphi_X(t)$.
+Let $N$ be a non-negative integer random variable, independent of the sequence $(X_n)$.
 Let $G_N(z) = E[z^N]$ be the probability generating function for $N$.
 Let $S = \sum_{i = 1}^N X_i$.
 Then,
@@ -211,17 +234,16 @@ $$
 \begin{align*}
     \varphi_S(t) &= E[ \exp(it \sum_{i = 1}^N X_i) ]\\
     &= E[ E[ \exp(it \sum_{i = 1}^N X_i) | N ]]\\
-    &= E \left[ \prod_{i = 1}^N E[\exp(it X_i) | N] \right] && \text{by independence}\\
-    &= E[\varphi_X(t)]\\
-    &= G_N(\varphi_X(z))
+    &= E \left[ \prod_{i = 1}^N E[\exp(it X_i)] \right] && \text{by independence}\\
+    &= E[\varphi_X(t)^N]\\
+    &= G_N(\varphi_X(t))
 \end{align*}
 \end{proof}
 
 \subsubsection{Random Sums}
 
 \begin{theorem} \label{thm:geom_sum_exp}
-Let $N$ be geometrically distributed with parameter $p$.
-$P(N = n) = (1 - p)^{n - 1} p$ and $X_1,X_2,\ldots$ iid and independent of $N$ with each $X_i$ exponentially distributed with rate $\lambda$.
+Let $N$ be geometrically distributed ($N \in \{1,2,\ldots\})$ with parameter $p$ and $X_1,X_2,\ldots$ i.i.d and independent of $N$ with each $X_i$ exponentially distributed with rate $\lambda$.
 Then,
 $$
 S = \sum_{i = i}^N X_i
@@ -231,6 +253,7 @@ has an exponential distribution with rate $p \lambda$.
 
 \begin{proof}
 Let $G_N(z)$ be the probability generating function of $N$ and $\varphi_X(t)$ be the characteristic function of each $X_i$.
+It is easy to show that
 \begin{align*}
     G_N(z) &= \frac{pz}{1 - (1 - p)z}\\
     \varphi_X(t) &= \frac{\lambda}{\lambda - it}
@@ -254,11 +277,11 @@ Then by Theorem \ref{thm:char_func_random_sum},
         p \lambda - it 
     }
 \end{align*}
-Which is the characteristic function of the exponential distribution with rate $p \lambda$.
+which is the characteristic function of the exponential distribution with rate $p \lambda$.
 \end{proof}
 
-\begin{theorem}[Wald's equation]\label{thm:random_sum_ev} \cite{Ross97}
-Let $X_1, X_2, \ldots$ be sequence of iid random variables and $N$ a non-negative integer random variable independent of the sequence $(X_n)$.
+\begin{theorem}[Wald's equation]\label{thm:random_sum_ev}
+Let $X_1, X_2, \ldots$ be sequence of i.i.d random variables with finite expectation and $N$ a non-negative integer random variable independent of the sequence $(X_n)$, also with finite expectation.
 Let $S = \sum_{i = 1}^N X_i$
 Then,
 $$
@@ -290,7 +313,7 @@ By properties of the probability generating function, we have that
 \end{proof}
 
 \begin{theorem} \label{thm:random_sum_var}
-Let $X_1, X_2, \ldots$ be iid random variables and $N$ a non-negative integer random variable independent of each $X_i$.
+Let $X_1, X_2, \ldots$ be i.i.d random variables and $N$ a non-negative integer random variable independent of ($X_n$).
 Then,
 $$
 \Var\left( \sum_{i = 1}^N X_i \right) = E[N]\Var(X) + (E[X])^2 \Var(N)
@@ -298,11 +321,13 @@ $$
 \end{theorem}
 
 \begin{proof}
-TODO
+See \cite{Ross97}
 \end{proof}
 
-\begin{theorem}\label{thm:geom_sum_geom}
-Let $X_1, X_2, \ldots$ be iid geometric random variables ($X_i \in \{1,2,\ldots\})$, with parameters $p$ and $N$ a geometric random variable ($N \in \{1,2,\ldots\})$ with parameter $\alpha$, independent of the sequence $(X_t)$.
+The following is analogous to Theorem \ref{thm:geom_sum_exp} but for discrete geometric sums.
+
+\begin{theorem}\label{thm:geom_sum_geom} (\cite{Nelson1995})
+Let $X_1, X_2, \ldots$ be i.i.d geometric random variables ($X_i \in \{1,2,\ldots\})$, with parameters $p$ and $N$ a geometric random variable ($N \in \{1,2,\ldots\})$ with parameter $\alpha$, independent of the sequence $(X_n)$.
 Then,
 $$
 S = \sum_{i = 1}^N X_i
@@ -310,7 +335,7 @@ $$
 is geometrically distributed with parameter $\alpha p$.
 \end{theorem}
 
-\begin{proof}\cite{Nelson1995}
+\begin{proof}
 The probability generating functions for $N$ and each $X_i$ are
 \begin{align*}
     G_X(z) &= \frac{p z}{1 - (1 - p)z}\\
@@ -341,8 +366,81 @@ So $S$ is geometrically distributed with parameter $\alpha p$
 
 \subsection{Markov Chains}
 
+\begin{defn}[(Discrete) Markov chain] \cite{grimmett2001}
+Let $\{X_n : n \geq 0\}$ be a stochastic process with a finite or countable state space $S$.
+Each $X_n$ is a discrete random variable with $X_n \in S$
+The process $(X_n)$ is a discrete-time Markov chain if
+$$
+P(X_{n + 1} = y | X_n = x, X_{n - 1} = x_{n - 1}, \ldots, X_0 = x_0) = P(X_{n + 1} = y | X_n = x)
+$$
+for all $n \geq 1$ and $y, x, x_{n-1}, \ldots, x_0 \in S$.
+\end{defn}
+
+\begin{defn}[Homogeneous Markov Chain]\cite{grimmett2001}
+We say that a discrete-time Markov chain $(X_n)$ with state space $S$ is \textbf{homogeneous} if
+$$
+P(X_{n + 1} = j | X_n = i) = P(X_{1} = j | X_0 = i) = \mathbf{P}(i,j) = p_{ij}
+$$
+$\mathbf{P} = (p_{ij})$ is the $|S| \times |S|$ matrix of transition probabilities
+$$
+p_{ij} = P(X_{n + 1} = i | X_n = j)
+$$
+
+All Markov chains are assumed to be homogeneous in this thesis unless stated otherwise.
+\end{defn}
+
+\begin{remark}
+Since for a fixed $i$, $P(i, \cdot)$ is a probability measure then we have that
+\begin{itemize}
+    \item $p_{ij} \geq 0$ for all $i,j$
+    \item $\mathbf{P}$ row sums equal one
+    $$
+    \sum_{j = 0}^\infty p_{ij} = 1
+    $$
+    for $i = 0, 1, \ldots$
+\end{itemize}
+\end{remark}
+
+\begin{defn}[Continuous-time Markov chain]
+Let $(X_t) = \{X(t) : t \in \mathbb T\}$, where $\mathbb T$ is some index set (generally $\mathbb T = [0, \infty)$ represents time), be a stochastic processes with countable state space $S$.
+
+Then $(X_t)$ is a continuous-time Markov chain if 
+$$
+P(X(t + h) = j | X(t) = i, X(u_1) = i_{u_1}, \ldots, X(u_n) = i_{u_n}) = P(X(t + h) = j | X(t) = i)
+$$
+for all $u_1,\ldots, u_n, s,t,h \in \mathbb T$, with $u_1 < \cdots < u_n < s$.
+\end{defn}
+
+\begin{defn}[Infinitesimal generator matrix]
+The \textbf{infinitesimal generator matrix} (or \textbf{transition rate matrix}) $Q$,of a continuous-time Markov chain $(X_t)$ with countable state space $S$, is an $|S| \times |S|$ matrix.
+The element $q_{ij}$ of $Q$ denotes the rate departing from i and arriving in state j.
+The diagonal is defined as $q_{ii} = - \sum_{j \not = i} q_{ij}$.
+Each $i \not = j, q_{ij} \geq 0$ and the rows sum to zero: $\sum_{j} q_{ij} = 0$ for each $i$.
+\end{defn}
+
+\begin{defn}[Embedded Markov Chain]
+Let $(X_t)$ be a continuous-time Markov chain and $Y_n$ be the the nth jump of the process $(X_t)$.
+This discrete-time Markov chain $(Y_n)$ is called the \textbf{embedded} (discrete) Markov chain of the process $(X_t)$.
+\end{defn}
+
+\begin{defn}[Waiting/Holding times]
+Let $(X_t)$ be a continuous-time Markov chain with infinitesimal generator matrix $Q$ and $(Y_n)$ the embedded discrete Markov chain.
+
+Let $(S_n)$ be the waiting/holding times in each state.
+That is, $S_i$ is the waiting time in the state $Y_i$ that is exponentially distributed with parameter $- q_{Y_i Y_i}$.
+\end{defn}
+
+\begin{defn}[Absorbing State] \cite{grinstead2003}
+A state $x \in \Omega$ is absorbing if and only if $P(x,x) = 1$ and $P(x,y) = 0$ for all $y \not = x$.
+That is, it is impossible to leave the state.
+\end{defn}
+
+\begin{defn}[Absorbing Markov Chain] \cite{grinstead2003}
+A Markov chain is absorbing if there is at least one absorbing state and it is possible to reach an absorbing state in a finite number of steps from any state.
+\end{defn}
+
 \begin{defn}[Canonical Form] \cite{grinstead2003}
-Assume we have a absorbing Markov chain with $r$ absorbing states and $t$ transient states and  transition matrix $P$.
+Assume we have an absorbing discrete time Markov chain with $r$ absorbing states and $t$ transient states and  transition matrix $P$.
 The canonical form of the transition matrix is
 \begin{equation}
     P = \begin{pmatrix}
@@ -351,16 +449,14 @@ The canonical form of the transition matrix is
     \end{pmatrix}
 \end{equation}
 
-where $Q$ is an $r \times r$ matrix of transient states, $R$ is an $t \times t$ matrix of absorbing states and $I_{r}$ is the $r \times r$ identity matrix.
+where $Q$ is an $r \times r$ matrix of transient states, $R$ is an $t \times r$ matrix of absorbing states and $I_{r}$ is the $r \times r$ identity matrix.
 \end{defn}
 
 \begin{theorem} \label{thm:fund_exp} \cite{grinstead2003}
-For an absorbing Markov chain the expected number of times that a chain is given by
+For an absorbing Markov chain with $Q$ is an $r \times r$ matrix of transient states from the canonical form. Let $N$ be a matrix with the same dimensions as $Q$. $N_{ij}$ is the expected number of times the chain is in state j when starting in state i. Then,
 \begin{equation}
     N = I + Q + Q^2 + \cdots = (I - Q)^{-1}
 \end{equation}
-Where $Q$ is the $Q$ is an $r \times r$ matrix of transient states from the canonical form.
-$N_{ij}$ is the expected number of times the chain is in state j when starting in state i.
 \end{theorem}
 
 \begin{proof}
@@ -368,22 +464,105 @@ See \cite{grinstead2003}
 \end{proof}
 
 \begin{theorem}\label{thm:mc_projection} \cite{LevinPeresWilmer2006}
-Let $(X_t)$ be a Markov chain with state space $\Omega$ and transition matrix $P$.
+Let $(X_n)$ be a Markov chain with state space $\Omega$ and transition matrix $P$.
 Let $\sim$ be an equivalence relation on $\Omega$ and denote the equivalences classes as $\Omega' = \{[x]: x \in \Omega\}$.
 
-If $x \sim x'$ implies that $P(x,[y]) = P(x', [y])$ then $[X_t]$  is a Markov chain.
+If $x \sim x'$ implies that $P(x,[y]) = P(x', [y])$ (where $P(x,A)$ is probability that the chain moves to one of the states $y \in A$ from $x$) then $[X_n]$  is a Markov chain.
 The state space is the equivalence classes $\Omega'$ and transition matrix $P'$ defined as $P'([x],[y]) := P(x, [y])$
+
+We call this new Markov chain $[X_n]$ a projection of $(X_n)$ or that we projected $(X_n)$ onto $[X_n]$.
 \end{theorem}
+
+\begin{theorem}\label{thm:x_N_indep}
+Assume that we have a continuous-time Markov chain with an embedded discrete-time Markov chain $(X_n)$.
+Let $S_i$ be the waiting time in state $X_i$.
+Then, the sequence $(S_n)$ is conditionally independent given the sequence of states $(X_n)$.
+\end{theorem}
+
+The core of the proof is included in the following theorems:
+
+\begin{theorem}
+Let $X \sim \exp(\alpha)$ and $Y \sim \exp(\beta)$ be independent random variables with $T = \min(X,Y)$.
+Then $T$ is independent of $X < Y$.
+\end{theorem}
+
+\begin{proof}
+Let $f(x,y)$ be the joint distribution of $X$ and $Y$.
+Since $X$ and $Y$ are independent, then $f(x,y) = \alpha \beta e^{-\alpha x} e^{-\beta y}$.
+\begin{align*}
+    P((T > t) \cap (X < Y)) &= P((X > t) \cap (Y > t) \cap (X < Y))\\
+    &= \int_t^\infty \int_t^y f(x,y) dx dy\\
+    &= \int_t^\infty \int_t^y \alpha \beta e^{-\alpha x} e^{-\beta y} dx dy\\
+    &= \int_t^\infty \beta e^{-\beta y} \left(\int_t^y \alpha e^{-\alpha x} dx \right)  dy\\
+    &= \int_t^\infty \beta e^{-\beta y} \left( e^{-\alpha t} - e^{-\alpha y} \right) dy\\
+    &= e^{-\alpha t} \int_t^\infty \beta e^{-\beta y} - \beta \int_t^\infty e^{-(\alpha + \beta) y} dy\\
+    &= e^{-\alpha t} \int_t^\infty \beta e^{-\beta y} - \frac{\beta}{\alpha + \beta} \int_t^\infty (\alpha + \beta) e^{-(\alpha + \beta) y} dy\\
+    &= e^{-(\alpha + \beta) t} - \frac{\beta}{\alpha + \beta} e^{-(\alpha + \beta) t}\\
+    &= e^{-(\alpha + \beta) t} \left(1 - \frac{\beta}{\alpha + \beta} \right)\\
+    &= \frac{\alpha}{\alpha + \beta} e^{-(\alpha + \beta) t}
+\end{align*}
+By Theorem \ref{thm:exp_x_less_y}, we have that $P(X < Y) = \frac{\alpha}{\alpha + \beta}$ so
+\begin{align*}
+    P(T > t | X < Y) &= \frac{P(T > t \cap (X < Y))}{P(X < Y)}\\
+    &= e^{-(\alpha + \beta) t}
+\end{align*}
+
+%So $T | X < Y$ is an exponential distribution with parameter $\alpha + \beta$
+Since both $T | X < Y \sim \exp(\alpha + \beta)$ and $T \sim \exp(\alpha + \beta)$ then $T$ and $X < Y$ are independent.
+\end{proof}
+
+\begin{defn}[Matrix Exponential]
+The matrix exponential of a real or complex $n \times n$ matrix $A$ is defined as
+$$
+\exp(X) = \sum_{i = 0}^\infty \frac{1}{i!} X^i
+$$
+where $X^0 = I$, the $n \times n$ identity matrix.
+\end{defn}
+
+\begin{defn}[Phase-shift distribution]
+Let $(X_t)$ be a continuous-time Markov chain with a finite state space $\Omega$ with exactly one absorbing state and $n$ transient states.
+Let $Q$ be the infinitesimal generator matrix ($n + 1 \times n + 1$) for the process which has the form
+$$
+Q = \begin{pmatrix}
+0 & \mathbf{0}\\
+\mathbf{s} & \mathbf{S}
+\end{pmatrix}
+$$
+Where $S$ is $n \times n$, and $s = - S \mathbf{1}$ is $n \times 1$ where $\mathbf{1}$ is a $n$ dimensional column vector of ones.
+Let $\boldsymbol{\alpha}$ be a $1 \times n$ matrix of initial probabilities of stating in each state.
+
+The distribution of the time until the process $(X_t)$ is absorbed is said to be phase-type distributed and its distribution function is 
+$$
+F(x) = 1 - \boldsymbol{\alpha} \exp(\mathbf{S} x) \mathbf{1}
+$$
+with density
+$$
+f(x) = \boldsymbol{\alpha} \exp(\mathbf{S} x) \mathbf{s}
+$$
+\end{defn}
 
 \section{Contact Process on Finite Graphs}
 
 Now we look at a contact process on a finite graph.
-Based on finite Markov chain theory, no matter the initial state, the process will eventually be zero.
 We look at $T_\lambda$, the time until we reach the state zero while keeping the number of nodes fixed as $\lambda$ goes to $\infty$.
-First we investigate the behavior for a complete graph, in which each node is connected to all other nodes and then we look at the one-dimensional lattice, in which each node is connected to at most two neighbors.
+It is know that $T_\lambda$ has a phase-shift distribution for a fixed $\lambda$.
+As $\lambda \to \infty$ then $T_\lambda$ will converge to infinity in distribution so we will normalize $T_\lambda$ to understand which limiting distribution one can get.
+First we investigate the behavior for a complete graph, in which each node is connected to all other nodes and then we look at the one-dimensional lattice and cycles.
 
-\begin{defn}[Contact process]
-Let $X = \{0,1\}^S$ be a finite state space.
+\begin{defn}[Contact process on finite graph]
+Let $S = (V,E)$ be a finite graph where $V$ are the vertices and $E$ is the set of edges.
+Let $X =  \{0,1\}^S$ be the state space.
+The contact process is a continuous-time Markov chain in which each 1 on the graph waits a random time, exponentially distributed, with rate 1 and then becomes a 0.
+Every 0 waits exponentially with rate $k \lambda$, where $k$ is the number of edges shared with a 1.
+Let $\eta$ and $\delta$ be two configurations of the graph $S$ in the process.
+The transition rate matrix can be described as follow
+$$
+q(\eta, \delta) = \begin{cases}
+    0 & \eta, \delta \text{ differ by more than one point}\\
+    1 & \text{differ only at } x, \eta(x) = 1, \delta(x) = 0\\
+    \lambda |\{ (x,y) \in E : \eta(y) = 1\}| & \text{differ only at } x, \eta(x) = 0, \delta(x) = 1
+\end{cases}
+$$
 \end{defn}
 
 \subsection{Two node contact process}
@@ -398,14 +577,12 @@ Define a contact process on the finite graph with two nodes and one edge between
     \end{cases}
 \end{align}
 
-Start the process with both nodes at 1.
-Clearly we will eventually reach $(0,0)$.
-We can express the transition rate matrix $Q$ matrix as
+We can express the infinitesimal generator matrix $Q'$ matrix as
 
 % Info on blockarray
 % https://tex.stackexchange.com/a/59519/41827
 $$
-Q = \begin{blockarray}{ccccc}
+Q' = \begin{blockarray}{ccccc}
     & (1,1) & (1,0) & (0,1) & (0,0)\\
     \begin{block}{c(cccc)}
         (1,1) & -2 & 1 & 1 & 0\\
@@ -415,9 +592,9 @@ Q = \begin{blockarray}{ccccc}
     \end{block}
 \end{blockarray}
 $$
-
-We can project this Markov chain to the number of ones in the process at a given time.
-That is, mapping $\{(1,0),(0,1)\}$ to a single state 1.
+Start the process with both nodes at 1.
+We can project this continuous-time Markov chain to the number of ones in the process at a given time.
+That is, mapping $(1,1)$ to 2, $\{(1,0),(0,1)\}$ to a single state 1, and $(0,0)$ to 0.
 This new chain is also a Markov chain by Theorem \ref{thm:mc_projection}.
 
 $$
@@ -425,11 +602,29 @@ Q = \begin{blockarray}{cccc}
     & 2 & 1 & 0\\
     \begin{block}{c(ccc)}
         2 & -2 & 2 & 0\\
-        1 & \lambda & - 1 - \lambda & 1\\
+        1 & \lambda & - (1 + \lambda) & 1\\
         0 & 0 & 0 & 0\\
     \end{block}
 \end{blockarray}
 $$
+
+\begin{figure}
+    \centering
+   \begin{tikzpicture}[start chain = going right,
+   -Triangle, every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (2) {2};
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (0) {0};
+   
+   % TODO: Need to add labels
+   \draw (2) edge[bend left] node[yshift=3mm]{rate $2$} (1);
+   \draw (1) edge[bend left] node[yshift=-3mm]{$\lambda$}(2);
+   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$1$} (0);
+   
+\end{tikzpicture}
+    \caption{Rates for two node projected contact process}
+    \label{fig:rates_mc_two_contact}
+\end{figure}
 
 \begin{figure}
     \centering
@@ -445,7 +640,7 @@ $$
    \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$\frac{1}{1 + \lambda}$} (0);
    
 \end{tikzpicture}
-    \caption{Projected embedded discrete Markov chain for two node contact process}
+    \caption{Embedded Markov chain for two node projected contact process}
     \label{fig:discrete_mc_two_contact}
 \end{figure}
 
@@ -453,60 +648,15 @@ Let $T_\lambda$ be the time in which we hit 0.
 The waiting time while in state 2 is exponentially distributed random variable $X$ with parameter $- q_{2} = 2$ and similarly the waiting time while in state 1 is exponentially distributed with parameter $- q_{(1,0)} = 1 + \lambda$.
 
 Let $N$ be a geometric random variable which denotes the number of times that the process waits at state 1 before moving to the absorbing state 0.
-$$
-P(N = n) = \left(\frac{\lambda}{1 + \lambda} \right)^{n - 1} \frac{1}{1 + \lambda} \quad n = 1,2,\ldots
-$$
-with
-\begin{align*}
-    E[N] &= 1 + \lambda\\
-    \Var(N) &= \frac{\lambda/(1 + \lambda)}{1/(1 + \lambda)^2} = \lambda (1 + \lambda)
-\end{align*}
+It has a success parameter $\frac{1}{1 + \lambda}$ which represents going to the absorbing state 0.
 
-Let $X_1, X_2, \ldots$ be iid random variables with
-$X_i \sim \exp(2)$ for the waiting time at state 2 and independent of iid random variables $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$ for the waiting time at state 1.
+Let $X_1, X_2, \ldots$ be i.i.d random variables with
+$X_i \sim \exp(2)$ for the waiting time at state 2 and independent of i.i.d random variables $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$ for the waiting time at state 1.
 
 Now we can express $T_\lambda$ as a random sum
 $$
 T_\lambda = \sum_{i = 1}^N (X_i + Y_i)
 $$
-
-\begin{theorem}
-Let $X \sim \exp(\alpha)$ and $Y \sim \exp(\beta)$ be independent random variables with $T = \min(X,Y)$.
-Then $T | X < Y \sim \exp(\alpha + \beta)$.
-\end{theorem}
-
-\begin{proof}
-Let $f(x,y)$ be the joint distribution of $X$ and $Y$.
-Since $X$ and $Y$ are independent, then $f(x,y) = \alpha \beta e^{-\alpha x} e^{-\beta y}$.
-\begin{align*}
-    P(T > t \cap X < Y) &= P(X > t \cap Y > t \cap X < Y)\\
-    &= \int_t^\infty \int_t^y f(x,y) dx dx\\
-    &= \int_t^\infty \int_t^y \alpha \beta e^{-\alpha x} e^{-\beta y} dx dx\\
-    &= \int_t^\infty \beta e^{-\beta y} \left(\int_t^y \alpha e^{-\alpha x} dx \right)  dx\\
-    &= \int_t^\infty \beta e^{-\beta y} \left( e^{-\alpha t} - e^{-\alpha y} \right) dy\\
-    &= e^{-\alpha t} \int_t^\infty \beta e^{-\beta y} - \beta \int_t^\infty e^{-(\alpha + \beta) y} dy\\
-    &= e^{-\alpha t} \int_t^\infty \beta e^{-\beta y} - \frac{\beta}{\alpha + \beta} \int_t^\infty (\alpha + \beta) e^{-(\alpha + \beta) y} dy\\
-    &= e^{-(\alpha + \beta) t} - \frac{\beta}{\alpha + \beta} e^{-(\alpha + \beta) t}\\
-    &= e^{-(\alpha + \beta) t} (1 - \frac{\beta}{\alpha + \beta})\\
-    &= \frac{\alpha}{\alpha + \beta} e^{-(\alpha + \beta) t}
-\end{align*}
-By Theorem \ref{thm:exp_x_less_y}, we have that $P(X < Y) = \frac{\alpha}{\alpha + \beta}$ so
-\begin{align*}
-    P(T > t | X < Y) &= \frac{P(T > t \cap X < Y)}{P(X < Y)}\\
-    &= e^{-(\alpha + \beta) t}
-\end{align*}
-
-%So $T | X < Y$ is an exponential distribution with parameter $\alpha + \beta$
-\end{proof}
-
-\begin{cor}\label{cor:t_xy_indep}
-Let $X, Y, T = \min(X,Y)$ be defined as before in Theorem \eqref{thm:exp_t_cond}.
-Then $T > t$ is independent of $X < Y$.
-\end{cor}
-
-\begin{proof}
-It follows immediately from Theorem \eqref{thm:exp_t_cond} since both $T | X < Y \sim \exp(\alpha + \beta)$ and $T \sim \exp(\alpha + \beta)$
-\end{proof}
 
 \begin{theorem}
 $$
@@ -519,16 +669,30 @@ $$
 \end{theorem}
 
 \begin{proof}
-By Corollary \ref{cor:t_xy_indep} we have that $(X_t)$ and $N$ are pairwise independent.
-TODO: Need to show that they are mutually independent
+$$
+P(N = n) = \left(\frac{\lambda}{1 + \lambda} \right)^{n - 1} \frac{1}{1 + \lambda} \quad n = 1,2,\ldots
+$$
+with
+\begin{align*}
+    E[N] &= 1 + \lambda\\
+    \Var(N) &= \frac{\lambda/(1 + \lambda)}{1/(1 + \lambda)^2} = \lambda (1 + \lambda)
+\end{align*}
+Also since $(X_n)$ and $(Y_n)$ are independent,
+
+\begin{align*}
+    E[X_i + Y_i] &= E[X + Y] = \frac{3 + \lambda}{2(1 + \lambda)}\\
+    \Var(X_i + Y_i) &= \Var(X + Y) = \frac{(1 + \lambda)^2 + 4}{4(1 + \lambda)^2}
+\end{align*}
+
+By Theorem \ref{thm:x_N_indep} we have that both $(X_t)$ and $(Y_t)$ are mutually independent of $N$.
 Thus by Theorem \eqref{thm:random_sum_ev},
 $$
-E[T_\lambda] = E\left[ \sum_{i = 1}^N X_i \right] = E[X_1] E[N] = \frac{3 + \lambda}{2(1 + \lambda)} \cdot (1 + \lambda) = \frac{3}{2} + \frac{\lambda}{2}
+E[T_\lambda] = E\left[ \sum_{i = 1}^N X_i + Y_i \right] = E[X + Y] E[N] = \frac{3 + \lambda}{2(1 + \lambda)} \cdot (1 + \lambda) = \frac{3}{2} + \frac{\lambda}{2}
 $$
 
 By Theorem \ref{thm:random_sum_var}
 \begin{align*}
-    \Var\left( \sum_{i = 1}^N X_i \right) &= E[N]\Var(X) + (E[X])^2 \Var(N)\\
+    \Var\left( \sum_{i = 1}^N X_i + Y_i \right) &= E[N]\Var(X + Y) + (E[X + Y])^2 \Var(N)\\
     &= (1 + \lambda) \frac{(1 + \lambda)^2 + 4}{4(1 + \lambda)^2} + \frac{(3 + \lambda)^2}{4 (1 + \lambda)^2} \lambda (1 + \lambda)^2\\
     &= \frac{\lambda^3 + 8 \lambda^2 + 17 \lambda + 14}{4(1 + \lambda)}\\
     &= \frac{\lambda^2 + 7 \lambda + 10}{4} + \frac{1}{1 + \lambda}
@@ -537,14 +701,92 @@ By Theorem \ref{thm:random_sum_var}
 
 \subsubsection{Limiting Distribution}
 
+The time to absorption $T_|lambda$ has a phase-type distribution.
+We can express the $Q$ matrix as
+$$
+Q = \begin{blockarray}{cccc}
+    & 2 & 1 & 0\\
+    \cline{2-4}
+    \begin{block}{c|cc|c|}
+        2 & -2 & 2 & 0\\
+        1 & \lambda & - (1 + \lambda) & 1\\
+        \cline{2-3}
+    \end{block}
+    \begin{block}{c|ccc|}
+        0 & 0 & 0 & 0\\
+    \end{block}
+\end{blockarray}
+$$
+where
+\begin{align*}
+    \mathbf{S} &= \begin{pmatrix}
+        -2 & 2\\
+        \lambda & - (1 + \lambda)
+    \end{pmatrix}\\
+    \mathbf{s} &= \begin{pmatrix}
+        0\\
+        1
+    \end{pmatrix}\\
+    \boldsymbol{\alpha} &= \begin{pmatrix}
+    1 & 0
+    \end{pmatrix}
+\end{align*}
+
+% MatrixExp[{{-2 x, 2 x}, {\[Lambda] x, -((1 + \[Lambda]) x)}}] // TeXForm 
+
+Using Wolfram Language we can compute the matrix exponential which is complicated even in this simple case. Let $A = \exp(Sx)$.
+
+\begin{align*}
+      A_{11} &= \frac{\left(\sqrt{\lambda ^2+6 \lambda +1}+\lambda -1\right) e^{\frac{1}{2}
+   \left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2 \sqrt{\lambda ^2+6
+   \lambda +1}}-\frac{\left(-\sqrt{\lambda ^2+6 \lambda +1}+\lambda -1\right)
+   e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2
+   \sqrt{\lambda ^2+6 \lambda +1}}\\
+   A_{12} &= \frac{2 e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6
+   \lambda +1}-\lambda -3\right) x}}{\sqrt{\lambda ^2+6 \lambda +1}}-\frac{2
+   e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right)
+   x}}{\sqrt{\lambda ^2+6 \lambda +1}}\\
+   A_{21} &= \frac{\lambda  e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right)
+   x}}{\sqrt{\lambda ^2+6 \lambda +1}}-\frac{\lambda  e^{\frac{1}{2}
+   \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{\sqrt{\lambda ^2+6
+   \lambda +1}}\\
+   A_{22} &= \frac{\left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda +1\right)
+   e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2
+   \sqrt{\lambda ^2+6 \lambda +1}}-\frac{\left(-\sqrt{\lambda ^2+6 \lambda
+   +1}-\lambda +1\right) e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda
+   -3\right) x}}{2 \sqrt{\lambda ^2+6 \lambda +1}}
+\end{align*}
+
+Then the density of $T_\lambda$ is defined as
+\begin{align}
+f(x; \lambda) &= \boldsymbol{\alpha} \exp(\mathbf{S} x) \mathbf{s} \nonumber\\
+&= (1, 0) \exp(\mathbf{S} x) (0,1)^T \nonumber\\
+&= A_{12} \nonumber\\
+&= \frac{2 e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6
+   \lambda +1}-\lambda -3\right) x}}{\sqrt{\lambda ^2+6 \lambda +1}}-\frac{2
+   e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right)
+   x}}{\sqrt{\lambda ^2+6 \lambda +1}} \label{eq:t_density}
+\end{align}
+
+\begin{figure}
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/contact_phase_densities.png}
+   \caption{Density functions for $T_\lambda$ for $\lambda = 1, 2, 5, 15$ on the contact process with two nodes}
+  \label{fig:contact_phase_densities}
+\end{figure}
+
+In Figure \ref{fig:contact_phase_densities} we plot the density from Equation \ref{eq:t_density} for various values of $\lambda$.
+We can see that increasing $\lambda$ very quickly increases the the amount of time that we wait until absorption.
+It is clear that as $\lambda \to \infty$ then $T_\lambda$ approaches infinity in distribution.
+
 \begin{theorem}
 Let $T_\lambda$ be the time in which we hit $(0,0)$.
-Then $\frac{2}{1 + \lambda} T_\lambda$ approaches an exponential distribution with rate 1 in distribution.
+Then $\frac{2}{1 + \lambda} T_\lambda$ approaches an exponential distribution with rate 1 in distribution as $\lambda \to \infty$.
 \end{theorem}
 
 \begin{proof}
-Let $X_1, X_2, \ldots$ be iid random variables with
-$X_i \sim \exp(2)$ and independent of iid random variables $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$.
+Let $X_1, X_2, \ldots$ be i.i.d random variables with
+$X_i \sim \exp(2)$ and independent of i.i.d random variables $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$.
 
 $T_\lambda$ is expressed as a random sum
 $$
@@ -556,10 +798,6 @@ $$
     \sum_{i = 1}^N Y_i &\sim \exp( 1 )
 \end{align*}
 
-$$
-    \frac{2}{1 + \lambda} T_\lambda = 
-    \frac{2}{1 + \lambda}\sum_{i = 1}^N X_i + \frac{2}{1 + \lambda}\sum_{i = 1}^N Y_i
-$$
 Using the scaling property of exponential random variables (Theorem \ref{thm:exp_scaling}) we have that
 \begin{align*}
     \frac{2}{1 + \lambda}\sum_{i = 1}^N X_i &\sim \exp( 1 )\\
@@ -570,13 +808,35 @@ As $\lambda \to \infty$, then $\frac{2}{1 + \lambda} T_\lambda \Rightarrow \exp(
 
 
 \subsection{Three node contact process}
-Now we look at the three node contract process where all the nodes are connected.
-Again we project the states to the number of ones in the process.
+Now we look at the three node contract process on a complete graph.
+Again we project the states to the number of ones in the process which will be a Markov chain by Theorem \ref{thm:mc_projection}, as shown in Figure \ref{fig:mc_three_contact}.
 
 Now let $N_1, N_2, N_3$ be the number of visits to states 1, 2, and 3, respectively.
-Let $X_i^{(1)} \sim \exp(1 + 2\lambda)$ be iid random variables, $X_i^{(2)} \sim \exp(2 + 2\lambda)$ iid and $X_i^{(3)} \sim \exp(3)$ idd.
-Note that $N_1, N_2, N_3$ are not independent of each other, but for each $i$ each state is independent of the wait times at the state.
+Let $X_i^{(1)} \sim \exp(1 + 2\lambda)$ be i.i.d random variables, $X_i^{(2)} \sim \exp(2 + 2\lambda)$ i.i.d and $X_i^{(3)} \sim \exp(3)$ i.d.d.
+Note that $N_1, N_2, N_3$ are not independent of each other, but for each $i$ each state is independent of the waiting times at the state.
 We can again represent $T_\lambda$ as random sums
+
+\begin{figure}
+    \centering
+   \begin{tikzpicture}[start chain = going right,
+   -Triangle, every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (3) {3};
+   \node[state, on chain]  (2) {2};
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (0) {0};
+   
+   \draw (3) edge[bend left] node[yshift=3mm]{rate $3$} (2);
+   \draw (2) edge[bend left] node[yshift=-3mm]{$2\lambda$}(3);
+   %
+   \draw (2) edge[bend left] node[yshift=3mm]{$1$} (1);
+   \draw (1) edge[bend left] node[yshift=-3mm]{$2\lambda$}(2);
+   %
+   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$1$} (0);
+   
+\end{tikzpicture}
+    \caption{Projected Markov chain rates of number of ones for three node contact process}
+    \label{fig:mc_three_contact}
+\end{figure}
 
 \begin{equation}
     T_\lambda = \sum_{i = 1}^{N_3} X_i^{(3)} + \sum_{i = 1}^{N_2} X_i^{(2)} + \sum_{i = 1}^{N_1} X_i^{(1)}
@@ -584,33 +844,76 @@ We can again represent $T_\lambda$ as random sums
 
 Then the discrete time Markov chain for this process can be expressed in canonical form as
 $$
-P = \begin{blockarray}{ccccc}
-    & 0 & 1 & 2 & 3\\
-    \begin{block}{c(c|ccc))}
-        0 & 0 & 0 & 0 & 0 \\
-       \cline{2-5}
-        1 & \frac{1}{1 + 2\lambda} & 0 &
-        \frac{2\lambda}{1 + 2\lambda} & 0\\
-        2 & 0 & \frac{1}{1 + \lambda} & 0 & \frac{1}{1 + 1\lambda}\\
-        3 & 0 & 0 & 1 & 0\\
+P_{C_3} = \begin{blockarray}{ccccc}
+    & 3 & 2 & 1 & 0\\
+    \begin{block}{c|ccc|c}
+    \cline{2-5}
+        3 & 0 & 1 & 0 & 0 \\
+        2 & \frac{\lambda}{1 + \lambda} & 0 &
+        \frac{1}{1 + \lambda} & 0\\
+        1 & 0 & \frac{2\lambda}{1 + 2 \lambda} & 0 & \frac{1}{1 + 2\lambda}\\
+    \cline{2-4}
+    \end{block}
+    \begin{block}{c|cccc}
+    0 & 0 & 0 & 0 & 1\\
     \end{block}
 \end{blockarray}
 $$
+
+\begin{figure}
+    \centering
+   \begin{tikzpicture}[start chain = going right,
+   -Triangle, every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (3) {3};
+   \node[state, on chain]  (2) {2};
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (0) {0};
+   
+   \draw (3) edge[bend left] node[yshift=3mm]{$1$} (2);
+   \draw (2) edge[bend left] node[yshift=-3mm]{$\frac{ \lambda}{1 + \lambda}$}(3);
+   %
+   \draw (2) edge[bend left] node[yshift=3mm]{$\frac{1}{1 + \lambda}$} (1);
+   \draw (1) edge[bend left] node[yshift=-3mm]{$\frac{2\lambda}{1 + 2 \lambda}$}(2);
+   %
+   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$\frac{1}{1 + 2\lambda}$} (0);
+   
+\end{tikzpicture}
+    \caption{Embedded discrete Markov chain for projection to number of ones for three node contact process}
+    \label{fig:discrete_mc_three_contact}
+\end{figure}
+
 Since the discrete Markov chain is absorbing, with 0 as an absorbing state, we can compute the expected number of visits to each state using the fundamental matrix.
 
-Let $B$ be the transition matrix for the transient state 3, 2, and 1.
-Then by Theorem \ref{thm:fund_exp} the expected number of times that the contact process has a given state is given by,
+% Wolfram:
+% B = {{1, -1, 0},{-x/(2 + x), 1, -2/(2 + x)},{0, -2x/(1 + 2x), 1}}
+% inverse of {{1, -1, 0},{-x/(1 + x), 1, -1/(1 + x)},{0, -2x/(1 + 2x), 1}}
+
+Let $B$ be the transition matrix for the transient states 3, 2, and 1.
 $$
-    I + B + B^2 + \cdots = (I - B)^{-1} = \begin{blockarray}{cccc}
-    & 1 & 2 & 3\\
-    \begin{block}{c(ccc))}
-    1 & 2\lambda + 1 & 2 \lambda ( \lambda + 1) & 2 \lambda^2\\
-    2 & 2 \lambda + 1 & (\lambda + 1)(2 \lambda + 1) & \lambda (2 \lambda + 1)\\
-    3 & 2 \lambda + 1 & (\lambda + 1) (2 \lambda + 1) & 2 \lambda^2 + \lambda + 1\\
+B_{C_3} = \begin{blockarray}{cccc}
+    & 3 & 2 & 1\\
+    \begin{block}{c|ccc}
+    \cline{2-4}
+        3 & 0 & 1 & 0\\
+        2 & \frac{\lambda}{1 + \lambda} & 0 &
+        \frac{1}{1 + \lambda}\\
+        1 & 0 & \frac{2\lambda}{1 + 2 \lambda} & 0\\
     \end{block}
     \end{blockarray}
 $$
-The last row corresponds to the expected number of visits to each state given that we started in state 3 (all the nodes initialized to 1).
+Then by Theorem \ref{thm:fund_exp} the expected number of times that the contact process has a given state is given by,
+$$
+    I + B_{C_3} + B_{C_3}^2 + \cdots = (I - B_{C_3})^{-1} = \begin{blockarray}{cccc}
+    & 3 & 2 & 1\\
+    \begin{block}{c|ccc}
+    \cline{2-4}
+    3 & 2 \lambda^2 + \lambda + 1 & (\lambda + 1) (2 \lambda + 1) &  2 \lambda + 1\\
+    2 & \lambda (2 \lambda + 1 & (\lambda + 1)(2 \lambda + 1) & 2 \lambda + 1\\
+    1 & 2 \lambda^2 & 2 \lambda ( \lambda + 1) &  2\lambda + 1\\
+    \end{block}
+    \end{blockarray}
+$$
+The first row corresponds to the expected number of visits to each state given that we started in state 3 (all the nodes initialized to 1).
 Thus,
 \begin{align*}
     E[N_1] &= 2 \lambda + 1\\
@@ -632,28 +935,6 @@ It then follow that
         &= \frac{1}{6}(4 \lambda^2 + 8 \lambda + 11)
 \end{align*}
 
-\begin{figure}
-    \centering
-   \begin{tikzpicture}[start chain = going right,
-   -Triangle, every loop/.append style = {-Triangle}]
-   \node[state, on chain]  (3) {3};
-   \node[state, on chain]  (2) {2};
-   \node[state, on chain]  (1) {1};
-   \node[state, on chain]  (0) {0};
-   
-   \draw (3) edge[bend left] node[yshift=3mm]{$1$} (2);
-   \draw (2) edge[bend left] node[yshift=-3mm]{$\frac{ \lambda}{1 + \lambda}$}(3);
-   %
-   \draw (2) edge[bend left] node[yshift=3mm]{$\frac{1}{1 + \lambda}$} (1);
-   \draw (1) edge[bend left] node[yshift=-3mm]{$\frac{2\lambda}{1 + 2 \lambda}$}(2);
-   %
-   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$\frac{1}{1 + 2\lambda}$} (0);
-   
-\end{tikzpicture}
-    \caption{Embedded discrete Markov chain for three node contact process}
-    \label{fig:discrete_mc_three_contact}
-\end{figure}
-
 \subsubsection{Limiting Distribution}
 \begin{theorem}
 Let $T_\lambda$ be the time in which we hit 0 in the three node complete contact process.
@@ -661,7 +942,7 @@ Then $\frac{3}{2 \lambda^2 + \lambda + 1} T_\lambda$ converges in distribution t
 \end{theorem}
 
 \begin{proof}
-Again using Theorem \eqref{thm:geom_sum_exp}, we have that
+By Theorem \eqref{thm:geom_sum_exp}, we have that
 \begin{align*}
     \sum_{i = 1}^{N_3} X_i^{(3)} &\sim \exp\left(
         \frac{3}{2\lambda^2 + \lambda + 1}
@@ -676,7 +957,7 @@ Multiplying $T_\lambda$ by $\frac{3}{2 \lambda^2 + \lambda + 1}$ and using Theor
 \begin{align*}
     \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_3} X_i^{(3)} &\sim \exp\left(
         1
-        \right) \text{as } \lambda \to \infty\\
+        \right)\\
     \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_2} X_i^{(2)} &\sim \exp\left(
         \frac{(2 + 2\lambda)(2 \lambda^2 + \lambda + 1)}{3 (2 \lambda^2 + 3\lambda + 1)}
     \right)  \Rightarrow 0 \quad \text{as } \lambda \to \infty\\
@@ -746,7 +1027,7 @@ The rate of going state with $i - 1$ ones is $i$ since we have $i$ nodes that ha
 
 Let $T_\lambda$ be the time until we reach state zero.
 Now let $N_1, N_2, \ldots, N_m$ be the number of visits to states $1, 2, \ldots, m$ respectively.
-Let $X_i^{(n)} \sim \exp(n)$ be iid random variables, $X_i^{(j)} \sim \exp(n - i + i(n - i)\lambda)$ for each $j \in \{1, \ldots, n-1\}$.
+Let $X_i^{(n)} \sim \exp(n)$ be i.i.d random variables, $X_i^{(j)} \sim \exp(n - i + i(n - i)\lambda)$ for each $j \in \{1, \ldots, n-1\}$.
 We can again represent $T_\lambda$ as random sums
 
 \begin{equation}\label{eq:wait_contact_sum}
@@ -756,7 +1037,7 @@ We can again represent $T_\lambda$ as random sums
 Since we are concerned with the limiting distribution we can instead focus on the rates up to a constant
 
 \begin{theorem}
-Let $N_k^{(n)}$ be a random variable that denoted the number of visits to state $k$ (that is, there are $k$ nodes with 1 with $n$ possible nodes) which is geometrically distributed. Then,
+Let $N_k^{(n)}$ be a random variable that denotes the number of visits to state $k$ (that is, there are $k$ nodes with 1 with $n$ possible nodes) which is geometrically distributed. Then,
 $$
 E[N_k^{(n)}] = \begin{cases}
     O(\lambda^k) & k < n\\
@@ -781,51 +1062,180 @@ It follows that
    N_{k + 1}^{(n)} = \sum_{i = 1}^M Y_i
 \end{equation}
 
-Then using Theorem \eqref{thm:geom_sum_geom}, we can conclude that $N_{k + 1}{(n)}$ is geometrically distributed with parameter proportional to $O(1/\lambda^{k + 1})$ or equivalently $N_{k + 1}{(n)} = O(\lambda^{k + 1})$
+Then using Theorem \eqref{thm:geom_sum_geom}, we can conclude that $N_{k + 1}{(n)}$ is geometrically distributed with parameter proportional to $1/\lambda^{k + 1}$.
+Thus, $E[N_{k + 1}^{(n)}] = O(1/\lambda^{k + 1})$
 
 We can use the same reasoning for the case when $k = n$ case if we let $M$ have parameter 1 (since we always go to state $n - 1$), then it follows that $E[N_{n}{(n)}] = O(\lambda^{n - 1})$
 \end{proof}
 
 \begin{theorem}
 Let $T_\lambda$ be the waiting time until we reach state 1 in the $n$ node complete contact process.
-The limiting distribution of $O(1/\lambda^{n - 1}) \cdot T_\lambda$ is an exponential distribution with parameter 1.
+The limiting distribution of $E[N_{n-1}^{(n)}]^{-1} \cdot T_\lambda$ is an exponential distribution with parameter 1.
 \end{theorem}
 
 \begin{proof}
-If we multiply Equation \eqref{eq:wait_contact_sum} by $O(1/\lambda^{n - 1})$ then for each $k < n$, by Theorem \eqref{thm:geom_sum_exp}, \eqref{thm:exp_scaling}, $O(1/\lambda^{n - 1}) \sum_{i = 
-1}^{N_{k}} X_i^{(k)}$ will have a exponential distribution with parameter proportional to $O(\lambda^{n - k - 1})$ which approaches zero in distribution as $\lambda \to \infty$.
+If we multiply Equation \eqref{eq:wait_contact_sum} by $E[N_{n-1}^{(n)}]^{-1}$ then for each $k < n$, by Theorem \eqref{thm:geom_sum_exp}, \eqref{thm:exp_scaling}, $E[N_{n-1}^{(n)}]^{-1} \sum_{i = 
+1}^{N_{k}} X_i^{(k)}$ will have a exponential distribution with parameter proportional to $\lambda^{n - k - 1}$ which approaches zero in distribution as $\lambda \to \infty$.
 
 For $k = n$, we have that
 $$
-O(1/\lambda^{n - 1}) \sum_{i = 
+E[N_{n-1}^{(n)}]^{-1} \sum_{i = 
 1}^{N_{n}} X_i^{(n)} \Rightarrow \exp(1)
 $$
 as $\lambda \to \infty$.
 \end{proof}
+
+\section{Finite contact process on cycles}
+
+Now we look at the finite contact process with a cycle (circle) configuration.
+That is, each node has an edge with exactly two other nodes.
+For the two and three node case the graph is identical to the complete graph.
+
+\subsection{Four node cycle}
+We have $2^4 = 16$ possible configurations with four nodes.
+We can combine some of these states which are equivalent under the contact process.
+The state in the original process is denoted as a 4 character string of ones and zeros.
+There is an edge between neighboring indices which wraps around so that the first and last digits are connected as well.
+
+\begin{align*}
+    \{1111\} &\to 4\\
+    \{1110, 1101, 1011, 0111\} &\to 3\\
+    \{1100, 0110, 0011, 1001\} &\to 2_t\\
+    \{1010, 0101\} &\to 2_s\\
+    \{1000, 0100, 0010, 0001\} &\to 1\\
+    \{0000\} &\to 0
+\end{align*}
+
+It is easy to see that this is an equivalence relation that satisfies Theorem \ref{thm:mc_projection}.
+The notation $2_t$ means two nodes with one where the ones have an edge between them (the $t$ is for together),
+and $2_s$ are nodes where the two ones do not have an edge between them.
+
+% \begin{figure}
+%    \centering
+%    \begin{tikzpicture}
+%      \graph[circular placement, radius=4cm,
+%         empty nodes, nodes={circle,draw}] {
+%         a -- b;
+%         b -- c;
+%         c -- d;
+%    };
+%    \end{tikzpicture}
+%    \caption{...}
+    %\label{fig:_nodes_contact}
+%\end{figure}
+
+\begin{figure}
+    \centering
+  \begin{tikzpicture}[start chain = going right,
+   -Triangle, every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (4) {4};
+   \node[state, on chain]  (3) [right of=4]  {3};
+   \node[state, on chain]  (2t) [above right of=3, yshift=4mm]  {$2_t$};
+   
+   \node[state, on chain]  (2s) [below right of=3, yshift=-4mm]  {$2_s$};
+   \node[state, on chain]  (1) [right of=3, xshift=15mm]  {1};
+   
+   \node[state, on chain]  (0) [right of=1]  {0};
+   
+   
+   \draw (4) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{rate $4$} (3);
+   \draw (3) edge [] node[yshift=-2mm, xshift=1.5mm]{$2 \lambda$} (4);
+   
+    \draw (3) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{$2$} (2t);
+   \draw (2t) edge [] node[yshift=-2mm, xshift=1.5mm]{$2 \lambda$} (3);
+  
+   \draw (3) edge [bend right] node[yshift=-3mm]{$1$} (2s);
+   \draw (2s) edge [] node[yshift=1.5mm, xshift = 2mm]{$4\lambda$} (3);
+   
+    \draw (2t) edge [bend left] node[yshift=3.5mm]{$2$} (1);
+   \draw (1) edge [] node[yshift=-2mm, xshift=-1.5mm]{$2\lambda$} (2t);   
+   
+   \draw (2s) edge [] node[yshift=2mm, xshift=-1.5mm]{$2$} (1);
+   
+   \draw (1) edge [] node[yshift=2mm]{$1$} (0);
+    
+\end{tikzpicture}
+    \caption{Projected rates of four node contact process on cycle}
+    \label{fig:four_node_contact_cycle}
+\end{figure}
+
+\begin{equation}
+Q_{S_4} = 
+\begin{blockarray}{ccccccc}
+    & 4 & 3 & 2_t & 2_s & 1 & 0\\
+    \begin{block}{c|cccccc}
+    \cline{2-7}
+    4 & -4 & 4 & 0 & 0 & 0 & 0\\
+    3 & 2\lambda & -(2\lambda + 3) & 2 & 1 & 0 & 0\\
+    2_t & 0 & 2\lambda & -(2\lambda + 2) & 0 & 2 & 0\\
+    2_s & 0 & 4\lambda & 0 & -(4\lambda + 2) & 2 & 0\\
+    1 & 0 & 0 & 2\lambda & 0 & -(2\lambda + 1) & 1\\
+    0 & 0 & 0 & 0 & 0 & 0 & 0\\
+    \end{block}
+\end{blockarray}
+\end{equation}
+
+% TODO: See if better way to do this
+% Increase spacing between row
+\begingroup
+\renewcommand*{\arraystretch}{2}
+\begin{equation}
+P_{S_4} = 
+\begin{blockarray}{ccccccc}
+    & 4 & 3 & 2_t & 2_s & 1 & 0\\
+    \begin{block}{c|ccccc|c}
+    \cline{2-7}
+    4 & 0 & 1 & 0 & 0 & 0 & 0\\
+    3 & \frac{2\lambda}{2\lambda + 3} & 0 & \frac{2}{2\lambda + 3} & \frac{1}{2\lambda + 3} & 0 & 0\\
+    2_t & 0 & \frac{\lambda}{\lambda + 1} & 0 & 0 & \frac{1}{\lambda + 1} & 0\\
+    2_s & 0 & \frac{2\lambda}{2\lambda + 1} & 0 & 0 & \frac{1}{2\lambda + 1} & 0\\
+    1 & 0 & 0 & \frac{2\lambda}{2\lambda + 1} & 0 & 0 & \frac{1}{2\lambda + 1}\\
+    \cline{2-6}
+    \end{block}
+    \begin{block}{c|cccccc}
+    0 & 0 & 0 & 0 & 0 & 0 & 1\\
+    \end{block}
+\end{blockarray}
+\end{equation}
+
+Let $B_{S_4}$ be the transient states from $P_{S_4}$ which are inside the inner box.
+
+\begin{gather}
+\notag
+\mathclap{
+    \begin{multlined}
+    I + B_{S_4} + B_{S_4}^2 + \cdots = (I - B_{S_4})^{-1} = \\
+    \begin{blockarray}{cccccc}
+    & 4 & 3 & 2_t & 2_s & 1\\
+    \begin{block}{c|ccccc}
+    \cline{2-6}
+    4 & \frac{8 \lambda^4 + 8 \lambda^3 + 6 \lambda^2 + 7 \lambda + 3}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda + 3) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & \frac{2 (\lambda + 1)^2 (4 \lambda + 1)}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & 2 \lambda + 1
+\\
+    3 &   \frac{2 \lambda (2 \lambda + 1) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda + 3) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & \frac{2 (\lambda + 1)^2 (4 \lambda + 1)}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & 2 \lambda + 1
+\\
+    2_t &   \frac{2 \lambda^2 (2 \lambda + 1)^2}{5 \lambda + 3} & \frac{\lambda (2 \lambda + 1)^2 (2 \lambda + 3)}{5 \lambda + 3} & \frac{(\lambda + 1) (2 \lambda + 1) (4 \lambda + 3)}{5 \lambda + 3} & \frac{\lambda (2 \lambda + 1)^2}{5 \lambda + 3} & 2 \lambda + 1
+\\
+    2_s &   \frac{4 \lambda^2 (2 \lambda^2 + 2 \lambda + 1)}{5 \lambda + 3} & \frac{2 \lambda (2 \lambda + 3) (2 \lambda^2 + 2 \lambda + 1)}{5 \lambda + 3} & \frac{2 \lambda (\lambda + 1) (4 \lambda + 5)}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda^2 + \lambda + 3)}{5 \lambda + 3} & 2 \lambda + 1
+\\
+    1 &   \frac{4 \lambda^3 (2 \lambda + 1)}{5 \lambda + 3} & \frac{2 \lambda^2 (2 \lambda + 1) (2 \lambda + 3)}{5 \lambda + 3} & \frac{2 \lambda (\lambda + 1) (4 \lambda + 3)}{5 \lambda + 3} & \frac{2 \lambda^2 (2 \lambda + 1)}{5 \lambda + 3} & 2 \lambda + 1
+\\
+    \end{block}
+\end{blockarray}
+\end{multlined}
+    }
+\end{gather}    
+\endgroup
+
+The top row of this matrix indicates the expected number of visits to each state when starting at state 4 (all ones configuration).
+
 
 \section{Finite contact process on 1D lattice}
 
 The two node contact process on the lattice is identical to the complete graph.
 
 \subsection{Three node contact process}
-
-For the three node contact process, shown in Figure \ref{fig:three_node_contact_lattice} we have a transition graph shown in Figure \ref{fig:three_node_contact_lattice_states}.
-Nodes 110 and 011 are combined due to symmetry as well as 100 and 001.
-
-
-\begin{figure}
-    \centering
-   \begin{tikzpicture}[auto, node distance=2cm, every loop/.style={}, thick,main node/.style={circle,draw}]
-   \node[main node]  (0) {1};
-   \node[main node]  (1) [right of=0]  {1};
-   \node[main node]  (2) [right of=1]  {1};
-   
-   \draw (0) edge [left] (1);
-   \draw (1) edge [left] (2);
-\end{tikzpicture}
-    \caption{Three node contact process on 1D lattice}
-    \label{fig:three_node_contact_lattice}
-\end{figure}
+We can project the three node contact process with two edges onto a new Markov chain by Theorem \ref{thm:mc_projection} by associating states 110 and 011 as well as 100 and 001.
+For the three node contact process with two edges, we have a transition graph shown in Figure \ref{fig:three_node_contact_lattice_states}.
 
 \begin{figure}
     \centering
@@ -842,7 +1252,7 @@ Nodes 110 and 011 are combined due to symmetry as well as 100 and 001.
    \node[state, on chain]  (000) [below right of=010]  {000};
    
    
-   \draw (111) edge [bend left] node[yshift=3mm]{$2$} (110);
+   \draw (111) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{rate $2$} (110);
    \draw (110) edge [] node[yshift=-2mm, xshift=1.5mm]{$\lambda$} (111);
   
    \draw (111) edge [bend right] node[yshift=-3mm]{$1$} (101);
@@ -860,12 +1270,42 @@ Nodes 110 and 011 are combined due to symmetry as well as 100 and 001.
   \draw (100) edge [] node[yshift=-3mm]{$1$} (000);
     
 \end{tikzpicture}
-    \caption{Three node contact process rates between each states}
+    \caption{Three node contact process on 1D lattice projected rates between each states}
     \label{fig:three_node_contact_lattice_states}
 \end{figure}
 
+\begin{equation}
+Q_{L_3} = 
+\begin{blockarray}{ccccccc}
+    & 111 & 110 & 101 & 100 & 010 & 000\\
+    \begin{block}{c|cccccc}
+    \cline{2-7}
+    111 & -3 & 2 & 1 & 0 & 0 & 0\\
+    110 & \lambda & -(\lambda + 2) & 0 & 1 & 1 & 0\\
+    101 & \lambda & 0 & -(\lambda + 1) & 1 & 0 & 0\\
+    100 & 0 & \lambda & 0 & -(\lambda + 1) & 0 & 1\\
+    010 & 0 & 2\lambda & 0 & 0 & -(2\lambda + 1) & 1\\
+    000 & 0 & 0 & 0 & 0 & 0 & 0\\
+    \end{block}
+\end{blockarray}
+\end{equation}
 
-\subsection{Voter Model}
+\begin{equation}
+P_{L_3} = 
+\begin{blockarray}{ccccccc}
+    & 111 & 110 & 101 & 100 & 010 & 000\\
+    \begin{block}{c|cccccc}
+    \cline{2-7}
+    111 & 0 &2/3 & 1/3 & 0 & 0 & 0\\
+    110 & \frac{\lambda}{\lambda + 2} & 0 & 0 & \frac{1}{\lambda + 2} & \frac{1}{\lambda + 2} & 0\\
+    101 & \frac{\lambda}{\lambda + 1} & 0 & 0 & \frac{1}{\lambda + 1} & 0 & 0\\
+    100 & 0 & \frac{\lambda}{\lambda + 1} & 0 & 0 & 0 & \frac{1}{\lambda + 1}\\
+    010 & 0 & \frac{2\lambda}{2\lambda + 1} & 0 & 0 & 0 & \frac{1}{2\lambda + 1}\\
+    000 & 0 & 0 & 0 & 0 & 0 & 1\\
+    \end{block}
+\end{blockarray}
+\end{equation}
+
 
 \bibliographystyle{plainnat}
 \bibliography{references}
