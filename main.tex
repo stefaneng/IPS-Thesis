@@ -541,6 +541,10 @@ f(x) = \boldsymbol{\alpha} \exp(\mathbf{S} x) \mathbf{s}
 $$
 \end{defn}
 
+\begin{example}
+The exponential distribution distribution is 
+\end{example}
+
 \section{Contact Process on Finite Graphs}
 
 Now we look at a contact process on a finite graph.
@@ -701,7 +705,7 @@ By Theorem \ref{thm:random_sum_var}
 
 \subsubsection{Limiting Distribution}
 
-The time to absorption $T_|lambda$ has a phase-type distribution.
+The time to absorption $T_\lambda$ has a phase-type distribution.
 We can express the $Q$ matrix as
 $$
 Q = \begin{blockarray}{cccc}
@@ -737,9 +741,10 @@ where
 Using Wolfram Language we can compute the matrix exponential which is complicated even in this simple case. Let $A = \exp(Sx)$.
 
 \begin{align*}
-      A_{11} &= \frac{\left(\sqrt{\lambda ^2+6 \lambda +1}+\lambda -1\right) e^{\frac{1}{2}
+A_{11} &= \frac{\left(\sqrt{\lambda ^2+6 \lambda +1}+\lambda -1\right) e^{\frac{1}{2}
    \left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2 \sqrt{\lambda ^2+6
-   \lambda +1}}-\frac{\left(-\sqrt{\lambda ^2+6 \lambda +1}+\lambda -1\right)
+   \lambda +1}}\\
+   &\quad\quad- \frac{\left(-\sqrt{\lambda ^2+6 \lambda +1}+\lambda -1\right)
    e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2
    \sqrt{\lambda ^2+6 \lambda +1}}\\
    A_{12} &= \frac{2 e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6
@@ -752,7 +757,8 @@ Using Wolfram Language we can compute the matrix exponential which is complicate
    \lambda +1}}\\
    A_{22} &= \frac{\left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda +1\right)
    e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2
-   \sqrt{\lambda ^2+6 \lambda +1}}-\frac{\left(-\sqrt{\lambda ^2+6 \lambda
+   \sqrt{\lambda ^2+6 \lambda +1}}\\
+   &\quad\quad-\frac{\left(-\sqrt{\lambda ^2+6 \lambda
    +1}-\lambda +1\right) e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda
    -3\right) x}}{2 \sqrt{\lambda ^2+6 \lambda +1}}
 \end{align*}
@@ -770,14 +776,16 @@ f(x; \lambda) &= \boldsymbol{\alpha} \exp(\mathbf{S} x) \mathbf{s} \nonumber\\
 
 \begin{figure}
   \centering
-    \includegraphics[width=.80\textwidth]{figures/contact_phase_densities.png}
+    \includegraphics[width=.80\textwidth]{figures/complete_2_contact_phase_densities.png}
    \caption{Density functions for $T_\lambda$ for $\lambda = 1, 2, 5, 15$ on the contact process with two nodes}
-  \label{fig:contact_phase_densities}
+  \label{fig:contact_2_phase_densities}
 \end{figure}
 
-In Figure \ref{fig:contact_phase_densities} we plot the density from Equation \ref{eq:t_density} for various values of $\lambda$.
+In Figure \ref{fig:contact_2_phase_densities} we plot the density from Equation \ref{eq:t_density} for various values of $\lambda$.
 We can see that increasing $\lambda$ very quickly increases the the amount of time that we wait until absorption.
 It is clear that as $\lambda \to \infty$ then $T_\lambda$ approaches infinity in distribution.
+For all of the more complex models we will use numerical methods for approximating the phase-type distribution rather than the symbolic algebra method.
+We sample and simulate from the phase-type distributions using the R package from \cite{actuar2008}.
 
 \begin{theorem}
 Let $T_\lambda$ be the time in which we hit $(0,0)$.
@@ -950,7 +958,16 @@ It then follow that
 \end{align*}
 
 \subsubsection{Limiting Distribution}
-TODO: Use R to simulate from the phase-type distribution
+
+The exact distribution of $T_\lambda$ for a fixed $\lambda$ is computed numerically.
+We plot the density functions for $T_\lambda$ for $\lambda = 1, 2, 5, 15$ on the complete three node contact process.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/complete_3_contact_phase_densities.png}
+   \caption{Density functions for $T_\lambda$ for $\lambda = 1, 2, 5, 15$ on the complete three node contact process}
+  \label{fig:contact_3_phase_densities}
+\end{figure}
 
 \begin{theorem}
 Let $T_\lambda$ be the time in which we hit 0 in the three node complete contact process.
@@ -1244,6 +1261,14 @@ Let $B_{S_4}$ be the transient states from $P_{S_4}$ which are inside the inner 
 
 The top row of this matrix indicates the expected number of visits to each state when starting at state 4 (all ones configuration).
 
+\subsection{Limiting Distribution}
+
+\begin{figure}
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/}
+   \caption{Density functions for $T_\lambda$ for $\lambda = 1, 2, 5, 15$ on the complete three node contact process}
+  \label{fig:contact_3_phase_densities}
+\end{figure}
 
 \section{Finite contact process on 1D lattice}
 
