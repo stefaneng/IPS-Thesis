@@ -78,3 +78,36 @@ ggsave(filename = "complete_3_contact_phase_densities.png", path = here::here("f
 
 # Get the moments
 # mphtype(1, pi, QC3(3,onlyTrans = TRUE))
+
+#' Q matrix for cycle contact process with 4 nodes
+#' onlyTrans=TRUE remove the absorbing states
+QS4 <- function(lambda) {
+ A <- matrix(c(
+  -4, 4, 0, 0, 0, 0,
+  2 * lambda, -(2 * lambda + 3), 2, 1, 0, 0,
+  0, 2 * lambda, -(2 * lambda + 2), 0, 2, 0,
+  0, 4 * lambda, 0, -(4 * lambda + 2), 2, 0,
+  0, 0, 2 * lambda, 0, -(2 * lambda + 1), 1,
+  0, 0, 0, 0, 0, 0
+ ), byrow = TRUE, ncol = 6)
+
+ if(onlyTrans) A[-ncol(A), -ncol(A)]
+ else A
+}
+
+
+t <- seq(0, 10, length.out = 1000)
+lambdas <- c(1, 2, 5, 15)
+pi <- c(1, 0, 0)
+
+df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = dphtype(t, pi, QC3(l,onlyTrans = TRUE))))))
+
+ggplot(df) +
+ geom_line(aes(x = t, y = ft)) +
+ facet_wrap(~ λ, nrow = 2, labeller=label_both) +
+ labs(title = "Cycle contact process 4 nodes") +
+ ylab("") +
+ xlab("time") +
+ theme_minimal(base_size = 18)
+
+ggsave(filename = "cycle_4_contact_phase_densities.png", path = here::here("figures"), dpi = 320)
