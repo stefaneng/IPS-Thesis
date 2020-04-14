@@ -275,7 +275,7 @@ $$
 \begin{theorem}
 Let $X$ and $Y$ be independent continuous random variables with density functions $f$ and $g$.
 
-Then the distribution of $Z = X + Y$ has a density function 
+Then the distribution of $Z = X + Y$ has a density function
 $$
 h(z) = (f * g)(z)
 $$
@@ -452,7 +452,7 @@ Since for a fixed $i$, $P(i, \cdot)$ is a probability measure then we have that
 
 \begin{defn}[Continuous-time Markov chain] \cite{grimmett2001}
 Let $(X_t) = \{X(t) : t \in \mathbb T\}$, where $\mathbb T$ is some index set (generally $\mathbb T = [0, \infty)$ represents time), be a stochastic processes with countable state space $S$.
-Then $(X_t)$ is a continuous-time Markov chain if 
+Then $(X_t)$ is a continuous-time Markov chain if
 $$
 P(X(t_n) = j | X(t_{n - 1}) = i_{n-1}, \ldots, X(t_1) = i_{1}) = P(X(t_n) = j | X(t_{n - 1}) = i_{n - 1})
 $$
@@ -669,7 +669,6 @@ $\mathbf{S}_0 = - S \mathbf{1}$.
 \begin{proof}
 Let $P_t$ be the transition probabilities of the process restricted to the transient states.
 By the forward equations (Equation \eqref{eq:forward_eqs}), we have that $P_t' = P_t \mathbf{S}$ for $t > 0$.
-The .
 The solution to the differential equation with initial condition $\boldsymbol{\alpha}$ is given by 
 $$
 P_t = \boldsymbol{\alpha} \exp(x \mathbf{S})
