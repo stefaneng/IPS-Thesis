@@ -420,6 +420,21 @@ It follows that
 So $S$ is geometrically distributed with parameter $\alpha p$
 \end{proof}
 
+\subsubsection{Convergence}
+
+\begin{defn}[Weak convergence]
+A sequence of probability measures $(\mu_n)$ \textbf{converges weakly} to $\mu$ if
+$$
+\lim_{n \to \infty} \int f d\mu_n = \int f d\mu
+$$
+for all bounded and continuous functions $f$.
+If $F_n$ and $F$ are the CDFs of $\mu_n$ and $F$ then this is equivalent to 
+$$
+\lim F_n(x) = F(x)
+$$
+for all $x \in \R$ that are continuous for $F$.
+\end{defn}
+
 \subsection{Markov Chains}
 
 \begin{defn}[(Discrete) Markov chains] \cite{grimmett2001}
@@ -602,8 +617,9 @@ The \textbf{backwards equations} are
 \end{equation}
 \end{theorem}
 
-\section{Phase-Type Distributions}
+\section{Phase-Type distributions}
 
+\subsection{Continuous phase-type distributions}
 \begin{defn}[Phase-shift distribution] % \cite{mle_phase_type2011}
 \cite{neuts1981}, \cite{maier1992}
 Let $(X_t)$ be a continuous-time Markov chain with a finite state space $\Omega$ with exactly one absorbing state and $n$ transient states.
@@ -657,7 +673,7 @@ Let $\mathbf S = - \lambda$, $\mathbf{S}_0 = \lambda$ and $\boldsymbol{\alpha} =
 \end{example}
 
 \begin{example}
-A mixture of 3 exponential distributions with rates $\lambda_1, \lambda_2, \lambda_3$ with weights $(\alpha_1, \alpha_2, \alpha_3)$ can be represented as a phase-type distribution:
+A mixture of 3 exponential distributions with rates $\lambda_1, \lambda_2, \lambda_3$ and weights $(\alpha_1, \alpha_2, \alpha_3)$ can be represented as a phase-type distribution:
 \begin{align*}
     \mathbf S &= \begin{bmatrix}
         -\lambda_1 & 0 & 0\\
@@ -695,6 +711,7 @@ As an example we show that $k = 4$ has representation
 which is easy to verify that the PDF from Theorem \ref{thm:phase-type-pdf-cdf} has the same PDF as the Erlang distribution from Definition \ref{defn:erlang}.
 \end{example}
 
+\subsection{Discrete phase-type distributions}
 \begin{defn}[Discrete phase-type distribution]
 \cite{neuts1981}
 Let $(X_n)$ be a discrete-time Markov chain with a finite state space $\Omega$ with exactly one absorbing state and $n$ transient states.
@@ -741,6 +758,12 @@ $$
 See \cite{neuts1981} or \cite{mle_phase_type2011}
 \end{proof}
 
+\subsection{Closure characterisation}
+
+\cite{neuts1975} proved the closure properties of the phase-type distributions.
+That is, that the class of phase-type distributions is closed under finite mixture, finite convolutions, and geometric mixtures.
+Later it was shown in \cite{maier1992}, that the phase-type distributions are the smallest class of distributions that have these properties.
+
 \begin{defn}[Geometric Mixture] \cite{maier1992}
 Let $\mu$ be a probability measure on $[0, \infty)$.
 Let $N$ be a geometric random variable (supported on $\{1,2,3,\ldots\}$) with success probability $p$.
@@ -781,16 +804,17 @@ The set of all continuous phase-type distributions is dense in the class of all 
 
 % PH distributions are classes of distributions which can be built up from mixtures, convolutions, and the 'geometric mixture' of the point mass at 0 and all exponential distributions.
 
-\section{Contact Process on Finite Graphs}
+\section{Contact Process}
 
-Now we look at a contact process on a finite graph.
-We look at $T_{C_2}$ (which depends on $\lambda$), the time until we reach the state zero while keeping the number of nodes fixed as $\lambda$ goes to $\infty$.
-It is know that $T_{C_2}$ has a phase-shift distribution for a fixed $\lambda$.
-As $\lambda \to \infty$ then $T_{C_2}$ will converge to infinity in distribution so we will normalize $T_{C_2}$ to understand which limiting distribution one can get.
-First we investigate the behavior for a complete graph, in which each node is connected to all other nodes and then we look at the one-dimensional lattice and cycles.
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/}
+   \caption{Simulation for voter model with periodic boundary conditions on $50 \times 50$ grid.}
+  \label{fig:contact_sim_torus.png}
+\end{figure}
 
-\begin{defn}[Contact process on finite graph]
-Let $S = (V,E)$ be a finite graph where $V$ are the vertices and $E$ is the set of edges.
+\begin{defn}[Contact process]
+Let $S = (V,E)$ be a graph where $V$ are the vertices (that have bounded degree) and $E$ is the set of edges.
 Let $X =  \{0,1\}^S$ be the state space.
 The contact process is a continuous-time Markov chain in which each 1 on the graph waits a random time, exponentially distributed, with rate 1 and then becomes a 0.
 Every 0 waits exponentially with rate $k \lambda$, where $k$ is the number of edges shared with a 1.
@@ -804,6 +828,33 @@ q(\eta, \delta) = \begin{cases}
 \end{cases}
 $$
 \end{defn}
+
+In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on a $50 \times 50$ grid.
+
+\begin{remark}
+If the graph $S$ is finite, then eventually any initial configuration will be all zeros.
+\end{remark}
+
+When the graph $S$ is infinite, then the limiting behavior of the system varies depending on $\lambda$.
+Let $\delta_0$ be the configuration of all zeros.
+This is clearly a stationary distribution since it will always remain all zeros.
+
+\begin{theorem} \cite{Liggett2002}
+For a contact process on d-dimensional lattice $\Z^d$ there is a critical value $\lambda_c$ such that when
+\begin{itemize}
+    \item If $\lambda \leq \lambda_c$ then all distributions converge weakly to $\delta_0$.
+    \item If $\lambda > \lambda_c$ then there is some other stationary distribution $\nu \not = \delta_0$ such that all distributions (except $\delta_0$) converge weakly to $\nu$.
+\end{itemize}
+Also, $\frac{1}{2d - 1} < \lambda_c < \frac{2}{d}$
+\end{theorem}
+
+\subsection{Contact process on finite graphs}
+
+Now we look at a contact process on a finite graph.
+We look at $T_{C_2}$ (which depends on $\lambda$), the time until we reach the state zero while keeping the number of nodes fixed as $\lambda$ goes to $\infty$.
+It is know that $T_{C_2}$ has a phase-shift distribution for a fixed $\lambda$.
+As $\lambda \to \infty$ then $T_{C_2}$ will converge to infinity in distribution so we will normalize $T_{C_2}$ to understand which limiting distribution one can get.
+First we investigate the behavior for a complete graph, in which each node is connected to all other nodes and then we look at the one-dimensional lattice and cycles.
 
 \subsection{Two node contact process \texorpdfstring{$C_2$}{C2}}
 
@@ -938,7 +989,7 @@ By Theorem \ref{thm:random_sum_var}
 \end{align*}
 \end{proof}
 
-\subsubsection{Phase-type Distribution}
+\subsubsection{Phase-type distribution}
 
 The time to absorption $T_{C_2}$ has a phase-type distribution.
 We can express the $Q$ matrix as
@@ -1358,13 +1409,13 @@ $$
 as $\lambda \to \infty$.
 \end{proof}
 
-\section{Finite contact process on cycles}
+\subsection{Finite contact process on cycles}
 
 Now we look at the finite contact process with a cycle (circle) configuration.
 That is, each node has an edge with exactly two other nodes.
 For the two and three node case the graph is identical to the complete graph.
 
-\subsection{Four node cycle \texorpdfstring{$S_4$}{S4}}
+\subsubsection{Four node cycle \texorpdfstring{$S_4$}{S4}}
 We have $2^4 = 16$ possible configurations with four nodes.
 We can combine some of these states which are equivalent under the contact process.
 The state in the original process is denoted as a 4 character string of ones and zeros.
@@ -1501,7 +1552,7 @@ Q_{S_4} =
 
 % The top row of this matrix indicates the expected number of visits to each state when starting at state 4 (all ones configuration).
 
-\subsection{Phase-type Distribution}
+\subsubsection{Phase-type Distribution}
 
 In Figure \ref{fig:contact_4_cycle_phase_densities} we plot the density functions for $T_{S_4}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle.
 
@@ -1512,11 +1563,11 @@ In Figure \ref{fig:contact_4_cycle_phase_densities} we plot the density function
   \label{fig:contact_4_cycle_phase_densities}
 \end{figure}
 
-\section{Finite contact process on 1D lattice}
+\subsection{Finite contact process on 1D lattice}
 
 The two node contact process on the lattice is identical to the complete graph.
 
-\subsection{Three node contact process \texorpdfstring{$L_3$}{L3}}
+\subsubsection{Three node contact process \texorpdfstring{$L_3$}{L3}}
 We can project the three node contact process with two edges onto a new Markov chain by Theorem \ref{thm:mc_projection} by associating states 110 and 011 as well as 100 and 001.
 For the three node contact process with two edges, we have a transition graph shown in Figure \ref{fig:three_node_contact_lattice_states}.
 
@@ -1573,7 +1624,7 @@ Q_{L_3} =
 \end{blockarray}
 \end{equation}
 
-\subsection{Phase-type Distribution}
+\subsubsection{Phase-type Distribution}
 
 In Figure \ref{fig:lattice_3_contact_phase_densities} we plot the density functions for $T_{L_3}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle.
 
@@ -1605,7 +1656,19 @@ Since $T_{S_4}$ is much larger than $T_{C_2}$, $T_{C_3}$, and $T_{L_3}$ we inclu
   \label{fig:ev_phase_comparison_4.png}
 \end{figure}
 
-\section{Voter Model on Finite Graphs}
+\subsection{Simulation of contact process on \texorpdfstring{$\Z^2$}{Z2}}
+In this section we describe how to simulate the linear voter model on the two-dimensional lattice $\Z^2$.
+By nature of the simulation we have to restrict $\Z^2$ to some finite subset of $\Z^2$.
+A new issue then arises with the boundaries.
+To capture the finite behavior of the system it makes sense to just keep the boundaries nodes with a reduced number of edges.
+If we want to simulate the behavior on $\Z^2$ then it is better to use \textit{periodic boundary conditions} where the boundaries wrap around to the other side (making the graph a torus).
+
+The dynamics of the system are that each 1 waits exponential time with rate 1 and changes to 0.
+Each 1 waits an independent exponential time with rate $\lambda$ and then places a 1 onto one of the $d$ neighbors with probability $1/2^d$.
+If there already is a 1 at this spot then nothing happens.
+\cite{steif91}
+
+\section{Voter Model}
 
 \begin{defn}[Voter Model] \cite{Liggett2002}
 Let $S$ be the state space and $P$ be the transition probability matrix for a Markov chain on $S$.
@@ -1628,18 +1691,20 @@ q(\eta, \delta) = 0
 $$
 \end{defn}
 
-\subsection{Simulation of Linear Voter Model}
-
-In this section we describe how to simulate the linear voter model on the two-dimensional lattice $\Z^2$.
-By nature of the simulation we have to restrict $\Z^2$ to some finite subset of $\Z^2$.
-A new issue then arises with the boundaries.
-To capture the finite behavior of the system it makes sense to just keep the boundaries nodes with a reduced number of edges.
-If we want to simulate the behavior on $\Z^2$ then it is better to use \textit{periodic boundary conditions} where the boundaries wrap around to the other side (making the graph a torus).
+\subsection{Simulation of Linear Voter Model on \texorpdfstring{$\Z^2$}{Z2}}
 
 The behavior of the linear voter model can be described as each voter waits exponential time and then takes the opinion of one of its neighbors according to the transition probabilities.
 Assume that we are simulating on a $N \times N$ grid.
 Using the exponential scaling property, this behavior is equivalent to waiting exponential time with rate $N^2$ and selecting a voter at random and updating their opinion.
 
+In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on a $50 \times 50$ grid.
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/voter_simulation_torus_50.png}
+   \caption{Simulation for voter model with periodic boundary conditions on $50 \times 50$ grid.}
+  \label{fig:voter_sim_torus.png}
+\end{figure}
 
 % \begin{equation}
 % P_{L_3} =
