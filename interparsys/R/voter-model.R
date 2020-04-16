@@ -34,7 +34,7 @@ simulate_voter <- function(n = 50, iter = 1e6, imgN = 4, torus=FALSE) {
   m <- matrix(round(runif(n^2)),n,n)
   # Save old par settings
   par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
-  image(m, axes=FALSE, col = grey(seq(0, 1, length = 256)), main = "Initial")
+  image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = "Initial")
 
   # Sample the times from gamma (Erlang)
   total_time <- 0
@@ -91,7 +91,7 @@ simulate_voter <- function(n = 50, iter = 1e6, imgN = 4, torus=FALSE) {
       # Sum of part_i exponentials is Erlang (gamma)
       wait_time <- rgamma(1, shape = part_i, rate = n^2)
       total_time <- total_time + wait_time
-      image(m, axes=FALSE, col = grey(seq(0, 1, length = 256)), main = paste0("time ", round(total_time)))
+      image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", round(total_time)))
       part_i <- 0
     }
     i <- i + 1
@@ -99,7 +99,7 @@ simulate_voter <- function(n = 50, iter = 1e6, imgN = 4, torus=FALSE) {
   }
 }
 
-set.seed(2626)
+set.seed(262)
 png(here("figures/voter_simulation_torus_50.png"))
 simulate_voter(imgN = 3, iter = 3e6, torus = TRUE)
 dev.off()

@@ -9,11 +9,12 @@ library(here)
 # Each 1 waits exp(lambda) time then places this 1 on to one of the neighbors with probability 1/2^d
 #  The birth is suppressed if there is already a 1 there.
 
-simulate_contact <- function(lambda = 2, n = 50, iter = 1e6, imgN = 4, torus=FALSE, init_config=c("one", "random")) {
+simulate_contact <- function(lambda = 2, n = 50, iter = 1e6, imgN = 4, torus=FALSE, init_config=c("one", "random", "all")) {
   if(init_config == "random") {
     m <- matrix(round(runif(n^2)),n,n)
+  } else if (init_config == "all") {
+    m <- matrix(1,n,n)
   } else {
-    # TODO: Need to fix this so that we have more that start as one
     m <- matrix(0, nrow = n, ncol = n)
     mid <- floor(n / 2)
     m[mid, mid] <- 1
@@ -21,7 +22,7 @@ simulate_contact <- function(lambda = 2, n = 50, iter = 1e6, imgN = 4, torus=FAL
 
   # Save old par settings
   par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
-  image(m, axes=FALSE, col = grey(rev(seq(0, 1, length = 256))), main = "Initial")
+  image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = "Initial")
 
   i <- 1
   total_time <- 0
@@ -119,7 +120,7 @@ simulate_contact <- function(lambda = 2, n = 50, iter = 1e6, imgN = 4, torus=FAL
     }
 
     if (i %% floor(iter / imgN) == 0) {
-      image(m, axes=FALSE, col = grey(rev(seq(0, 1, length = 256))), main = paste0("time ", round(total_time)))
+      image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", round(total_time)))
       part_i <- 0
     }
     i <- i + 1
@@ -132,3 +133,7 @@ png(here("figures/contact_simulation_torus_25.png"))
 simulate_contact(lambda = 4, n = 25, imgN = 3, iter = 4e3, torus = TRUE, init_config = "one")
 dev.off()
 
+set.seed(26)
+png(here("figures/contact_simulation_torus_25_below_crit.png"))
+simulate_contact(lambda = 1.5, n = 25, imgN = 3, iter = 6e3, torus = TRUE, init_config = "all")
+dev.off()
