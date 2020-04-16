@@ -18,8 +18,15 @@
 \usepackage{graphicx}
 
 \usepackage{tikz}
-\usetikzlibrary{calc, automata, chains, arrows.meta, graphs, graphs.standard}
+\usetikzlibrary{calc, automata, chains, arrows, arrows.meta, graphs, graphs.standard, matrix, positioning, scopes}
 
+\makeatletter
+\tikzset{join/.code=\tikzset{after node path={%
+\ifx\tikzchainprevious\pgfutil@empty\else(\tikzchainprevious)%
+edge[every join]#1(\tikzchaincurrent)\fi}}}
+\makeatother
+\tikzstyle{labeled}=[execute at begin node=$\scriptstyle,
+   execute at end node=$]
 
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}[section]
@@ -613,46 +620,7 @@ Let $\boldsymbol{\alpha}$ be a $1 \times n$ matrix of initial probabilities of s
 The distribution of the finite absorption time of the  continuous Markov chain $(X_t)$ is said to be \textbf{phase-type distributed} which we denote as $PH_c(\boldsymbol{\alpha}, S)$.
 \end{defn}
 
-\begin{example}
-The exponential distribution distribution is a Phase-type distribution:
-Let $\mathbf S = - \lambda$, $\mathbf{S}_0 = \lambda$ and $\boldsymbol{\alpha} = 1$.
-\end{example}
-
-\begin{example}
-TODO: Erlang distribution
-\end{example}
-
-\begin{defn}[Discrete phase-shift distribution]
-\cite{neuts1981}
-Let $(X_n)$ be a discrete-time Markov chain with a finite state space $\Omega$ with exactly one absorbing state and $n$ transient states.
-Let $P$ be the transition probability matrix ($n + 1 \times n + 1$) for the process which has the form
-$$
-P = \begin{pmatrix}
-\mathbf{S} & \mathbf{S}_0\\
-\mathbf{0} & 0
-\end{pmatrix}
-$$
-Where $\mathbf{S}$ is $n \times n$, and $\mathbf{S} \mathbf{1}  + \mathbf{S}_0 = \mathbf{1}$ where $\mathbf{1}$ is a $n$ dimensional column vector of ones.
-Let $\boldsymbol{\alpha}$ be a $1 \times n$ matrix of initial probabilities of starting in each state.
-
-The distribution of the first passage time to the absorbing state in the discrete-time Markov chain $(X_n)$ is denoted as $PH_d(\boldsymbol{\alpha}, S)$.
-
-The CDF is given by
-$$
-F(k) = 1 - \boldsymbol{\alpha} \mathbf{S}^k \mathbf{1}
-$$
-with density
-$$
-f(k) = \boldsymbol{\alpha} \mathbf{S}^{k - 1} \mathbf{S}_0
-$$
-\end{defn}
-
-\begin{example}
-The geometric distribution distribution with parameter $p$ is a discrete phase-type distribution:
-Let $\mathbf S = 1 - p$, $\mathbf{S}_0 = p$ and $\boldsymbol{\alpha} = 1$.
-\end{example}
-
-\begin{theorem}
+\begin{theorem} \label{thm:phase-type-pdf-cdf}
 Let $\tau \sim PH(\boldsymbol{\alpha}, \mathbf{S})$.
 Then $\tau$ has distribution function
 $$
@@ -682,6 +650,80 @@ $$
 f(x) = F'(x) = \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0
 $$
 \end{proof}
+
+\begin{example}
+The exponential distribution distribution is a phase-type distribution:
+Let $\mathbf S = - \lambda$, $\mathbf{S}_0 = \lambda$ and $\boldsymbol{\alpha} = 1$.
+\end{example}
+
+\begin{example}
+A mixture of 3 exponential distributions with rates $\lambda_1, \lambda_2, \lambda_3$ with weights $(\alpha_1, \alpha_2, \alpha_3)$ can be represented as a phase-type distribution:
+\begin{align*}
+    \mathbf S &= \begin{bmatrix}
+        -\lambda_1 & 0 & 0\\
+        0 & - \lambda_2 & 0\\
+        0 & 0 & - \lambda_3
+        \end{bmatrix}\\
+    \mathbf{S}_0 &= (\lambda_1, \lambda_2, \lambda_3)^T\\
+    \alpha &= (\alpha_1, \alpha_2, \alpha_3)
+\end{align*}
+\end{example}
+
+\begin{defn}[Erlang Distribution] \label{defn:erlang}
+A random variable $X$ is said to be Erlang distributed if it is supported on $[0, \infty)$ with two parameters: $k \in \{1,2,\ldots\}$ for the shape and $\lambda \in (0,\infty)$ for the rate with probability density function
+$$
+f(x) = \frac{\lambda ^{k}x^{{k-1}}e^{{-\lambda x}}}{(k-1)!}
+$$
+for $x, \lambda \geq 0$
+\end{defn}
+
+\begin{example}
+The Erlang distribution is a phase-type distribution.
+Assume we have an Erlang distribution with shape $k$ and rate $\lambda$.
+The matrix $S$ will be $k \times k$ with $-\lambda$ on the diagonal and $\lambda$ on $i \times i + 1$ for all $i \in \{1, \ldots, k - 1\}$.
+As an example we show that $k = 4$ has representation
+\begin{align*}
+    \mathbf S &= \begin{bmatrix}
+        -\lambda & \lambda & 0 & 0\\
+        0 & - \lambda & \lambda & 0\\
+        0 & 0 & -\lambda & \lambda\\
+        0 & 0 & 0 & -\lambda 
+        \end{bmatrix}\\
+    \mathbf{S}_0 &= (0, 0, 0, \lambda)^T\\
+    \alpha &= (1,0,0,0)
+\end{align*}
+which is easy to verify that the PDF from Theorem \ref{thm:phase-type-pdf-cdf} has the same PDF as the Erlang distribution from Definition \ref{defn:erlang}.
+\end{example}
+
+\begin{defn}[Discrete phase-type distribution]
+\cite{neuts1981}
+Let $(X_n)$ be a discrete-time Markov chain with a finite state space $\Omega$ with exactly one absorbing state and $n$ transient states.
+Let $P$ be the transition probability matrix ($n + 1 \times n + 1$) for the process which has the form
+$$
+P = \begin{pmatrix}
+\mathbf{S} & \mathbf{S}_0\\
+\mathbf{0} & 0
+\end{pmatrix}
+$$
+Where $\mathbf{S}$ is $n \times n$, and $\mathbf{S} \mathbf{1}  + \mathbf{S}_0 = \mathbf{1}$ where $\mathbf{1}$ is a $n$ dimensional column vector of ones.
+Let $\boldsymbol{\alpha}$ be a $1 \times n$ matrix of initial probabilities of starting in each state.
+
+The distribution of the first passage time to the absorbing state in the discrete-time Markov chain $(X_n)$ is denoted as $PH_d(\boldsymbol{\alpha}, S)$.
+
+The CDF is given by
+$$
+F(k) = 1 - \boldsymbol{\alpha} \mathbf{S}^k \mathbf{1}
+$$
+with density
+$$
+f(k) = \boldsymbol{\alpha} \mathbf{S}^{k - 1} \mathbf{S}_0
+$$
+\end{defn}
+
+\begin{example}
+The geometric distribution distribution with parameter $p$ is a discrete phase-type distribution:
+Let $\mathbf S = 1 - p$, $\mathbf{S}_0 = p$ and $\boldsymbol{\alpha} = 1$.
+\end{example}
 
 \begin{lemma}\cite{neuts1981}
 The matrix $S$ is non-singular if and only if the states $1,\ldots, n$ of $S$ are transient.
@@ -1562,6 +1604,42 @@ Since $T_{S_4}$ is much larger than $T_{C_2}$, $T_{C_3}$, and $T_{L_3}$ we inclu
    \caption{Comparison of expected values of $T_{C_2}$, $T_{C_3}$, $T_{L_3}$, and $T_{S_4}$}
   \label{fig:ev_phase_comparison_4.png}
 \end{figure}
+
+\section{Voter Model on Finite Graphs}
+
+\begin{defn}[Voter Model] \cite{Liggett2002}
+Let $S$ be the state space and $P$ be the transition probability matrix for a Markov chain on $S$.
+Then $\Omega = \{0,1\}^S$ is the state space for voter model which is a continuous-time Markov chain.
+For $\eta \in \Omega$ denote $\eta(x)$ as the value of the node $x \in S$ on the configuration $\eta$.
+Let $\eta_x$ be the configuration from changing the value of $\eta$ at the site $x$. That is,
+$$
+\eta_x(y) = \begin{cases}
+    \eta(y) & x \not = y\\
+    1 - \eta(y) & x = y
+\end{cases}
+$$
+The transition rates $Q$ are defined as
+$$
+q(\eta, \eta_x) = \sum_{y : \eta(y) \not = \eta(x)} P(x,y)
+$$
+Thus, for any $\eta, \delta \in \Omega$ that differ by more than one sites,
+$$
+q(\eta, \delta) = 0
+$$
+\end{defn}
+
+\subsection{Simulation of Linear Voter Model}
+
+In this section we describe how to simulate the linear voter model on the two-dimensional lattice $\Z^2$.
+By nature of the simulation we have to restrict $\Z^2$ to some finite subset of $\Z^2$.
+A new issue then arises with the boundaries.
+To capture the finite behavior of the system it makes sense to just keep the boundaries nodes with a reduced number of edges.
+If we want to simulate the behavior on $\Z^2$ then it is better to use \textit{periodic boundary conditions} where the boundaries wrap around to the other side (making the graph a torus).
+
+The behavior of the linear voter model can be described as each voter waits exponential time and then takes the opinion of one of its neighbors according to the transition probabilities.
+Assume that we are simulating on a $N \times N$ grid.
+Using the exponential scaling property, this behavior is equivalent to waiting exponential time with rate $N^2$ and selecting a voter at random and updating their opinion.
+
 
 % \begin{equation}
 % P_{L_3} =
