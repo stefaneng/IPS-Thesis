@@ -809,8 +809,15 @@ The set of all continuous phase-type distributions is dense in the class of all 
 \begin{figure}[h]
   \centering
     \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25.png}
-   \caption{Simulation for contact process with $\lambda = 4$ and periodic boundary conditions on $25 \times 25$ grid. Initial configuration is only one node with 1.}
-  \label{fig:contact_sim_torus.png}
+   \caption{Simulation for contact process with $\lambda = 4$ (above the critical value) and periodic boundary conditions on $25 \times 25$ grid. Initial configuration is only one node with 1.}
+  \label{fig:contact_sim_torus_above_crit.png}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25_below_crit.png}
+   \caption{Simulation for contact process with $\lambda = 1.5$ (below the critical value) and periodic boundary conditions on $25 \times 25$ grid. Initial configuration has all nodes as ones.}
+  \label{fig:contact_sim_torus_below_crit.png}
 \end{figure}
 
 \begin{defn}[Contact process]
@@ -827,17 +834,20 @@ q(\eta, \delta) = \begin{cases}
     \lambda |\{ (x,y) \in E : \eta(y) = 1\}| & \text{differ only at } x, \eta(x) = 0, \delta(x) = 1
 \end{cases}
 $$
+
+Denote $\delta_0$, $\delta_1$ as the configurations with all zeros and all ones respectively.
 \end{defn}
 
-In Figure \ref{fig:contact_sim_torus.png} we show one realization from a simulation of the contact process with periodic boundaries on a $25 \times 25 \subset \Z^2$.
+In Figure \ref{fig:contact_sim_torus_above_crit.png} we show one realization from a simulation of the contact process with periodic boundaries on a $25 \times 25 \subset \Z^2$ with $\lambda \geq \lambda_c$.
+This is contrasted with Figure \ref{fig:contact_sim_torus_below_crit.png} in which $\lambda = 1.5$ is smaller than the critical value.
+In this case the ones will eventually die out.
 
 \begin{remark}
-If the graph $S$ is finite, then eventually any initial configuration will be all zeros.
+If the graph $S$ is finite, then eventually any initial configuration will eventually converge weakly to $\delta_0$.
 \end{remark}
 
 When the graph $S$ is infinite, then the limiting behavior of the system varies depending on $\lambda$.
-Let $\delta_0$ be the configuration of all zeros.
-This is clearly a stationary distribution since it will always remain all zeros.
+The configuration of all zeros, $\delta_0$, is clearly a stationary distribution since it will always remain all zeros.
 
 \begin{theorem} \cite{Liggett2002}
 For a contact process on d-dimensional lattice $\Z^d$ there is a critical value $\lambda_c$ such that when
