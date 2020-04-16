@@ -44,7 +44,7 @@ simulate_voter <- function(n = 50, iter = 1e6, imgN = 4, torus=FALSE) {
   while(i <= iter) {
     # sample a random point on the grid
     s <- sample(1:n^2, 1)
-    x <- s %% n
+    x <- ifelse(s %% n == 0, n, s %% n)
     y <- ceiling(s / n)
 
     # Get the neighbors opinions
