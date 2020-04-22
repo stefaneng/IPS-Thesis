@@ -30,22 +30,29 @@ library(here)
 # voter_density(df, "")
 
 
-simulate_voter <- function(n = 50, iter = 1e6, imgN = 4, torus=FALSE) {
+simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_config = FALSE) {
   m <- matrix(round(runif(n^2)),n,n)
   # Save old par settings
   par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
   image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = "Initial")
 
+  max_time <- max(times)
+  times_uniq <- sort(times)
+  times_uniq <- times_uniq[!duplicated(times_uniq)]
+
   # Sample the times from gamma (Erlang)
   total_time <- 0
   i <- 1
+  total_ones <- sum(m)
   # Keep track of index in each parition
-  part_i <- 1
-  while(i <= iter) {
+  while(total_time <= max_time && (total_ones > 0 || total_ones == n^2)) {
     # sample a random point on the grid
     s <- sample(1:n^2, 1)
     x <- ifelse(s %% n == 0, n, s %% n)
     y <- ceiling(s / n)
+
+    wait_time <- rexp(1, rate = n^2)
+    total_time <- total_time + wait_time
 
     # Get the neighbors opinions
     neighbor_ones <- 0
@@ -87,25 +94,35 @@ simulate_voter <- function(n = 50, iter = 1e6, imgN = 4, torus=FALSE) {
     p <- neighbor_ones / neighbors
     m[x,y] <- as.integer(runif(1) < p)
 
-    if (i %% floor(iter / imgN) == 0) {
-      # Sum of part_i exponentials is Erlang (gamma)
-      wait_time <- rgamma(1, shape = part_i, rate = n^2)
-      total_time <- total_time + wait_time
-      image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", round(total_time)))
-      part_i <- 0
+    total_ones <- sum(m)
+
+    if (length(times_uniq) >= 1 && floor(total_time) == times_uniq[1]) {
+     image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", round(total_time)))
+     # Remove the image time
+     times_uniq <- times_uniq[-1]
     }
     i <- i + 1
-    part_i <- part_i + 1
   }
+
+  # Show the remaining plots
+  for(ti in times_uniq) {
+   image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", ti))
+  }
+
+  res <- list(
+   total_time = total_time
+  )
+
+  if (include_config) {
+   res$config <- m
+  }
+
+  res
 }
 
 set.seed(262)
 png(here("figures/voter_simulation_torus_50.png"))
-simulate_voter(imgN = 3, iter = 3e6, torus = TRUE)
+simulate_voter(n = 50, times = c(5,30,300))
 dev.off()
 
-# set.seed(2626)
-# png(here("figures/voter_simulation_torus_25.png"))
-# simulate_voter(n = 25, imgN = 3, iter = 1e6, torus = TRUE)
-# dev.off()
 

@@ -57,7 +57,7 @@ contact_1d <- function(row, lambda, torus=TRUE) {
 
 # contact_1d(c(0,1,0), 2)
 
-simulate_contact_1d <-  function(lambda = 2, space = 500, time = 400, torus=FALSE, init_config=c("one", "random", "all")) {
+simulate_contact_1d <-  function(lambda = 2, space = 500, time = 400, torus=FALSE, init_config=c("one", "random", "all"), , include_config = FALSE) {
  # results <- matrix(0, nrow = time, ncol = space)
 
  if(init_config == "random") {
@@ -80,7 +80,7 @@ simulate_contact_1d <-  function(lambda = 2, space = 500, time = 400, torus=FALS
 # Each 1 waits exp(lambda) time then places this 1 on to one of the neighbors with probability 1/2^d
 #  The birth is suppressed if there is already a 1 there.
 
-simulate_contact <- function(lambda = 2, n = 50, times = c(10, 20, 50), torus=FALSE, init_config=c("one", "random", "all")) {
+simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE, init_config=c("one", "random", "all")) {
   if(init_config == "random") {
    m <- matrix(round(runif(n^2)),n,n)
   } else if (init_config == "all") {
@@ -204,7 +204,15 @@ simulate_contact <- function(lambda = 2, n = 50, times = c(10, 20, 50), torus=FA
   i <- i + 1
   }
 
-  total_time
+  res <- list(
+    total_time = total_time,
+    survived = sum(m) > 0
+  )
+  if (include_config) {
+    res$config <- m
+  }
+
+  res
 }
 
 
@@ -216,5 +224,6 @@ dev.off()
 
 set.seed(26)
 png(here("figures/contact_simulation_torus_25_below_crit.png"))
-simulate_contact(lambda = 0.25, n = 50, torus = TRUE, times = c(1, 3, 6), init_config = "all")
+simulate_contact(lambda = 0.25, n = 50, torus = TRUE, times = c(1, 3, 10), init_config = "all")
 dev.off()
+
