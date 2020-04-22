@@ -14,6 +14,12 @@ f <- function(lambda, x) {
   (2 * exp(1/2 * (sqrt(lambda^2 + 6 * lambda + 1) - lambda - 3) * x))/sqrt(lambda^2 + 6 * lambda + 1) - (2 * exp(1/2 * (-sqrt(lambda^2 + 6 * lambda + 1) - lambda - 3) * x))/sqrt(lambda^2 + 6 * lambda + 1)
 }
 
+# Compute the variance of the phase-type distributions
+# var_phtype(pi5, QL3(4 ,onlyTrans = TRUE))
+var_phtype <- function(prob, rates) {
+  mphtype(2, prob, rates) - mphtype(1, prob, rates)^2
+}
+
 contact_density <- function(df, title) {
   ggplot(df) +
     geom_line(aes(x = t, y = ft, color = as.factor(λ))) +
@@ -25,7 +31,24 @@ contact_density <- function(df, title) {
     theme(panel.spacing = unit(2, "lines"))
 }
 
-df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = f(l, t)))))
+#' Q matrix for complete contact process with 2 nodes
+#' Projected to the number of ones in the process
+#' onlyTrans=TRUE remove the absorbing states
+QC2 <- function(lambda, onlyTrans = FALSE) {
+  A <- matrix(c(
+    -2, 2, 0,
+    lambda, -(1 + lambda), 1,
+    0, 0, 0
+  ),
+  byrow=TRUE,
+  nrow=3
+  )
+
+  if(onlyTrans) A[-ncol(A), -ncol(A)]
+  else A
+}
+
+df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = f(l, t), ft2 =  dphtype(t, pi2, QC2(l,onlyTrans = TRUE))))))
 
 contact_density(df, "Complete contact process 2 nodes")
 
@@ -38,22 +61,16 @@ g <- function(x) {
 
 integrate(g, lower = 0, upper = Inf)
 
-#' Q matrix for complete contact process with 2 nodes
-#' Projected to the number of ones in the process
-#' onlyTrans=TRUE remove the absorbing states
-QC2 <- function(lambda, onlyTrans = FALSE) {
- A <- matrix(c(
-  -2, 2, 0,
-  lambda, -(1 + lambda), 1,
-  0, 0, 0
- ),
- byrow=TRUE,
- nrow=3
- )
-
- if(onlyTrans) A[-ncol(A), -ncol(A)]
- else A
+c2_var <- function(L) {
+  (L^2 + 6 * L + 5) / 4
 }
+
+# Double check that algebra calculation of variance is the same
+# as the one computed numerically
+
+assertthat::are_equal(c2_var(2), var_phtype(pi2, QC2(2, onlyTrans = TRUE)))
+assertthat::are_equal(c2_var(3), var_phtype(pi2, QC2(3, onlyTrans = TRUE)))
+assertthat::are_equal(c2_var(15), var_phtype(pi2, QC2(15, onlyTrans = TRUE)))
 
 #' Q matrix for complete contact process with 3 nodes
 #' Projected to the number of ones in the process
@@ -158,12 +175,6 @@ ggsave(plot = g1, filename = "ev_phase_comparison_3.png", path = here::here("fig
 # Include S4
 ggsave(plot = g2, filename = "ev_phase_comparison_4.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
 
-# Compute the variance of the phase-type distributions
-# var_phtype(pi5, QL3(4 ,onlyTrans = TRUE))
-var_phtype <- function(prob, rates) {
- mphtype(2, prob, rates) - mphtype(1, prob, rates)^2
-}
-
 var_lambdas <- seq(.1, 15, length.out = 50)
 res_var_c2 <-unlist(lapply(mean_lambdas, function(l) var_phtype(pi2, QC2(l ,onlyTrans = TRUE))))
 res_var_c3 <-  unlist(lapply(mean_lambdas, function(l) var_phtype(pi3, QC3(l ,onlyTrans = TRUE))))
@@ -182,7 +193,19 @@ ggplot(res_var_long) +
  theme_minimal(base_size = 18)
 
 
-# library(mapfit)
-# norm_sample <- rnorm(100)
-# phfit.point(ph=cf1(3), x=norm_sample)
+library(mapfit)
+
+# TODO: Set seed
+L <- 2
+qs4_sample <- rphtype(200, pi5, QS4(L ,onlyTrans = TRUE))
+# qs4_group <- hist(x=qs4_sample, breaks="fd", plot=FALSE)
+
+#phfit.group(ph=cf1(size = 5, alpha = pi5), counts=qs4_group$counts, breaks = qs4_group$breaks)
+
+qs4_cf1 <- phfit.point(ph=cf1(sum(QS4(L ,onlyTrans = TRUE) != 0)), x = qs4_sample)
+
+t <- seq(0, 10, length.out = 1000)
+hist(qs4_sample, freq = FALSE)
+#plot(t, dphtype(t, qs4_cf1$model@alpha, as.matrix(qs4_cf1$model@Q)), type = "l")
+lines(t, dphtype(t, pi5, QS4(L,onlyTrans = TRUE)))
 

@@ -19,7 +19,6 @@ contact_wait3 <- function(lambda, log_times = FALSE) {
 
     if (state == 3) {
       w <- rexp(1,3)
-      t <- t + w
       # Go to state 2
       state <- 2
     }
@@ -29,13 +28,11 @@ contact_wait3 <- function(lambda, log_times = FALSE) {
 
       if (w_lambda < w1) {
         # Go back to state 3
-        t <- t + w1
-        w <- w1
+        w <- w_lambda
         state <- 3
       } else {
         # Go to state 2
-        t <- t + w_lambda
-        w <- w_lambda
+        w <- w1
         state <- 1
       }
     }
@@ -45,17 +42,16 @@ contact_wait3 <- function(lambda, log_times = FALSE) {
 
       if (w_lambda < w1) {
         # Go back to state 2
-        t <- t + w1
-        w <- w1
+        w <- w_lambda
         state <- 2
       } else {
         # Go to state 1
-        t <- t + w_lambda
-        w <- w_lambda
+        w <- w1
         state <- 0
       }
     }
 
+    t <- t + w
     if (log_times) {
       wait_log <- c(wait_log, w)
     }
@@ -68,11 +64,57 @@ contact_wait3 <- function(lambda, log_times = FALSE) {
   }
 }
 
+expected_mean <- function(L) {
+  #(2 * L^2 + L + 1) / 3 + (2 * L + 1) / 2 + 1
+  (4 * L^2 + 8 * L + 11) / 6
+}
+
+# Create the Q matrix for the fundamental matrix of absorbing Markov chain
+#
+genQ3 <- function(lambda) {
+  matrix(c(0, 2 * lambda / (1 + 2 * lambda), 0,
+           2 / (2 + 2 * lambda), 0, 2*lambda / (2 + 2 * lambda),
+           0, 1, 0), nrow = 3, byrow = TRUE)
+}
+
+# testVisitCount <- function(L) {
+#   c(2 * L + 1, (L + 1) * (2 * L + 1) , 2 *L^2 + L + 1)
+# }
+
+# Number of times expected to visit each state
+visitCount <- function(lambda) {
+  solve(diag(3) - genQ3(lambda))[3,]
+}
+
+# This one seems correct
+# The expected time spent in each state
+expectedTime <- function(lambda) {
+  sum(visitCount(lambda) * c(1/(1 + 2 * lambda), 1/(2 + 2 * lambda), 1/3))
+}
+
+expectedTime(2)
+
+# Simulate lambda = 2
+N <- 1000
+lambda <- 2
+res <- replicate(N, contact_wait3(lambda))
+# contact_wait3(lambda, log_times = TRUE)
+c(sim = mean(res), expected = expectedTime(lambda))
+
+# Show that it equals in distribution exponential
+hist(res * 3 / (2 * lambda^2 + lambda + 1), freq = FALSE)
+xvals <- seq(0, 50, by=0.5)
+lines(xvals,
+      dexp(xvals, rate = 1),
+      lwd=2,
+      col="red")
+
+
+# Simulate more lambdas
 lambdas <- seq(1, 25, length.out = 10)
 res_sum <- matrix(0, ncol = 3, nrow = length(lambdas))
 res <- NULL
 
-N <- 500
 for(i in seq_along(lambdas)) {
   l <- lambdas[i]
   r <- replicate(N, contact_wait3(l))
@@ -96,7 +138,7 @@ ggplot(data.frame(res = r)) +
   geom_histogram(aes(res))
 
 lambda <- 2
-rpass <- replicate(N, contact_wait3(l, log_times = TRUE)$states)
+rpass <- replicate(N, contact_wait3(lambda, log_times = TRUE)$states)
 # Finding distribution of the number of times at each state
 pass_df <- as.data.frame(do.call(rbind, lapply(rpass, table))) %>% gather(state, count)
 
@@ -124,20 +166,12 @@ r <- replicate(1000, contact_wait3(2))
 ggplot(data.frame(value = r)) +
   geom_histogram(aes(value), bins = 30)
 
-
-# Create the Q matrix for the fundamental matrix of absorbing Markov chain
-#
-genQ3 <- function(lambda) {
-  matrix(c(0, 2 * lambda / (1 + 2 * lambda), 0,
-    2 / (2 + 2 * lambda), 0, 2*lambda / (2 + 2 * lambda),
-    0, 1, 0), nrow = 3, byrow = TRUE)
-}
-
 lambdas <- seq(1, 100, by = 1)
 
 # Compute the expected number of visits to each node
 # Using the fundamental matrix inversion: (I - Q)^{-1}
-dist_df <- data.frame(do.call(rbind, lapply(lambdas, function(x) solve(diag(3) - genQ3(x))[3,])))
+# Wolfram alpha: https://www.wolframalpha.com/input/?i=inverse+of+%7B%7B1%2C+-2x+%2F+%281+%2B+2x%29%2C+0%7D%2C+%7B-2%2F%282+%2B+2x%29%2C+1%2C+-+2x+%2F+%282+%2B+2x%29%7D%2C+%7B0%2C+-1%2C+1%7D%7D
+dist_df <- data.frame(do.call(rbind, lapply(lambdas, visitCount)))
 colnames(dist_df) <- c("state1", "state2", "state3")
 dist_df$lambda <- lambdas
 

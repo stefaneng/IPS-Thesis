@@ -163,6 +163,3 @@ library(MittagLeffleR)
 params <- logMomentEstimator(lim_res_df$time, alpha = 0.05)
 rml(params, params[1], params[2])
 
-
-
-

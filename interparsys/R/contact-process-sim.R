@@ -3,7 +3,78 @@ library(actuar)
 library(tidyr)
 library(here)
 
-# Sample: sample(1:5, 1, prob = c(.1, 0, .9, 0, 0))
+#' Simulate one results from the contact process
+#' Only torus implemented now
+contact_1d <- function(row, lambda, torus=TRUE) {
+  res <- list(
+    t = 0,
+    new_row = row,
+    suppressed = FALSE
+  )
+  # Sum of all the rates
+  rate <- sum(lambda * row + m)
+  if(rate > 0) {
+    res$t <- rexp(1, rate)
+
+    # Get the indices of the ones
+    ones <- which(as.logical(row))
+    if(length(ones) == 0) {
+      return(res)
+    } else {
+      # Sample uniformly from the infected sites
+      if(length(ones) == 1) {
+        s <- ones
+      } else {
+        # Sample from the ones
+        s <- sample(ones, 1)
+      }
+
+      # Turn the 1 into a 0
+      if (runif(1) < 1 / (1 + lambda)) {
+        res$new_row[s] <- 0
+      } else {
+        # Place a one on either the left or the right neighbor
+        ns <- s
+        if (runif(1) < .5) {
+          # Place 1 on left neighbor
+          if (torus) {
+            ns <- ifelse(s - 1 > 0, s - 1, length(row))
+          }
+        } else {
+          # Place 1 on right neighbor
+          if(torus) {
+            ns <- ifelse(s + 1 < length(row), s + 1, 1)
+          }
+        }
+
+        res$suppressed <- row[ns] == 1
+        res$new_row[ns] <- 1
+      }
+    }
+  }
+  res
+}
+
+contact_1d(c(0,1,0), 2)
+
+simulate_contact_1d <-  function(lambda = 2, space = 500, time = 400, torus=FALSE, init_config=c("one", "random", "all")) {
+  # results <- matrix(0, nrow = time, ncol = space)
+
+  if(init_config == "random") {
+    r <- round(runif(n))
+  } else if (init_config == "all") {
+    r <- rep(1, 10)
+  } else {
+    r <- matrix(0, nrow = n, ncol = n)
+    mid <- floor(n / 2)
+    r[mid] <- 1
+  }
+
+  i <- 1
+  total_time <- 0
+  # Set first time point
+  results[time, ] <- r
+}
 
 # Each 1 waits exp(1) time then becomes a 0
 # Each 1 waits exp(lambda) time then places this 1 on to one of the neighbors with probability 1/2^d
@@ -41,7 +112,6 @@ simulate_contact <- function(lambda = 2, n = 50, iter = 1e6, imgN = 4, torus=FAL
     # Wait exponential time according to sum of all the rates
     t <- rexp(1, rate = rates)
     total_time <- total_time + t
-    # Sample from the ones according to the rates
 
     ones <- (1:n^2)[m == 1]
     if(length(ones) == 0) {
