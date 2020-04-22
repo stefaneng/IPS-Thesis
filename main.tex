@@ -13,6 +13,7 @@
 \usepackage{mathrsfs}
 \usepackage{blkarray}
 \usepackage{mathtools}
+\usepackage{float}
 
 \usepackage{natbib}
 \usepackage{graphicx}
@@ -428,12 +429,21 @@ $$
 \lim_{n \to \infty} \int f d\mu_n = \int f d\mu
 $$
 for all bounded and continuous functions $f$.
-If $F_n$ and $F$ are the CDFs of $\mu_n$ and $F$ then this is equivalent to 
+If $F_n$ and $F$ are the CDFs of $\mu_n$ and $F$ then this is equivalent to
 $$
-\lim F_n(x) = F(x)
+\lim_{n \to \infty} F_n(x) = F(x)
 $$
 for all $x \in \R$ that are continuous for $F$.
 \end{defn}
+
+\begin{theorem}[Convergence together lemma] \label{thm:conv_together_lemma}
+If $X_n \Rightarrow X$ and $Y_n \Rightarrow c$, where $c$ is a constant, then $X_n + Y_n \Rightarrow X + c$.
+\end{theorem}
+
+\begin{proof}
+TODO
+
+\end{proof}
 
 \subsection{Markov Chains}
 
@@ -586,15 +596,6 @@ By Theorem \ref{thm:exp_x_less_y}, we have that $P(X < Y) = \frac{\alpha}{\alpha
 Since both $T | \{X < Y\} \sim \exp(\alpha + \beta)$ and $T \sim \exp(\alpha + \beta)$ then $T$ and $\{X < Y\}$ are independent.
 \end{proof}
 
-\begin{defn}[Matrix Exponential]
-The matrix exponential of a real or complex $n \times n$ matrix $A$ is defined as
-$$
-\exp(X) = \sum_{i = 0}^\infty \frac{1}{i!} X^i
-$$
-where $X^0 = I$, the $n \times n$ identity matrix.
-\end{defn}
-
-
 \begin{theorem}[Forward and backward equations] \cite{grimmett2001}
 Assume that we have a CTMC on a finite state space $\Omega$ with $P_t = p_{ij}(t)$ where $p_{ij}(t)$ is the homogeneous transition probability from state $i$ to state $j$ in a time interval of length $t$.
 
@@ -615,6 +616,26 @@ The \textbf{backwards equations} are
     \label{eq:backwards_eqs}
     P_t' = Q P_t
 \end{equation}
+\end{theorem}
+
+\subsection{Matrix Exponential}
+
+\begin{defn}[Matrix Exponential]
+The matrix exponential of a real or complex $n \times n$ matrix $A$ is defined as
+$$
+\exp(A) = \sum_{i = 0}^\infty \frac{1}{i!} A^i
+$$
+where $A^0 = I$, the $n \times n$ identity matrix.
+\end{defn}
+
+\begin{theorem} \label{thm:eigen_matrix_exp}
+Assume that $A$ is a diagonalizable $n \times n$ matrix with eigenvalues $\lambda_1, \lambda_2, \ldots, \lambda_n$.
+Let $A = T \Lambda T^{-1}$ be the eigendecomposition of $A$ where $T$ is the $n \times n$ matrix of the eigenvectors and $\Lambda = \operatorname{diag}(\lambda_1, \ldots, \lambda_n)$.
+Then,
+\begin{align*}
+    \exp(A) &= T \exp(\Lambda) T^{-1}\\
+    &= T \operatorname{diag}(\exp(\lambda_1), \ldots, \exp(\lambda_n)) T^{-1}
+\end{align*}
 \end{theorem}
 
 \section{Phase-Type distributions}
@@ -653,7 +674,7 @@ $\mathbf{S}_0 = - S \mathbf{1}$.
 \begin{proof}
 Let $P_t$ be the transition probabilities of the process restricted to the transient states.
 By the forward equations (Equation \eqref{eq:forward_eqs}), we have that $P_t' = P_t \mathbf{S}$ for $t > 0$.
-The solution to the differential equation with initial condition $\boldsymbol{\alpha}$ is given by 
+The solution to the differential equation with initial condition $\boldsymbol{\alpha}$ is given by
 $$
 P_t = \boldsymbol{\alpha} \exp(x \mathbf{S})
 $$
@@ -703,7 +724,7 @@ As an example we show that $k = 4$ has representation
         -\lambda & \lambda & 0 & 0\\
         0 & - \lambda & \lambda & 0\\
         0 & 0 & -\lambda & \lambda\\
-        0 & 0 & 0 & -\lambda 
+        0 & 0 & 0 & -\lambda
         \end{bmatrix}\\
     \mathbf{S}_0 &= (0, 0, 0, \lambda)^T\\
     \alpha &= (1,0,0,0)
@@ -806,69 +827,70 @@ The set of all continuous phase-type distributions is dense in the class of all 
 
 \section{Contact Process}
 
-\begin{figure}[h]
-  \centering
-    \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25.png}
-   \caption{Simulation for contact process with $\lambda = 4$ (above the critical value) and periodic boundary conditions on $25 \times 25$ grid. Initial configuration is only one node with 1.}
-  \label{fig:contact_sim_torus_above_crit.png}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-    \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25_below_crit.png}
-   \caption{Simulation for contact process with $\lambda = 1.5$ (below the critical value) and periodic boundary conditions on $25 \times 25$ grid. Initial configuration has all nodes as ones.}
-  \label{fig:contact_sim_torus_below_crit.png}
-\end{figure}
-
 \begin{defn}[Contact process]
-Let $S = (V,E)$ be a graph where $V$ are the vertices (that have bounded degree) and $E$ is the set of edges.
+Let $S = (V,E)$ be a graph where $V$ is the set of vertices (that have bounded degree) and $E$ is the set of edges.
 Let $X =  \{0,1\}^S$ be the state space.
-The contact process is a continuous-time Markov chain in which each 1 on the graph waits a random time, exponentially distributed, with rate 1 and then becomes a 0.
+A contact process $(\eta_t)$, is a continuous-time Markov chain on $X$ in which each 1 on the graph waits a random time, exponentially distributed, with rate 1 and then becomes a 0.
 Every 0 waits exponentially with rate $k \lambda$, where $k$ is the number of edges shared with a 1.
 Let $\eta$ and $\delta$ be two configurations of the graph $S$ in the process.
 The transition rate matrix can be described as follow
 $$
 q(\eta, \delta) = \begin{cases}
-    0 & \eta, \delta \text{ differ by more than one point}\\
+    0 & \eta, \delta \text{ differ in more than one point}\\
     1 & \text{differ only at } x, \eta(x) = 1, \delta(x) = 0\\
     \lambda |\{ (x,y) \in E : \eta(y) = 1\}| & \text{differ only at } x, \eta(x) = 0, \delta(x) = 1
 \end{cases}
 $$
 
-Denote $\delta_0$, $\delta_1$ as the configurations with all zeros and all ones respectively.
+Denote $\delta_0$, $\delta_1$ be point masses on the configuration of all zeros and all ones respectively.
 \end{defn}
 
-In Figure \ref{fig:contact_sim_torus_above_crit.png} we show one realization from a simulation of the contact process with periodic boundaries on a $25 \times 25 \subset \Z^2$ with $\lambda \geq \lambda_c$.
-This is contrasted with Figure \ref{fig:contact_sim_torus_below_crit.png} in which $\lambda = 1.5$ is smaller than the critical value.
-In this case the ones will eventually die out.
-
 \begin{remark}
-If the graph $S$ is finite, then eventually any initial configuration will eventually converge weakly to $\delta_0$.
+If the graph $S$ is finite, then the process will eventually converge to the configuration of all zeros.
+%will eventually converge weakly to $\delta_0$, the point mass on configuration of all zeros ($\eta \equiv 0$).
 \end{remark}
 
 When the graph $S$ is infinite, then the limiting behavior of the system varies depending on $\lambda$.
-The configuration of all zeros, $\delta_0$, is clearly a stationary distribution since it will always remain all zeros.
+The point mass on the configuration of all zeros, $\delta_0$, is clearly a stationary distribution since no 0 is able to change to a 1.
 
 \begin{theorem} \cite{Liggett2002}
-For a contact process on d-dimensional lattice $\Z^d$ there is a critical value $\lambda_c$ such that when
+For a contact process on d-dimensional lattice $\Z^d$ there is a critical value $\lambda_c = \lambda_c(d) \in \left( \frac{1}{2d - 1}, \frac{2}{d} \right)$ such that
 \begin{itemize}
-    \item If $\lambda \leq \lambda_c$ then all distributions converge weakly to $\delta_0$.
-    \item If $\lambda > \lambda_c$ then there is some other stationary distribution $\nu \not = \delta_0$ such that all distributions (except $\delta_0$) converge weakly to $\nu$.
+    \item If $\lambda \leq \lambda_c$ then $\eta_t$ converges weakly to $\delta_0$. % TODO: More detail on this
+    \item If $\lambda > \lambda_c$ then there is some other stationary distribution $\nu \not = \delta_0$ such that $\eta_t$ converges weakly to $\nu$ for all initial configurations with infinitely many ones.
 \end{itemize}
-Also, $\frac{1}{2d - 1} < \lambda_c < \frac{2}{d}$
 \end{theorem}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25.png}
+   \caption{Simulation for contact process with $\lambda = 4$ (above the critical value) and periodic boundary conditions on $25 \times 25$ grid. The initial configuration is only one node with 1.}
+  \label{fig:contact_sim_torus_above_crit.png}
+\end{figure}
+
+In Figure \ref{fig:contact_sim_torus_above_crit.png} we show one realization from a simulation of the contact process with periodic boundaries on a $25 \times 25$ with $\lambda = 4 \geq \lambda_c$.
+That is, the contact process is on $\{0,1\}^{(\Z/25) \times (\Z/25)}$.
+This is contrasted with Figure \ref{fig:contact_sim_torus_below_crit.png} in which $\lambda = 1.5$ is smaller than the critical value.
+In this case the ones will eventually die out.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25_below_crit.png}
+   \caption{Simulation for contact process with $\lambda = 0.25$ that eventually dies out on $\{0,1\}^{(\Z/25) \times (\Z/25)}$. The initial configuration has all nodes as ones.}
+  \label{fig:contact_sim_torus_below_crit.png}
+\end{figure}
 
 \subsection{Contact process on finite graphs}
 
 Now we look at a contact process on a finite graph.
 We look at $T_{C_2}$ (which depends on $\lambda$), the time until we reach the state zero while keeping the number of nodes fixed as $\lambda$ goes to $\infty$.
-It is know that $T_{C_2}$ has a phase-shift distribution for a fixed $\lambda$.
+% It is known that $T_{C_2}$ has a phase-type distribution for a fixed $\lambda$.
 As $\lambda \to \infty$ then $T_{C_2}$ will converge to infinity in distribution so we will normalize $T_{C_2}$ to understand which limiting distribution one can get.
 First we investigate the behavior for a complete graph, in which each node is connected to all other nodes and then we look at the one-dimensional lattice and cycles.
 
 \subsection{Two node contact process \texorpdfstring{$C_2$}{C2}}
 
-Define a contact process on the finite graph with two nodes and one edge between them.
+The contact process on the finite graph with two nodes and one edge between them has the following transition rates
 
 \begin{align}
     1 &\to 0 \text{ at rate } 1\\
@@ -895,10 +917,10 @@ Q = \begin{blockarray}{ccccc}
 $$
 Start the process with both nodes at 1.
 We can project this continuous-time Markov chain to the number of ones in the process at a given time.
-That is, mapping $(1,1)$ to 2, $\{(1,0),(0,1)\}$ to a single state 1, and $(0,0)$ to 0.
+Map $(1,1)$ to 2, $\{(1,0),(0,1)\}$ to a single state 1, and $(0,0)$ to 0.
 This new chain is also a Markov chain by Theorem \ref{thm:mc_projection}.
 
-$$
+\begin{equation}\label{eq:q_c_2}
 Q_{C_2} = \begin{blockarray}{cccc}
     & 2 & 1 & 0\\
     \begin{block}{c(ccc)}
@@ -907,9 +929,10 @@ Q_{C_2} = \begin{blockarray}{cccc}
         0 & 0 & 0 & 0\\
     \end{block}
 \end{blockarray}
-$$
+\end{equation}
 
-\begin{figure}[h]
+
+\begin{figure}[H]
     \centering
    \begin{tikzpicture}[start chain = going right,
    -Triangle, every loop/.append style = {-Triangle}]
@@ -917,8 +940,7 @@ $$
    \node[state, on chain]  (1) {1};
    \node[state, on chain]  (0) {0};
 
-   % TODO: Need to add labels
-   \draw (2) edge[bend left] node[yshift=3mm]{rate $2$} (1);
+   \draw (2) edge[bend left] node[yshift=3mm]{$2$} (1);
    \draw (1) edge[bend left] node[yshift=-3mm]{$\lambda$}(2);
    \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$1$} (0);
 
@@ -927,7 +949,7 @@ $$
     \label{fig:rates_mc_two_contact}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
    \begin{tikzpicture}[start chain = going right,
    -Triangle, every loop/.append style = {-Triangle}]
@@ -947,11 +969,15 @@ $$
 Let $T_{C_2}$ be the time in which we hit 0.
 The waiting time while in state 2 is exponentially distributed random variable $X$ with parameter $- q_{2} = 2$ and similarly the waiting time while in state 1 is exponentially distributed with parameter $- q_{(1,0)} = 1 + \lambda$.
 
+The embedded Markov chain for the process is the discrete-time Markov chain of the jumps in the process.
+For example if the original process $(A_t)$ is $A_{0} = 2, A_{.75} = 1, A_{1.2} = 2, \ldots, A_{23.2} = 0$ then the embedded chain $(B_n)$ is $B_{0} = 2, B_1 = 1, B_2 = 2, \ldots, B_n = 0$.
+The probability of going from one state to another is shown in Figure \ref{fig:discrete_mc_two_contact}.
+
 Let $N$ be a geometric random variable which denotes the number of times that the process waits at state 1 before moving to the absorbing state 0.
 It has a success parameter $\frac{1}{1 + \lambda}$ which represents going to the absorbing state 0.
-
-Let $X_1, X_2, \ldots$ be i.i.d random variables with
+Also, let $X_1, X_2, \ldots$ be i.i.d random variables with
 $X_i \sim \exp(2)$ for the waiting time at state 2 and independent of i.i.d random variables $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$ for the waiting time at state 1.
+The random variable $N$ is independent of both $(X_n)$ and $(Y_n)$ from Theorem \ref{thm:x_N_indep}.
 
 Now we can express $T_{C_2}$ as a random sum
 $$
@@ -964,7 +990,7 @@ E[T_{C_2}] = \frac{3}{2} + \frac{\lambda}{2}
 $$
 and
 $$
-\Var(T_{C_2}) = \frac{\lambda^2 + 7 \lambda + 10}{4} + \frac{1}{1 + \lambda}
+\Var(T_{C_2}) = \frac{\lambda^2 + 6 \lambda + 5}{4}
 $$
 \end{theorem}
 
@@ -984,8 +1010,7 @@ Also since $(X_n)$ and $(Y_n)$ are independent,
     \Var(X_i + Y_i) &= \Var(X + Y) = \frac{(1 + \lambda)^2 + 4}{4(1 + \lambda)^2}
 \end{align*}
 
-By Theorem \ref{thm:x_N_indep} we have that both $(X_t)$ and $(Y_t)$ are mutually independent of $N$.
-Thus by Theorem \eqref{thm:random_sum_ev},
+Since both $(X_n)$ and $(Y_n)$ are mutually independent of $N$ then by Theorem \eqref{thm:random_sum_ev},
 $$
 E[T_{C_2}] = E\left[ \sum_{i = 1}^N X_i + Y_i \right] = E[X + Y] E[N] = \frac{3 + \lambda}{2(1 + \lambda)} \cdot (1 + \lambda) = \frac{3}{2} + \frac{\lambda}{2}
 $$
@@ -993,37 +1018,41 @@ $$
 By Theorem \ref{thm:random_sum_var}
 \begin{align*}
     \Var\left( \sum_{i = 1}^N X_i + Y_i \right) &= E[N]\Var(X + Y) + (E[X + Y])^2 \Var(N)\\
-    &= (1 + \lambda) \frac{(1 + \lambda)^2 + 4}{4(1 + \lambda)^2} + \frac{(3 + \lambda)^2}{4 (1 + \lambda)^2} \lambda (1 + \lambda)^2\\
-    &= \frac{\lambda^3 + 8 \lambda^2 + 17 \lambda + 14}{4(1 + \lambda)}\\
-    &= \frac{\lambda^2 + 7 \lambda + 10}{4} + \frac{1}{1 + \lambda}
+    &= (1 + \lambda) \frac{(1 + \lambda)^2 + 4}{4(1 + \lambda)^2} + \frac{(3 + \lambda)^2}{4 (1 + \lambda)^2} \lambda (1 + \lambda)\\
+    &= \frac{
+        (1 + \lambda)^2 + 4 + (3 + \lambda)^2 \lambda
+    }{4(1 + \lambda)}\\
+    &= \frac{
+    \lambda^3 + 7 \lambda^2 + 11 \lambda + 5
+    }{4(1 + \lambda}\\
+    &= \frac{\lambda^2 + 6 \lambda + 5}{4}
 \end{align*}
 \end{proof}
 
 \subsubsection{Phase-type distribution}
 
 The time to absorption $T_{C_2}$ has a phase-type distribution.
-We can express the $Q$ matrix as
-$$
-Q_{C_2} = \begin{blockarray}{cccc}
-    & 2 & 1 & 0\\
-    \cline{2-4}
-    \begin{block}{c|cc|c|}
-        2 & -2 & 2 & 0\\
-        1 & \lambda & - (1 + \lambda) & 1\\
-        \cline{2-3}
-    \end{block}
-    \begin{block}{c|ccc|}
-        0 & 0 & 0 & 0\\
-    \end{block}
-\end{blockarray}
-$$
-where
+We can decompose $Q_{C_2}$, Equation \eqref{eq:q_c_2}, as
+% $$
+% Q_{C_2} = \begin{blockarray}{cccc}
+%     & 2 & 1 & 0\\
+%     \cline{2-4}
+%     \begin{block}{c|cc|c|}
+%         2 & -2 & 2 & 0\\
+%         1 & \lambda & - (1 + \lambda) & 1\\
+%         \cline{2-3}
+%     \end{block}
+%     \begin{block}{c|ccc|}
+%         0 & 0 & 0 & 0\\
+%     \end{block}
+% \end{blockarray}
+% $$
 \begin{align*}
     \mathbf{S} &= \begin{pmatrix}
         -2 & 2\\
         \lambda & - (1 + \lambda)
     \end{pmatrix}\\
-    \mathbf{s} &= \begin{pmatrix}
+    \mathbf{S}_0 &= \begin{pmatrix}
         0\\
         1
     \end{pmatrix}\\
@@ -1032,45 +1061,171 @@ where
     \end{pmatrix}
 \end{align*}
 
-% MatrixExp[{{-2 x, 2 x}, {\[Lambda] x, -((1 + \[Lambda]) x)}}] // TeXForm
-
-Using Wolfram Language we can compute the matrix exponential which is complicated even in this simple case. Let $A = \exp(Sx)$.
-
+To compute the matrix exponential $\exp(x S)$ we first compute the eigenvalues of $S$.
+Solving $\det(S - m I) = 0$ for $m$,
 \begin{align*}
-A_{11} &= \frac{\left(\sqrt{\lambda ^2+6 \lambda +1}+\lambda -1\right) e^{\frac{1}{2}
-   \left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2 \sqrt{\lambda ^2+6
-   \lambda +1}}\\
-   &\quad\quad- \frac{\left(-\sqrt{\lambda ^2+6 \lambda +1}+\lambda -1\right)
-   e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2
-   \sqrt{\lambda ^2+6 \lambda +1}}\\
-   A_{12} &= \frac{2 e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6
-   \lambda +1}-\lambda -3\right) x}}{\sqrt{\lambda ^2+6 \lambda +1}}-\frac{2
-   e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right)
-   x}}{\sqrt{\lambda ^2+6 \lambda +1}}\\
-   A_{21} &= \frac{\lambda  e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right)
-   x}}{\sqrt{\lambda ^2+6 \lambda +1}}-\frac{\lambda  e^{\frac{1}{2}
-   \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{\sqrt{\lambda ^2+6
-   \lambda +1}}\\
-   A_{22} &= \frac{\left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda +1\right)
-   e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right) x}}{2
-   \sqrt{\lambda ^2+6 \lambda +1}}\\
-   &\quad\quad-\frac{\left(-\sqrt{\lambda ^2+6 \lambda
-   +1}-\lambda +1\right) e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda
-   -3\right) x}}{2 \sqrt{\lambda ^2+6 \lambda +1}}
+    \det(S - m I) &= \det\left(\begin{bmatrix}
+        -2 - m & 2\\
+        \lambda & - 1 - \lambda - m
+    \end{bmatrix} \right)\\
+    &= (2 + m) (1 + \lambda + m) - 2 \lambda\\
+    &= 2 + (3 + \lambda) m + m^2
+\end{align*}
+Solving the equation $2 + (3 + \lambda) m + m^2 = 0$ for $m$ we get roots (eigenvalues)
+\begin{align*}
+    m_1 &= \frac{1}{2}(-3 - \lambda + \sqrt{\lambda^2 + 6 \lambda + 1})\\
+    m_2 &= \frac{1}{2}(-3 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1})
+\end{align*}
+So $\lambda_1 = x m_1$, $\lambda_2 = x m_2$ are the eigenvalues for $x S$.
+Denote
+$$
+\Lambda = \operatorname{diag}(\lambda_1, \lambda_2)
+$$
+and
+$$
+C = \sqrt{\lambda^2 + 6 \lambda + 1}
+$$
+Then solving $(S - m I) \mathbf{v} = 0$ for $m_1, m_2$, we get eigenvectors
+\begin{align*}
+    v_1 &= \left( \frac{-1 + \lambda - C}{2\lambda}, 1 \right)\\
+    v_2 &= \left( \frac{-1 + \lambda + C}{2\lambda}, 1 \right)
+\end{align*}
+Let
+$$
+U = \begin{bmatrix}
+    \frac{-1 + \lambda - C}{2\lambda} & \frac{-1 + \lambda + C}{2\lambda}\\
+    1 & 1
+\end{bmatrix}
+$$
+hence
+$$
+\det(U) = - \frac{C}{\lambda}
+$$
+It follows that
+\begin{align*}
+    U^{-1} &= - \frac{\lambda}{C} \begin{bmatrix}
+    1 & \frac{1 - \lambda - C}{2\lambda}\\
+    -1 & \frac{-1 + \lambda - C}{2\lambda}
+    \end{bmatrix}\\
+    &= \frac{1}{2C} \begin{bmatrix}
+    -2\lambda & -1 + \lambda + C\\
+    2\lambda & 1 - \lambda + C
+    \end{bmatrix}
 \end{align*}
 
-Then the density of $T_{C_2}$ is defined as
-\begin{align}
-f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{s} \nonumber\\
-&= (1, 0) \exp(\mathbf{S} x) (0,1)^T \nonumber\\
-&= A_{12} \nonumber\\
-&= \frac{2 e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6
-   \lambda +1}-\lambda -3\right) x}}{\sqrt{\lambda ^2+6 \lambda +1}}-\frac{2
-   e^{\frac{1}{2} \left(-\sqrt{\lambda ^2+6 \lambda +1}-\lambda -3\right)
-   x}}{\sqrt{\lambda ^2+6 \lambda +1}} \label{eq:t_density}
-\end{align}
+% Now by Theorem \ref{thm:eigen_matrix_exp}, we can compute $\exp(xS)$ as
+% \begin{align*}
+% \exp(xS) &= T \begin{bmatrix}
+%     \exp(\frac{1}{2}(-3 - \lambda + C)) & 0\\
+%     0 & \exp(\frac{1}{2}(-3 - \lambda - C))
+% \end{bmatrix} T^{-1}\\
+% &= - \frac{1}{2 C} T \begin{bmatrix}
+%     \exp(\frac{-3 - \lambda + C}{2}) & \exp(\frac{-3 - \lambda + C}{2}) \frac{1 - \lambda - C}{2\lambda} \\
+%     - \exp(\frac{-3 - \lambda - C}{2}) & \exp(\frac{1}{2}(-3 - \lambda - C)) \frac{-1 + \lambda - C}{2\lambda}
+% \end{bmatrix}
+% \end{align*}
 
-\begin{figure}[h]
+The density of $T_{C_2}$ is defined as
+\begin{align*}
+ f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0 \nonumber\\
+ &= (1, 0) \exp(\mathbf{S} x) (0,1)^T \\
+ &= (1, 0) U \exp(\Lambda) U^{-1} (0,1)^T
+\end{align*}
+Where
+\begin{align*}
+    (1,0) U &= (1,0) \begin{bmatrix}
+    \frac{-1 + \lambda - C}{2\lambda} & \frac{-1 + \lambda + C}{2\lambda}\\
+    1 & 1
+\end{bmatrix}\\
+    &= \begin{bmatrix}
+    \frac{-1 + \lambda - C}{2\lambda} & \frac{-1 + \lambda + C}{2\lambda}
+    \end{bmatrix}
+\end{align*}
+and
+\begin{align*}
+    U^{-1} (0,1)^T &= \frac{1}{2C} \begin{bmatrix}
+    -2\lambda & -1 + \lambda + C\\
+    2\lambda & 1 - \lambda + C
+    \end{bmatrix} (0,1)^T\\
+    &= \frac{1}{2C} \begin{bmatrix}
+    -1 + \lambda + C\\
+    1 - \lambda + C
+    \end{bmatrix}
+\end{align*}
+
+Thus
+\begin{align*}
+     f(x; \lambda) &= (1, 0) U \exp(\Lambda) U^{-1} (0,1)^T\\
+     &= \frac{1}{2C} \begin{bmatrix}
+    \frac{-1 + \lambda - C}{2\lambda} & \frac{-1 + \lambda + C}{2\lambda}
+    \end{bmatrix} \exp(\Lambda)  \begin{bmatrix}
+    -1 + \lambda + C\\
+    1 - \lambda + C
+    \end{bmatrix}\\
+    &= \frac{1}{2C} \left( 4 \exp\left(\frac{1}{2}(-3 - \lambda + C) x\right) - 4 \exp\left(\frac{1}{2}(-3 - \lambda - C) x\right) \right)\\
+    &= \frac{2}{C} \left( \exp\left(\frac{1}{2}(-3 - \lambda + C) x\right) - \exp\left(\frac{1}{2}(-3 - \lambda - C) x\right) \right)\\
+\end{align*}
+Note that the left exponential and right exponential differ only by sign on the term $C$.
+Finally plugging back in $C$ we get
+\begin{equation} \label{eq:t_density}
+      f(x; \lambda) = \frac{2 \exp\left(\frac{1}{2}(-3 - \lambda + \sqrt{\lambda^2 + 6 \lambda + 1}) x\right)}{\sqrt{\lambda^2 + 6 \lambda + 1}}  - \frac{2 \exp\left(\frac{1}{2}(-3 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}) x\right)}{\sqrt{\lambda^2 + 6 \lambda + 1}}
+\end{equation}
+
+% \begin{align}
+% f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0 \nonumber\\
+% &= (1, 0) \exp(\mathbf{S} x) (0,1)^T \nonumber\\
+% &= (1, 0) T \begin{bmatrix}
+%     \exp(\frac{1}{2}(-3 - \lambda + \sqrt{\lambda^2 + 6 \lambda + 1})) & 0\\
+%     0 & \exp(\frac{1}{2}(-3 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}))
+% \end{bmatrix} T^{-1}
+% (0,1)^T \nonumber\\
+% &=
+% \left(\frac{-1 + \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}}{2\lambda}, 1\right) \nonumber \\
+% &\quad\quad \begin{bmatrix}
+%     \exp(\frac{1}{2}(-3 - \lambda + \sqrt{\lambda^2 + 6 \lambda + 1})) & 0\\
+%     0 & \exp(\frac{1}{2}(-3 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}))
+% \end{bmatrix} \nonumber\\
+% &\quad\quad  \begin{bmatrix}
+%     \frac{1 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}}{2\lambda}\\
+%     \frac{-1 + \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}}{2\lambda}
+% \end{bmatrix} \nonumber
+% \end{align}
+
+% MatrixExp[{{-2 x, 2 x}, {\[Lambda] x, -((1 + \[Lambda]) x)}}] // TeXForm
+
+% Using Wolfram Language we can compute the matrix exponential which is complicated even in this simple case. Let $A = \exp(Sx)$.
+
+% \begin{align*}
+% A_{11} &= \frac{\left(C+\lambda -1\right) e^{\frac{1}{2}
+%   \left(C-\lambda -3\right) x}}{2 C}\\
+%   &\quad\quad- \frac{\left(-C+\lambda -1\right)
+%   e^{\frac{1}{2} \left(-C-\lambda -3\right) x}}{2
+%   C}\\
+%   A_{12} &= \frac{2 e^{\frac{1}{2} \left(C-\lambda -3\right) x}}{C}-\frac{2
+%   e^{\frac{1}{2} \left(-C-\lambda -3\right)
+%   x}}{C}\\
+%   A_{21} &= \frac{\lambda  e^{\frac{1}{2} \left(C-\lambda -3\right)
+%   x}}{C}-\frac{\lambda  e^{\frac{1}{2}
+%   \left(-C-\lambda -3\right) x}}{C}\\
+%   A_{22} &= \frac{\left(C-\lambda +1\right)
+%   e^{\frac{1}{2} \left(C-\lambda -3\right) x}}{2
+%   C}\\
+%   &\quad\quad-\frac{\left(-C-\lambda +1\right) e^{\frac{1}{2} \left(-C-\lambda
+%   -3\right) x}}{2 C}
+% \end{align*}
+
+% Then the density of $T_{C_2}$ is defined as
+% \begin{align}
+% f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0 \nonumber\\
+% &= (1, 0) \exp(\mathbf{S} x) (0,1)^T \nonumber\\
+% &= \exp(\mathbf{S} x)_{12} \nonumber\\
+% &= \frac{2 e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6
+%   \lambda +1}-\lambda -3\right) x}}{C}-\frac{2
+%   e^{\frac{1}{2} \left(-C-\lambda -3\right)
+%   x}}{C} \label{eq:t_density}
+% \end{align}
+
+\begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/complete_2_contact_phase_densities.png}
    \caption{Density functions for $T_{C_2}$ for $\lambda = 1, 2, 3, 4$ on the contact process with two nodes}
@@ -1078,10 +1233,9 @@ f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{s} \nonumber\\
 \end{figure}
 
 In Figure \ref{fig:contact_2_phase_densities} we plot the density from Equation \ref{eq:t_density} for $\lambda = 1, 2, 3, 4$.
-We use the same values of $\lambda$ for all of the phase-type distribution so that we can compare the rate at which they approaches infinity in distribution.
 It is clear that as $\lambda \to \infty$ then $T_{C_2}$ approaches infinity in distribution.
 For all of the more complex models we will use numerical methods for approximating the phase-type distribution rather than the symbolic algebra method.
-We sample and simulate from the phase-type distributions using the \textit{actuar} R package from \cite{actuar2008}.
+We sample and simulate from the phase-type distributions using the R package from \cite{actuar2008}.
 
 \subsubsection{Limiting Distribution}
 
@@ -1093,13 +1247,14 @@ Then $\frac{2}{1 + \lambda} T_{C_2}$ approaches an exponential distribution with
 \begin{proof}
 Let $X_1, X_2, \ldots$ be i.i.d random variables with
 $X_i \sim \exp(2)$ and independent of i.i.d random variables $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$ and
-$N$ geometrically distributed (supported on $\{1,2,\ldots\}$) with parameter $\frac{1}{1 + \lambda}$.
+$N$ geometrically distributed (supported on $\{1,2,\ldots\}$) with parameter $\frac{1}{1 + \lambda}$, independent of $(X_n)$ and $(Y_n)$.
 
 $T_{C_2}$ is expressed as a random sum
 $$
 T_{C_2} = \sum_{i = 1}^N (X_i + Y_i)
 $$
 
+By Theorem \ref{thm:geom_sum_exp}, we have that
 \begin{align*}
     \sum_{i = 1}^N X_i &\sim \exp\left( \frac{2}{1 + \lambda} \right)\\
     \sum_{i = 1}^N Y_i &\sim \exp( 1 )
@@ -1110,12 +1265,14 @@ Using the scaling property of exponential random variables (Theorem \ref{thm:exp
     \frac{2}{1 + \lambda}\sum_{i = 1}^N X_i &\sim \exp( 1 )\\
     \frac{2}{1 + \lambda}\sum_{i = 1}^N Y_i &\sim \exp \left( \frac{1 + \lambda}{2} \right)
 \end{align*}
-As $\lambda \to \infty$, then $\frac{2}{1 + \lambda} T_{C_2} \Rightarrow \exp(1)$
+
+Let $W_\lambda \sim \exp \left( \frac{1 + \lambda}{2} \right)$ with $F_\lambda$ the distribution function, that is $F_\lambda(x) = 1 - \exp(-(1 + \lambda)/2 x)$.
+As $\lambda \to \infty$, then $F_\lambda(x) \to 1$ for $x \in [x, \infty)$, so $W_n \Rightarrow 0$.
+Then by Theorem \ref{thm:conv_together_lemma}, we have that $\frac{2}{1 + \lambda} T_{C_2} \Rightarrow \exp(1)$.
 \end{proof}
 
-
 \subsection{Three node contact process \texorpdfstring{$C_3$}{C3}}
-Now we look at the three node contract process on a complete graph.
+Now we look at the three node contact process on a complete graph.
 Again we project the states to the number of ones in the process which will be a Markov chain by Theorem \ref{thm:mc_projection}, as shown in Figure \ref{fig:mc_three_contact}.
 
 \begin{equation}
@@ -1133,11 +1290,11 @@ Q_{C_3} = \begin{blockarray}{ccccc}
 \end{equation}
 
 Now let $N_1, N_2, N_3$ be the number of visits to states 1, 2, and 3, respectively.
-Let $X_i^{(1)} \sim \exp(1 + 2\lambda)$ be i.i.d random variables, $X_i^{(2)} \sim \exp(2 + 2\lambda)$ i.i.d and $X_i^{(3)} \sim \exp(3)$ i.d.d.
+Let $X_i^{(1)} \sim \exp(1 + 2\lambda)$ be i.i.d random variables, $X_i^{(2)} \sim \exp(2 + 2\lambda)$ i.i.d and $X_i^{(3)} \sim \exp(3)$ i.i.d.
 Note that $N_1, N_2, N_3$ are not independent of each other, but for each $i$ each state is independent of the waiting times at the state.
-We can again represent $T_{C_3}$ as random sums
+We can again represent $T_{C_3}$ as a random sum
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
    \begin{tikzpicture}[start chain = going right,
    -Triangle, every loop/.append style = {-Triangle}]
@@ -1146,7 +1303,7 @@ We can again represent $T_{C_3}$ as random sums
    \node[state, on chain]  (1) {1};
    \node[state, on chain]  (0) {0};
 
-   \draw (3) edge[bend left] node[yshift=3mm]{rate $3$} (2);
+   \draw (3) edge[bend left] node[yshift=3mm]{$3$} (2);
    \draw (2) edge[bend left] node[yshift=-3mm]{$2\lambda$}(3);
    %
    \draw (2) edge[bend left] node[yshift=3mm]{$2$} (1);
@@ -1181,7 +1338,7 @@ P_{C_3} = \begin{blockarray}{ccccc}
 \end{blockarray}
 $$
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
    \begin{tikzpicture}[start chain = going right,
    -Triangle, every loop/.append style = {-Triangle}]
@@ -1229,7 +1386,7 @@ $$
     \begin{block}{c|ccc}
     \cline{2-4}
     3 & 2 \lambda^2 + \lambda + 1 & (\lambda + 1) (2 \lambda + 1) &  2 \lambda + 1\\
-    2 & \lambda (2 \lambda + 1 & (\lambda + 1)(2 \lambda + 1) & 2 \lambda + 1\\
+    2 & \lambda (2 \lambda + 1) & (\lambda + 1)(2 \lambda + 1) & 2 \lambda + 1\\
     1 & 2 \lambda^2 & 2 \lambda ( \lambda + 1) &  2\lambda + 1\\
     \end{block}
     \end{blockarray}
@@ -1261,7 +1418,7 @@ It then follow that
 The exact distribution of $T_{C_3}$ for a fixed $\lambda$ is computed numerically.
 We plot the density functions for $T_{C_3}$ for $\lambda = 1, 2, 3, 4$ on the complete three node contact process.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/complete_3_contact_phase_densities.png}
    \caption{Density functions for $T_{C_3}$ for $\lambda = 1, 2, 3, 4$ on the complete three node contact process}
@@ -1300,28 +1457,28 @@ Multiplying $T_{C_3}$ by $\frac{3}{2 \lambda^2 + \lambda + 1}$ and using Theorem
     \right) \Rightarrow 0 \quad \text{as } \lambda \to \infty
 \end{align*}
 
-So we have that $\frac{3}{2 \lambda^2 + \lambda + 1} T_{C_3}$ converges in distribution to an exponential distribution with rate 1.
+Since we have a sum of three random variables, two of which approach 0 in distribution, we can use Theorem \ref{thm:conv_together_lemma} to conclude that  $\frac{3}{2 \lambda^2 + \lambda + 1} T_{C_3}$ converges in distribution to an exponential distribution with rate 1.
 \end{proof}
 
 \subsection{N node complete graph contact process \texorpdfstring{$C_n$}{Cn}}
 
-\begin{figure}[h]
-    \centering
-    \begin{tikzpicture}
-      \graph[circular placement, radius=4cm,
-         empty nodes, nodes={circle,draw}] {
-    \foreach \x in {a,...,z} {
-      \foreach \y in {\x,...,f} {
-        \x -- \y;
-      };
-    };
-    };
-    \end{tikzpicture}
-    \caption{Complete graph N node contact process}
-    \label{fig:n_nodes_contact}
-\end{figure}
+% \begin{figure}[H]
+%     \centering
+%     \begin{tikzpicture}
+%       \graph[circular placement, radius=4cm,
+%          empty nodes, nodes={circle,draw}] {
+%     \foreach \x in {a,...,z} {
+%       \foreach \y in {\x,...,f} {
+%         \x -- \y;
+%       };
+%     };
+%     };
+%     \end{tikzpicture}
+%     \caption{Complete graph N node contact process}
+%     \label{fig:n_nodes_contact}
+% \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
    \begin{tikzpicture}[
    start chain = going right,
@@ -1335,7 +1492,7 @@ So we have that $\frac{3}{2 \lambda^2 + \lambda + 1} T_{C_3}$ converges in distr
    \node[state, on chain]  (1) {1};
    \node[state, on chain]  (0) {0};
 
-   \draw (n) edge[bend left] node[yshift=3mm]{rate $n$} (n1);
+   \draw (n) edge[bend left] node[yshift=3mm]{$n$} (n1);
    \draw (n1) edge[bend left] node[yshift=-3mm]{$1 (n - 1) \lambda$}(n);
 
    \draw (n1) edge[bend left] node[yshift=3mm]{$n-1$} (n2);
@@ -1458,7 +1615,7 @@ and $2_s$ are nodes where the two ones do not have an edge between them.
     %\label{fig:_nodes_contact}
 %\end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
   \begin{tikzpicture}[start chain = going right,
    -Triangle, every loop/.append style = {-Triangle}]
@@ -1566,7 +1723,7 @@ Q_{S_4} =
 
 In Figure \ref{fig:contact_4_cycle_phase_densities} we plot the density functions for $T_{S_4}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/cycle_4_contact_phase_densities.png}
    \caption{Density functions for $T_{S_4}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle}
@@ -1581,7 +1738,7 @@ The two node contact process on the lattice is identical to the complete graph.
 We can project the three node contact process with two edges onto a new Markov chain by Theorem \ref{thm:mc_projection} by associating states 110 and 011 as well as 100 and 001.
 For the three node contact process with two edges, we have a transition graph shown in Figure \ref{fig:three_node_contact_lattice_states}.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
    %\begin{tikzpicture}[auto, node distance=2cm, every loop/.style={-Triangle}, thick,main node/.style={circle,draw}]
   \begin{tikzpicture}[start chain = going right,
@@ -1638,7 +1795,7 @@ Q_{L_3} =
 
 In Figure \ref{fig:lattice_3_contact_phase_densities} we plot the density functions for $T_{L_3}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/lattice_3_contact_phase_densities.png}
    \caption{Density functions for $T_{L_3}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle}
@@ -1652,14 +1809,14 @@ Also, $S_3$ is the same as $C_3$.
 In Figure \ref{fig:ev_phase_comparison_3.png} we compare of expected values of $T_{C_2}$, $T_{C_3}$, and $T_{L_3}$.
 Since $T_{S_4}$ is much larger than $T_{C_2}$, $T_{C_3}$, and $T_{L_3}$ we include it separately in Figure \ref{fig:ev_phase_comparison_4.png}.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/ev_phase_comparison_3.png}
    \caption{Comparison of expected values of $T_{C_2}$, $T_{C_3}$, and $T_{L_3}$}
   \label{fig:ev_phase_comparison_3.png}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/ev_phase_comparison_4.png}
    \caption{Comparison of expected values of $T_{C_2}$, $T_{C_3}$, $T_{L_3}$, and $T_{S_4}$}
@@ -1671,7 +1828,8 @@ In this section we describe how to simulate the linear voter model on the two-di
 By nature of the simulation we have to restrict $\Z^2$ to some finite subset of $\Z^2$.
 A new issue then arises with the boundaries.
 To capture the finite behavior of the system it makes sense to just keep the boundaries nodes with a reduced number of edges.
-If we want to simulate the behavior on $\Z^2$ then it is better to use \textit{periodic boundary conditions} where the boundaries wrap around to the other side (making the graph a torus).
+If we want to simulate the behavior on $\Z^2$ then it is better to use \textit{periodic boundary conditions} where we let the state space be $\{0,1\}^{(\Z/n)^2}$ where $n$ is some finite number.
+This means that each node on the graph will have exactly
 
 The dynamics of the system are that each 1 waits exponential time with rate 1 and changes to 0.
 Each 1 waits an independent exponential time with rate $\lambda$ and then places a 1 onto one of the $d$ neighbors with probability $1/2^d$.
@@ -1701,36 +1859,29 @@ q(\eta, \delta) = 0
 $$
 \end{defn}
 
-\subsection{Simulation of Linear Voter Model on \texorpdfstring{$\Z^2$}{Z2}}
-
-The behavior of the linear voter model can be described as each voter waits exponential time and then takes the opinion of one of its neighbors according to the transition probabilities.
-Assume that we are simulating on a $N \times N$ grid.
-Using the exponential scaling property, this behavior is equivalent to waiting exponential time with rate $N^2$ and selecting a voter at random and updating their opinion.
-
 In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on a $50 \times 50$ grid.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/voter_simulation_torus_50.png}
    \caption{Simulation for voter model with periodic boundary conditions on $50 \times 50$ grid.}
   \label{fig:voter_sim_torus.png}
 \end{figure}
 
-% \begin{equation}
-% P_{L_3} =
-% \begin{blockarray}{ccccccc}
-%     & 111 & 110 & 101 & 100 & 010 & 000\\
-%     \begin{block}{c|cccccc}
-%     \cline{2-7}
-%     111 & 0 &2/3 & 1/3 & 0 & 0 & 0\\
-%     110 & \frac{\lambda}{\lambda + 2} & 0 & 0 & \frac{1}{\lambda + 2} & \frac{1}{\lambda + 2} & 0\\
-%     101 & \frac{\lambda}{\lambda + 1} & 0 & 0 & \frac{1}{\lambda + 1} & 0 & 0\\
-%     100 & 0 & \frac{\lambda}{\lambda + 1} & 0 & 0 & 0 & \frac{1}{\lambda + 1}\\
-%     010 & 0 & \frac{2\lambda}{2\lambda + 1} & 0 & 0 & 0 & \frac{1}{2\lambda + 1}\\
-%     000 & 0 & 0 & 0 & 0 & 0 & 1\\
-%     \end{block}
-% \end{blockarray}
-% \end{equation}
+\begin{theorem} \cite{swart2017course}
+For $d = 1,2$ the voter model on $\Z^d$ with any initial configuration then
+$$
+\lim_{t \to \infty} P(\eta_t(x) \not = \eta_t(y)) = 0
+$$
+for all $x,y \in \Z^d$.
+This behavior is called \textbf{clustering}.
+\end{theorem}
+
+\subsection{Simulation of Linear Voter Model on \texorpdfstring{$\Z^2$}{Z2}}
+
+The behavior of the linear voter model can be described as each voter waits exponential time and then takes the opinion of one of its neighbors according to the transition probabilities.
+Assume that we are simulating on a $N \times N$ grid.
+Using the exponential scaling property, this behavior is equivalent to waiting exponential time with rate $N^2$ and selecting a voter at random and updating their opinion.
 
 \clearpage
 \bibliographystyle{plainnat}
