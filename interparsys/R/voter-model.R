@@ -1,7 +1,8 @@
 library(ggplot2)
-library(actuar)
-library(tidyr)
+#library(actuar)
+#library(tidyr)
 library(here)
+library(animation)
 
 # t <- seq(.00001, 5, length.out = 1000)
 # # lambdas <- c(1, 2, 3, 4)
@@ -30,11 +31,11 @@ library(here)
 # voter_density(df, "")
 
 
-simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_config = FALSE) {
+simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_config = FALSE, title = TRUE, animate = FALSE) {
   m <- matrix(round(runif(n^2)),n,n)
-  # Save old par settings
-  par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
-  image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = "Initial")
+
+  image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = ifelse(title, "Initial", ""))
+  if(animate) ani.record()
 
   max_time <- max(times)
   times_uniq <- sort(times)
@@ -96,8 +97,9 @@ simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_confi
 
     total_ones <- sum(m)
 
-    if (length(times_uniq) >= 1 && floor(total_time) == times_uniq[1]) {
-     image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", round(total_time)))
+    if (length(times_uniq) >= 1 && total_time >= times_uniq[1]) {
+     image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = ifelse(title, paste0("time ", round(total_time, digit = 2)), ""))
+      if(animate) ani.record()
      # Remove the image time
      times_uniq <- times_uniq[-1]
     }
@@ -106,7 +108,8 @@ simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_confi
 
   # Show the remaining plots
   for(ti in times_uniq) {
-   image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", ti))
+    image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = ifelse(title, paste0("time ", ti), ""))
+    if(animate) ani.record()
   }
 
   res <- list(
@@ -122,7 +125,22 @@ simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_confi
 
 set.seed(262)
 png(here("figures/voter_simulation_torus_50.png"))
+par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
 simulate_voter(n = 50, times = c(5,30,300))
 dev.off()
+
+
+set.seed(27)
+# Create an animation of the voter model
+ani.record(reset = TRUE)
+#img_dir <- here("gifs/voter_images/")
+#png(paste0(img_dir, "voter_sim%04d.png"))
+par(mar=c(0, 0, 0, 0))
+simulate_voter(n = 50, times = seq(0, 500, by = 1), title = FALSE, animate = TRUE)
+saveGIF(ani.replay(), movie.name = paste0(here("gifs/test.gif")))
+dev.off()
+#system(paste0("convert -delay 10 ", img_dir, "*.png test.gif"))
+#file.remove(list.files(path = img_dir, pattern=".png", full.names = TRUE))
+
 
 

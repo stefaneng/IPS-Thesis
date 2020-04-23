@@ -80,7 +80,7 @@ simulate_contact_1d <-  function(lambda = 2, space = 500, time = 400, torus=FALS
 # Each 1 waits exp(lambda) time then places this 1 on to one of the neighbors with probability 1/2^d
 #  The birth is suppressed if there is already a 1 there.
 
-simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE, init_config=c("one", "random", "all")) {
+simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE, init_config=c("one", "random", "all"), include_config = FALSE, title = TRUE) {
   if(init_config == "random") {
    m <- matrix(round(runif(n^2)),n,n)
   } else if (init_config == "all") {
@@ -95,9 +95,7 @@ simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE,
   times_uniq <- sort(times)
   times_uniq <- times_uniq[!duplicated(times_uniq)]
 
- # Save old par settings
-  par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
-  image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = "Initial")
+  image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = ifelse(title, "Initial", ""))
 
   i <- 1
   total_time <- 0
@@ -112,7 +110,7 @@ simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE,
    if(rates == 0) {
      # Show the remaining plots
      for(ti in times_uniq) {
-       image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", ti))
+       image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = ifelse(title, paste0("time ", ti), ""))
      }
     break
    }
@@ -196,8 +194,8 @@ simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE,
     m[nx, ny] <- 1
   }
 
-  if (length(times_uniq) >= 1 && floor(total_time) == times_uniq[1]) {
-    image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = paste0("time ", round(total_time)))
+  if (length(times_uniq) >= 1 && total_time >= times_uniq[1]) {
+    image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = ifelse(title, paste0("time ", round(total_time)), ""))
     # Remove the image time
     times_uniq <- times_uniq[-1]
   }
@@ -219,11 +217,13 @@ simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE,
 
 set.seed(26)
 png(here("figures/contact_simulation_torus_25.png"))
+par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
 simulate_contact(lambda = 4, n = 50, torus = TRUE, times = c(5, 10, 30), init_config = "one")
 dev.off()
 
 set.seed(26)
 png(here("figures/contact_simulation_torus_25_below_crit.png"))
+par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
 simulate_contact(lambda = 0.25, n = 50, torus = TRUE, times = c(1, 3, 10), init_config = "all")
 dev.off()
 
