@@ -55,7 +55,7 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 \newcommand{\F}{\mathcal{F}}
 \newcommand{\E}{\mathcal{E}}
 \newcommand{\M}{\mathcal{M}}
-\newcommand{\N}{\mathcal{N}}
+\newcommand{\N}{\mathbb{N}}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\Zs}{{\{0,1\}^\mathbb{Z}}}
 \newcommand{\I}{\mathcal{I}}
@@ -424,7 +424,7 @@ So $S$ is geometrically distributed with parameter $\alpha p$
 \subsubsection{Convergence}
 
 \begin{defn}[Weak convergence]
-A sequence of probability measures $(\mu_n)$ \textbf{converges weakly} to $\mu$ if
+A sequence of probability measures $(\mu_n)$ \textbf{converges weakly} to $\mu$ (notated as $\mu_n \Rightarrow \mu$) if
 $$
 \lim_{n \to \infty} \int f d\mu_n = \int f d\mu
 $$
@@ -436,14 +436,13 @@ $$
 for all $x \in \R$ that are continuous for $F$.
 \end{defn}
 
+\begin{theorem}
+$X_n \Rightarrow X$ iff $E[g(X_n)] \to E[g(X)]$ for all continuous and bounded functions $g$.
+\end{theorem}
+
 \begin{theorem}[Convergence together lemma] \label{thm:conv_together_lemma}
 If $X_n \Rightarrow X$ and $Y_n \Rightarrow c$, where $c$ is a constant, then $X_n + Y_n \Rightarrow X + c$.
 \end{theorem}
-
-\begin{proof}
-TODO
-
-\end{proof}
 
 \subsection{Markov Chains}
 
@@ -845,6 +844,14 @@ $$
 Denote $\delta_0$, $\delta_1$ be point masses on the configuration of all zeros and all ones respectively.
 \end{defn}
 
+\begin{defn}
+Let $G = (V,E)$ be a graph and $X = \{0,1\}^G$ be the state space for the contact process $(\eta_t)$.
+Then the extinction time of the process is denoted as
+$$
+\tau_{G} = \inf\{ t : \eta_t \equiv 0 \}
+$$
+\end{defn}
+
 \begin{remark}
 If the graph $S$ is finite, then the process will eventually converge to the configuration of all zeros.
 %will eventually converge weakly to $\delta_0$, the point mass on configuration of all zeros ($\eta \equiv 0$).
@@ -861,31 +868,66 @@ For a contact process on d-dimensional lattice $\Z^d$ there is a critical value 
 \end{itemize}
 \end{theorem}
 
+In the finite case, the system will eventually be $\equiv 0$ but \cite{Liggett1999} showed that for a finite subset $N^d$ of $Z^d$, then $\tau_{N^d}$ is logarithmic if $\lambda < \lambda_c(\Z^d)$, exponential if $\lambda > \lambda_c(\Z^d)$ and polynomial if $\lambda = \lambda_c(\Z^d)$.
+Later, \cite{schapira2017}, \cite{mourrat2014phase}, and \cite{Mountford2016} showed bounds for general graphs with finite vertices.
+Denote $\mathbb T^d$ as an infinite tree has exactly $d \geq 3$ edges connected to each vertex.
+There are two critical values for a contact process on $\mathbb T^d$, which we denote $\lambda_c^{(1)}(\mathbb T^d)$ and $\lambda_c^{(2)}(\mathbb T^d)$.
+See \cite{mourrat2014phase} for a complete description of what phase transitions occur at each of the critical values.
+% TODO: Describe what happens at the two critical values?
+
+\begin{theorem}[\cite{mourrat2014phase}]\label{thm:contact_finite_log}
+For any $d \in \N$ and $\lambda < \lambda_c^{(1)}(\mathbb T^d)$ there is a constant $C > 0$ such that for any graph $G$ with at least two vertices and with bounded degree less than $d$
+$$
+E[\tau_{G}] \leq C \log(|G|)
+$$
+where $|G|$ is the number of vertices of $G$.
+\end{theorem}
+
+\begin{theorem}[\cite{Mountford2016}] \label{thm:contact_finite_exp}
+For any $d \in \N$ and $\lambda > \lambda_c(\Z)$ there is a constant $k > 0$ such that for any connected graph $G$ with at least two vertices and with bounded degree less than $d$
+$$
+E[\tau_{G}] \geq \exp(k |G|)
+$$
+where $|G|$ is the number of vertices of $G$.
+\end{theorem}
+
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25.png}
-   \caption{Simulation for contact process with $\lambda = 4$ (above the critical value) and periodic boundary conditions on $50 \times 50$ grid. The initial configuration is only one node with 1.}
+   \caption{Simulation for contact process with $\lambda = 4$ and periodic boundary conditions on $50 \times 50$ grid. The initial configuration is only one node with 1.}
   \label{fig:contact_sim_torus_above_crit.png}
 \end{figure}
 
-In Figure \ref{fig:contact_sim_torus_above_crit.png} we show one realization from a simulation of the contact process with periodic boundaries on a $50 \times 50$ with $\lambda = 4 \geq \lambda_c$.
-That is, the contact process is on $\{0,1\}^{(\Z/50) \times (\Z/50)}$.
-This is contrasted with Figure \ref{fig:contact_sim_torus_below_crit.png} in which $\lambda = .25$ is smaller than the critical value.
+In Figure \ref{fig:contact_sim_torus_above_crit.png} we show one realization from a simulation of the contact process on $\{0,1\}^{(\Z/50) \times (\Z/50)}$ with $\lambda = 4 \geq \lambda_c(\Z^2)$.
+This simulation follows the behavior that the time to extinction is proportional to $\exp(50 \times 50)$.
+This is contrasted with Figure \ref{fig:contact_sim_torus_below_crit.png} in which $\lambda = .25$ is smaller than $\lambda_c(\Z^2)$.
+The behavior seen on the graph matches shows that the extinction time is proportional to $\log(50 \times 50)$.
 
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25_below_crit.png}
-   \caption{Simulation for contact process with $\lambda = 0.25$ that eventually dies out on $\{0,1\}^{(\Z/50) \times (\Z/50)}$. The initial configuration has all nodes as ones.}
+   \caption{Simulation for contact process with $\lambda = 0.25$ on $\{0,1\}^{(\Z/50) \times (\Z/50)}$. The initial configuration has all nodes as ones.}
   \label{fig:contact_sim_torus_below_crit.png}
 \end{figure}
 
 \subsection{Contact process on finite graphs}
 
 Now we look at a contact process on a finite graph.
-We look at $T_{C_2}$ (which depends on $\lambda$), the time until we reach the state zero while keeping the number of nodes fixed as $\lambda$ goes to $\infty$.
-% It is known that $T_{C_2}$ has a phase-type distribution for a fixed $\lambda$.
-As $\lambda \to \infty$ then $T_{C_2}$ will converge to infinity in distribution so we will normalize $T_{C_2}$ to understand which limiting distribution one can get.
+We look at $\tau_{C_2}$ (which depends on $\lambda$), the time until we reach the state zero while keeping the number of nodes fixed as $\lambda$ goes to $\infty$.
+% It is known that $\tau_{C_2}$ has a phase-type distribution for a fixed $\lambda$.
+As $\lambda \to \infty$ then $\tau_{C_2}$ will converge to infinity in distribution so we will normalize $\tau_{C_2}$ to understand which limiting distribution one can get. This is related to the more general results in \cite{schapira2017} for the limiting distribution of the extinction time of graphs that grow in size rather than $\lambda$.
+
+\begin{theorem}[\cite{schapira2017} Theorem 1.4]
+Let $G_n$ be a graph with $n$ vertices and $(G_n)_{n \in \N}$ with $|G_n| \to \infty$ as $n \to \infty$.
+Denote $\tau_{G_n}$ as the extinction time of the contact process on graph $G_n$.
+For any $\lambda > \lambda_c(\Z)$
+$$
+\frac{\tau_{G_n}}{E[\tau_{G_n}]} \Rightarrow \exp(1)
+$$
+\end{theorem}
+
 First we investigate the behavior for a complete graph, in which each node is connected to all other nodes and then we look at the one-dimensional lattice and cycles.
+
 
 \subsection{Two node contact process \texorpdfstring{$C_2$}{C2}}
 
@@ -965,7 +1007,7 @@ Q_{C_2} = \begin{blockarray}{cccc}
     \label{fig:discrete_mc_two_contact}
 \end{figure}
 
-Let $T_{C_2}$ be the time in which we hit 0.
+Let $\tau_{C_2}$ be the time in which we hit 0.
 The waiting time while in state 2 is exponentially distributed random variable $X$ with parameter $- q_{2} = 2$ and similarly the waiting time while in state 1 is exponentially distributed with parameter $- q_{(1,0)} = 1 + \lambda$.
 
 The embedded Markov chain for the process is the discrete-time Markov chain of the jumps in the process.
@@ -978,18 +1020,18 @@ Also, let $X_1, X_2, \ldots$ be i.i.d random variables with
 $X_i \sim \exp(2)$ for the waiting time at state 2 and independent of i.i.d random variables $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$ for the waiting time at state 1.
 The random variable $N$ is independent of both $(X_n)$ and $(Y_n)$ from Theorem \ref{thm:x_N_indep}.
 
-Now we can express $T_{C_2}$ as a random sum
+Now we can express $\tau_{C_2}$ as a random sum
 $$
-T_{C_2} = \sum_{i = 1}^N (X_i + Y_i)
+\tau_{C_2} = \sum_{i = 1}^N (X_i + Y_i)
 $$
 
 \begin{theorem}
 $$
-E[T_{C_2}] = \frac{3}{2} + \frac{\lambda}{2}
+E[\tau_{C_2}] = \frac{3}{2} + \frac{\lambda}{2}
 $$
 and
 $$
-\Var(T_{C_2}) = \frac{\lambda^2 + 6 \lambda + 5}{4}
+\Var(\tau_{C_2}) = \frac{\lambda^2 + 6 \lambda + 5}{4}
 $$
 \end{theorem}
 
@@ -1011,7 +1053,7 @@ Also since $(X_n)$ and $(Y_n)$ are independent,
 
 Since both $(X_n)$ and $(Y_n)$ are mutually independent of $N$ then by Theorem \eqref{thm:random_sum_ev},
 $$
-E[T_{C_2}] = E\left[ \sum_{i = 1}^N X_i + Y_i \right] = E[X + Y] E[N] = \frac{3 + \lambda}{2(1 + \lambda)} \cdot (1 + \lambda) = \frac{3}{2} + \frac{\lambda}{2}
+E[\tau_{C_2}] = E\left[ \sum_{i = 1}^N X_i + Y_i \right] = E[X + Y] E[N] = \frac{3 + \lambda}{2(1 + \lambda)} \cdot (1 + \lambda) = \frac{3}{2} + \frac{\lambda}{2}
 $$
 
 By Theorem \ref{thm:random_sum_var}
@@ -1030,7 +1072,7 @@ By Theorem \ref{thm:random_sum_var}
 
 \subsubsection{Phase-type distribution}
 
-The time to absorption $T_{C_2}$ has a phase-type distribution.
+The time to absorption $\tau_{C_2}$ has a phase-type distribution.
 We can decompose $Q_{C_2}$, Equation \eqref{eq:q_c_2}, as
 % $$
 % Q_{C_2} = \begin{blockarray}{cccc}
@@ -1124,7 +1166,7 @@ It follows that
 % \end{bmatrix}
 % \end{align*}
 
-The density of $T_{C_2}$ is defined as
+The density of $\tau_{C_2}$ is defined as
 \begin{align*}
  f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0 \nonumber\\
  &= (1, 0) \exp(\mathbf{S} x) (0,1)^T \\
@@ -1213,7 +1255,7 @@ Finally plugging back in $C$ we get
 %   -3\right) x}}{2 C}
 % \end{align*}
 
-% Then the density of $T_{C_2}$ is defined as
+% Then the density of $\tau_{C_2}$ is defined as
 % \begin{align}
 % f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0 \nonumber\\
 % &= (1, 0) \exp(\mathbf{S} x) (0,1)^T \nonumber\\
@@ -1227,20 +1269,20 @@ Finally plugging back in $C$ we get
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/complete_2_contact_phase_densities.png}
-   \caption{Density functions for $T_{C_2}$ for $\lambda = 1, 2, 3, 4$ on the contact process with two nodes}
+   \caption{Density functions for $\tau_{C_2}$ for $\lambda = 1, 2, 3, 4$ on the contact process with two nodes}
   \label{fig:contact_2_phase_densities}
 \end{figure}
 
 In Figure \ref{fig:contact_2_phase_densities} we plot the density from Equation \ref{eq:t_density} for $\lambda = 1, 2, 3, 4$.
-It is clear that as $\lambda \to \infty$ then $T_{C_2}$ approaches infinity in distribution.
+It is clear that as $\lambda \to \infty$ then $\tau_{C_2}$ approaches infinity in distribution.
 For all of the more complex models we will use numerical methods for approximating the phase-type distribution rather than the symbolic algebra method.
 We sample and simulate from the phase-type distributions using the R package from \cite{actuar2008}.
 
 \subsubsection{Limiting Distribution}
 
 \begin{theorem}
-Let $T_{C_2}$ be the time in which we hit $(0,0)$.
-Then $\frac{2}{1 + \lambda} T_{C_2}$ approaches an exponential distribution with rate 1 in distribution as $\lambda \to \infty$.
+Let $\tau_{C_2}$ be the time in which we hit $(0,0)$.
+Then $\frac{2}{1 + \lambda} \tau_{C_2}$ approaches an exponential distribution with rate 1 in distribution as $\lambda \to \infty$.
 \end{theorem}
 
 \begin{proof}
@@ -1248,9 +1290,9 @@ Let $X_1, X_2, \ldots$ be i.i.d random variables with
 $X_i \sim \exp(2)$ and independent of i.i.d random variables $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$ and
 $N$ geometrically distributed (supported on $\{1,2,\ldots\}$) with parameter $\frac{1}{1 + \lambda}$, independent of $(X_n)$ and $(Y_n)$.
 
-$T_{C_2}$ is expressed as a random sum
+$\tau_{C_2}$ is expressed as a random sum
 $$
-T_{C_2} = \sum_{i = 1}^N (X_i + Y_i)
+\tau_{C_2} = \sum_{i = 1}^N (X_i + Y_i)
 $$
 
 By Theorem \ref{thm:geom_sum_exp}, we have that
@@ -1267,7 +1309,7 @@ Using the scaling property of exponential random variables (Theorem \ref{thm:exp
 
 Let $W_\lambda \sim \exp \left( \frac{1 + \lambda}{2} \right)$ with $F_\lambda$ the distribution function, that is $F_\lambda(x) = 1 - \exp(-(1 + \lambda)/2 x)$.
 As $\lambda \to \infty$, then $F_\lambda(x) \to 1$ for $x \in [x, \infty)$, so $W_n \Rightarrow 0$.
-Then by Theorem \ref{thm:conv_together_lemma}, we have that $\frac{2}{1 + \lambda} T_{C_2} \Rightarrow \exp(1)$.
+Then by Theorem \ref{thm:conv_together_lemma}, we have that $\frac{2}{1 + \lambda} \tau_{C_2} \Rightarrow \exp(1)$.
 \end{proof}
 
 \subsection{Three node contact process \texorpdfstring{$C_3$}{C3}}
@@ -1291,7 +1333,7 @@ Q_{C_3} = \begin{blockarray}{ccccc}
 Now let $N_1, N_2, N_3$ be the number of visits to states 1, 2, and 3, respectively.
 Let $X_i^{(1)} \sim \exp(1 + 2\lambda)$ be i.i.d random variables, $X_i^{(2)} \sim \exp(2 + 2\lambda)$ i.i.d and $X_i^{(3)} \sim \exp(3)$ i.i.d.
 Note that $N_1, N_2, N_3$ are not independent of each other, but for each $i$ each state is independent of the waiting times at the state.
-We can again represent $T_{C_3}$ as a random sum
+We can again represent $\tau_{C_3}$ as a random sum
 
 \begin{figure}[H]
     \centering
@@ -1316,7 +1358,7 @@ We can again represent $T_{C_3}$ as a random sum
 \end{figure}
 
 \begin{equation}
-    T_{C_3} = \sum_{i = 1}^{N_3} X_i^{(3)} + \sum_{i = 1}^{N_2} X_i^{(2)} + \sum_{i = 1}^{N_1} X_i^{(1)}
+    \tau_{C_3} = \sum_{i = 1}^{N_3} X_i^{(3)} + \sum_{i = 1}^{N_2} X_i^{(2)} + \sum_{i = 1}^{N_1} X_i^{(1)}
 \end{equation}
 
 Then the discrete time Markov chain for this process can be expressed in canonical form as
@@ -1407,28 +1449,28 @@ Since $N_1, N_2, N_3$ are all geometrically distributed and are completely deter
 
 It then follow that
 \begin{align*}
-        E[T_{C_3}] &= E[N_3] E[X_i^{(3)}] + E[N_2] E[X_i^{(2)}] + E[N_1] E[X_i^{(1)}]\\
+        E[\tau_{C_3}] &= E[N_3] E[X_i^{(3)}] + E[N_2] E[X_i^{(2)}] + E[N_1] E[X_i^{(1)}]\\
         &= \frac{\lambda^2 + \lambda + 1}{3} + \frac{(\lambda + 1)(2 \lambda + 1)}{2 (\lambda + 1)} + \frac{1 + 2\lambda}{1 + 2 \lambda}\\
         &= \frac{1}{6}(4 \lambda^2 + 8 \lambda + 11)
 \end{align*}
 
 \subsubsection{Phase-type Distribution}
 
-The exact distribution of $T_{C_3}$ for a fixed $\lambda$ is computed numerically.
-We plot the density functions for $T_{C_3}$ for $\lambda = 1, 2, 3, 4$ on the complete three node contact process.
+The exact distribution of $\tau_{C_3}$ for a fixed $\lambda$ is computed numerically.
+We plot the density functions for $\tau_{C_3}$ for $\lambda = 1, 2, 3, 4$ on the complete three node contact process.
 
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/complete_3_contact_phase_densities.png}
-   \caption{Density functions for $T_{C_3}$ for $\lambda = 1, 2, 3, 4$ on the complete three node contact process}
+   \caption{Density functions for $\tau_{C_3}$ for $\lambda = 1, 2, 3, 4$ on the complete three node contact process}
   \label{fig:contact_3_phase_densities}
 \end{figure}
 
 \subsubsection{Limiting Distribution}
 
 \begin{theorem}
-Let $T_{C_3}$ be the time in which we hit 0 in the three node complete contact process.
-Then $\frac{3}{2 \lambda^2 + \lambda + 1} T_{C_3}$ converges in distribution to an exponential distribution with rate 1.
+Let $\tau_{C_3}$ be the time in which we hit 0 in the three node complete contact process.
+Then $\frac{3}{2 \lambda^2 + \lambda + 1} \tau_{C_3}$ converges in distribution to an exponential distribution with rate 1.
 \end{theorem}
 
 \begin{proof}
@@ -1443,7 +1485,7 @@ By Theorem \eqref{thm:geom_sum_exp}, we have that
     \sum_{i = 1}^{N_1} X_i^{(1)} &\sim \exp\left(\frac{1 + 2\lambda}{1 + 2\lambda}\right)
 \end{align*}
 
-Multiplying $T_{C_3}$ by $\frac{3}{2 \lambda^2 + \lambda + 1}$ and using Theorem \eqref{thm:exp_scaling}, we get
+Multiplying $\tau_{C_3}$ by $\frac{3}{2 \lambda^2 + \lambda + 1}$ and using Theorem \eqref{thm:exp_scaling}, we get
 \begin{align*}
     \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_3} X_i^{(3)} &\sim \exp\left(
         1
@@ -1456,7 +1498,7 @@ Multiplying $T_{C_3}$ by $\frac{3}{2 \lambda^2 + \lambda + 1}$ and using Theorem
     \right) \Rightarrow 0 \quad \text{as } \lambda \to \infty
 \end{align*}
 
-Since we have a sum of three random variables, two of which approach 0 in distribution, we can use Theorem \ref{thm:conv_together_lemma} to conclude that  $\frac{3}{2 \lambda^2 + \lambda + 1} T_{C_3}$ converges in distribution to an exponential distribution with rate 1.
+Since we have a sum of three random variables, two of which approach 0 in distribution, we can use Theorem \ref{thm:conv_together_lemma} to conclude that  $\frac{3}{2 \lambda^2 + \lambda + 1} \tau_{C_3}$ converges in distribution to an exponential distribution with rate 1.
 \end{proof}
 
 \subsection{N node complete graph contact process \texorpdfstring{$C_n$}{Cn}}
@@ -1515,13 +1557,13 @@ Note that for $i \in \{1, n - 1\} $ nodes that have a state of one, we have that
 Thus, a total rate of $i (n - i) \lambda$.
 The rate of going state with $i - 1$ ones is $i$ since we have $i$ nodes that have a potential to switch to zero, each with a rate of one.
 
-Let $T_{C_n}$ be the time until we reach state zero.
+Let $\tau_{C_n}$ be the time until we reach state zero.
 Now let $N_1, N_2, \ldots, N_m$ be the number of visits to states $1, 2, \ldots, m$ respectively.
 Let $X_i^{(n)} \sim \exp(n)$ be i.i.d random variables, $X_i^{(j)} \sim \exp(n - i + i(n - i)\lambda)$ for each $j \in \{1, \ldots, n-1\}$.
-We can again represent $T_{C_n}$ as random sums
+We can again represent $\tau_{C_n}$ as random sums
 
 \begin{equation}\label{eq:wait_contact_sum}
-    T_{C_n} = \sum_{i = 1}^{N_n} X_i^{(n)} + \sum_{i = 1}^{N_{n - 1}} X_i^{(n - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
+    \tau_{C_n} = \sum_{i = 1}^{N_n} X_i^{(n)} + \sum_{i = 1}^{N_{n - 1}} X_i^{(n - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
 \end{equation}
 
 Since we are concerned with the limiting distribution we can instead focus on the rates up to a constant
@@ -1559,8 +1601,8 @@ Then when $k = n$ case we note that $N_n \leq N_{n - 1}$ so that $E[N_{n}{(n)}] 
 \end{proof}
 
 \begin{theorem}
-Let $T_{C_n}$ be the waiting time until we reach state 1 in the $n$ node complete contact process.
-The limiting distribution of $E[N_{n-1}^{(n)}]^{-1} \cdot T_{C_n}$ is an exponential distribution with parameter 1.
+Let $\tau_{C_n}$ be the waiting time until we reach state 1 in the $n$ node complete contact process.
+The limiting distribution of $E[N_{n-1}^{(n)}]^{-1} \cdot \tau_{C_n}$ is an exponential distribution with parameter 1.
 \end{theorem}
 
 \begin{proof}
@@ -1720,12 +1762,12 @@ Q_{S_4} =
 
 \subsubsection{Phase-type Distribution}
 
-In Figure \ref{fig:contact_4_cycle_phase_densities} we plot the density functions for $T_{S_4}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle.
+In Figure \ref{fig:contact_4_cycle_phase_densities} we plot the density functions for $\tau_{S_4}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle.
 
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/cycle_4_contact_phase_densities.png}
-   \caption{Density functions for $T_{S_4}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle}
+   \caption{Density functions for $\tau_{S_4}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle}
   \label{fig:contact_4_cycle_phase_densities}
 \end{figure}
 
@@ -1792,12 +1834,12 @@ Q_{L_3} =
 
 \subsubsection{Phase-type Distribution}
 
-In Figure \ref{fig:lattice_3_contact_phase_densities} we plot the density functions for $T_{L_3}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle.
+In Figure \ref{fig:lattice_3_contact_phase_densities} we plot the density functions for $\tau_{L_3}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle.
 
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/lattice_3_contact_phase_densities.png}
-   \caption{Density functions for $T_{L_3}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle}
+   \caption{Density functions for $\tau_{L_3}$ for $\lambda = 1, 2, 3, 4$ on the four node contact process on a cycle}
   \label{fig:lattice_3_contact_phase_densities}
 \end{figure}
 
@@ -1805,20 +1847,20 @@ In Figure \ref{fig:lattice_3_contact_phase_densities} we plot the density functi
 
 All of the graph configurations are identical when we have two nodes.
 Also, $S_3$ is the same as $C_3$.
-In Figure \ref{fig:ev_phase_comparison_3.png} we compare of expected values of $T_{C_2}$, $T_{C_3}$, and $T_{L_3}$.
-Since $T_{S_4}$ is much larger than $T_{C_2}$, $T_{C_3}$, and $T_{L_3}$ we include it separately in Figure \ref{fig:ev_phase_comparison_4.png}.
+In Figure \ref{fig:ev_phase_comparison_3.png} we compare of expected values of $\tau_{C_2}$, $\tau_{C_3}$, and $\tau_{L_3}$.
+Since $\tau_{S_4}$ is much larger than $\tau_{C_2}$, $\tau_{C_3}$, and $\tau_{L_3}$ we include it separately in Figure \ref{fig:ev_phase_comparison_4.png}.
 
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/ev_phase_comparison_3.png}
-   \caption{Comparison of expected values of $T_{C_2}$, $T_{C_3}$, and $T_{L_3}$}
+   \caption{Comparison of expected values of $\tau_{C_2}$, $\tau_{C_3}$, and $\tau_{L_3}$}
   \label{fig:ev_phase_comparison_3.png}
 \end{figure}
 
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/ev_phase_comparison_4.png}
-   \caption{Comparison of expected values of $T_{C_2}$, $T_{C_3}$, $T_{L_3}$, and $T_{S_4}$}
+   \caption{Comparison of expected values of $\tau_{C_2}$, $\tau_{C_3}$, $\tau_{L_3}$, and $\tau_{S_4}$}
   \label{fig:ev_phase_comparison_4.png}
 \end{figure}
 
@@ -1867,7 +1909,7 @@ In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulatio
   \label{fig:voter_sim_torus.png}
 \end{figure}
 
-\begin{theorem} \cite{swart2017course}
+\begin{theorem}[\cite{Liggett2002}]
 For $d = 1,2$ the voter model on $\Z^d$ with any initial configuration then
 $$
 \lim_{t \to \infty} P(\eta_t(x) \not = \eta_t(y)) = 0
