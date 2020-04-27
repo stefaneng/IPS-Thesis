@@ -1316,6 +1316,8 @@ Then by Theorem \ref{thm:conv_together_lemma}, we have that $\frac{2}{1 + \lambd
 Now we look at the three node contact process on a complete graph.
 Again we project the states to the number of ones in the process which will be a Markov chain by Theorem \ref{thm:mc_projection}, as shown in Figure \ref{fig:mc_three_contact}.
 
+% {{-3x, 3x, 0}, {2\[Lambda] x, -(2 + 2 \[Lambda]) x, 2x}, {0, 2\[Lambda]x, -(1 + 2\[Lambda])x}}
+% Computing the matrix exponential is crazy. Better to leave numeric.
 \begin{equation}
 Q_{C_3} = \begin{blockarray}{ccccc}
     & 3 & 2 & 1 & 0\\
@@ -1623,6 +1625,8 @@ Now we look at the finite contact process with a cycle (circle) configuration.
 That is, each node has an edge with exactly two other nodes.
 For the two and three node case the graph is identical to the complete graph.
 
+% TODO: Maybe draw tikz graph of the cycle?
+
 \subsubsection{Four node cycle \texorpdfstring{$S_4$}{S4}}
 We have $2^4 = 16$ possible configurations with four nodes.
 We can combine some of these states which are equivalent under the contact process.
@@ -1670,7 +1674,7 @@ and $2_s$ are nodes where the two ones do not have an edge between them.
    \node[state, on chain]  (0) [right of=1]  {0};
 
 
-   \draw (4) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{rate $4$} (3);
+   \draw (4) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{$4$} (3);
    \draw (3) edge [] node[yshift=-2mm, xshift=1.5mm]{$2 \lambda$} (4);
 
     \draw (3) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{$2$} (2t);
@@ -1773,6 +1777,9 @@ In Figure \ref{fig:contact_4_cycle_phase_densities} we plot the density function
 
 \subsection{Finite contact process on 1D lattice}
 
+Now we look at a contact process on a finite subset of a 1-dimensional lattice.
+That is, two nodes will have exactly one edge while the rest will have two edges.
+This is in contrast to the cycle which has exactly two edges for each node.
 The two node contact process on the lattice is identical to the complete graph.
 
 \subsubsection{Three node contact process \texorpdfstring{$L_3$}{L3}}
@@ -1794,7 +1801,7 @@ For the three node contact process with two edges, we have a transition graph sh
    \node[state, on chain]  (000) [below right of=010]  {000};
 
 
-   \draw (111) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{rate $2$} (110);
+   \draw (111) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{$2$} (110);
    \draw (110) edge [] node[yshift=-2mm, xshift=1.5mm]{$\lambda$} (111);
 
    \draw (111) edge [bend right] node[yshift=-3mm]{$1$} (101);
@@ -1880,9 +1887,9 @@ If there already is a 1 at this spot then nothing happens.
 \section{Voter Model}
 
 \begin{defn}[Voter Model] \cite{Liggett2002}
-Let $S$ be the state space and $P$ be the transition probability matrix for a Markov chain on $S$.
-Then $\Omega = \{0,1\}^S$ is the state space for voter model which is a continuous-time Markov chain.
-For $\eta \in \Omega$ denote $\eta(x)$ as the value of the node $x \in S$ on the configuration $\eta$.
+Let $\Z^d$ be the state space and $P$ be the transition probability matrix for a Markov chain on $S$.
+Then $\Omega = \{0,1\}^{\Z^d}$ is the state space for voter model which is a continuous-time Markov chain.
+For $\eta \in \Omega$ denote $\eta(x)$ as the value of the node $x \in \Z^d$ on the configuration $\eta$.
 Let $\eta_x$ be the configuration from changing the value of $\eta$ at the site $x$. That is,
 $$
 \eta_x(y) = \begin{cases}
@@ -1898,7 +1905,26 @@ Thus, for any $\eta, \delta \in \Omega$ that differ by more than one sites,
 $$
 q(\eta, \delta) = 0
 $$
+
+In general we assume that on $Z^d$ then $P(x,y) = P(0, x - y)$. Where $P(x- y) = \frac{1}{2d}$ if $x$ and $y$ are adjacent and $P(x-y) = 0$ otherwise.
+
+The transition rates have the following properties:
+\begin{enumerate}
+    \item $q(\eta, \eta_x) = 0$ for each $x \in \Z^d$ if $\eta \equiv 0$ or $\eta \equiv 1$
+    \item $q(\eta, \eta_x) = q(\zeta, \zeta_x)$ for every $x \in \Z^d$ if $\eta(y) + \zeta(y) = 1$ for all $y \in \Z^d$. That is, the dynamics of the system are not changed by interchanging 1 and 0.
+    \item $q(\eta, \eta_x) \leq q(\zeta, \zeta_x)$ if $\eta \leq \zeta$ and $\eta(x) = \zeta(x) = 0$
+    \item $q(\eta, \eta_x)$ is invariant under shifts in $\Z^d$.
+\end{enumerate}
 \end{defn}
+
+\begin{theorem}[\cite{Liggett1999}]
+For $d = 1,2$ the voter model on $\Z^d$ with any initial configuration then
+$$
+\lim_{t \to \infty} P(\eta_t(x) \not = \eta_t(y)) = 0
+$$
+for all $x,y \in \Z^d$.
+This behavior is called \textbf{clustering}.
+\end{theorem}
 
 In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on a $50 \times 50$ grid.
 
@@ -1909,14 +1935,13 @@ In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulatio
   \label{fig:voter_sim_torus.png}
 \end{figure}
 
-\begin{theorem}[\cite{Liggett2002}]
-For $d = 1,2$ the voter model on $\Z^d$ with any initial configuration then
-$$
-\lim_{t \to \infty} P(\eta_t(x) \not = \eta_t(y)) = 0
-$$
-for all $x,y \in \Z^d$.
-This behavior is called \textbf{clustering}.
-\end{theorem}
+\subsection{Finite Linear Voter Model}
+
+\subsubsection{Finite Linear Voter Model on cycle}
+We will now look at a linear voter model on a finite cycle.
+That is, for a
+
+% Is it possible that we can use Burnside Polya counting (group actions) to show how many different distinct cycle configurations we get?
 
 \subsection{Simulation of Linear Voter Model on \texorpdfstring{$\Z^2$}{Z2}}
 
