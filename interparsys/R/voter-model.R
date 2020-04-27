@@ -1,35 +1,75 @@
 library(ggplot2)
 #library(actuar)
-#library(tidyr)
+library(tidyr)
 library(here)
 library(animation)
 
-# t <- seq(.00001, 5, length.out = 1000)
-# # lambdas <- c(1, 2, 3, 4)
-# pi3 <- c(1/3, 1/3, 1/3)
-# # pi3 <- c(1, 0, 0)
-#
-# Q <- matrix(c(
-#   -4/3, 1/3, 1/3,
-#   1/3, -4/3, 1/3,
-#   1/3, 1/3, -4/3
-# ), byrow = TRUE, nrow = 3)
-#
-# df <- data.frame(t = t, ft = dphtype(t, pi3, Q))
-#
-#
-# voter_density <- function(df, title) {
-#  ggplot(df) +
-#   geom_line(aes(x = t, y = ft)) +
-#   labs(title = title) +
-#   ylab("") +
-#   xlab("time") +
-#   theme_minimal(base_size = 18) +
-#   theme(panel.spacing = unit(2, "lines"))
-# }
-#
-# voter_density(df, "")
+simulate_voter_1d <- function(n = 50, max_iter = 1e4, torus=TRUE) {
+  # Initial state
+  m <- round(runif(n))
+  # History of the voter model
+  res <- matrix(0, ncol = n, nrow = max_iter)
 
+  total_time <- 0
+  i <- 1
+  total_ones <- sum(m)
+  # Keep track of index in each parition
+  while(i <= max_iter && total_ones > 0 && total_ones < n) {
+    # sample a random point
+    s <- sample(1:n, 1)
+
+    wait_time <- rexp(1, rate = n)
+    total_time <- total_time + wait_time
+
+    # Get the neighbors opinions
+    neighbor_ones <- 0
+    if (torus) {
+      # Each node always has 2 neighbors with periodic boundary conditions
+      neighbors <- 2
+      left <- ifelse(s - 1 == 0, n, s - 1)
+      # Wrap around right side
+      right <- ifelse(s + 1 > n, 1, s + 1)
+
+      # Count all the neighbors that have 1
+      neighbor_ones <- m[left] + m[right]
+    } else {
+      neighbors <- 0
+
+      if(s - 1 > 0) {
+        neighbors <- neighbors + 1
+        neighbor_ones <- neighbor_ones + m[s - 1, y]
+      }
+      if(s + 1 <= n) {
+        neighbors <- neighbors + 1
+        neighbor_ones <- neighbor_ones + m[s + 1, y]
+      }
+    }
+
+    # Choose 1 or 0 based on neighbors
+    p <- neighbor_ones / neighbors
+    m[s] <- as.integer(runif(1) < p)
+
+    total_ones <- sum(m)
+    # Save the state history
+    res[i,] <- m
+    i <- i + 1
+  }
+
+  list(
+    # Remove the excess rows
+    res = res[1:min(i - 1, max_iter),],
+    time = total_time
+  )
+}
+
+plot_1d <- function(n = 50, max_iter = 1e4, ...) {
+  res <- simulate_voter_1d(n, max_iter, ...)
+  image(t(res$res), col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), axes = FALSE, xlab = "Space", ylab = "Time")
+
+  at <- seq(0, 1, length.out = 6)
+  axis(1, at = at, labels = seq(from = 0, to = n, length.out = length(at)))
+  axis(2, at = at, labels = round(seq(from = 0, to = res$time, length.out = length(at))))
+}
 
 simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_config = FALSE, title = TRUE, animate = FALSE) {
   m <- matrix(round(runif(n^2)),n,n)
@@ -46,7 +86,7 @@ simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_confi
   i <- 1
   total_ones <- sum(m)
   # Keep track of index in each parition
-  while(total_time <= max_time && (total_ones > 0 || total_ones == n^2)) {
+  while(total_time <= max_time && (total_ones > 0 || total_ones < n^2)) {
     # sample a random point on the grid
     s <- sample(1:n^2, 1)
     x <- ifelse(s %% n == 0, n, s %% n)
@@ -98,7 +138,7 @@ simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_confi
     total_ones <- sum(m)
 
     if (length(times_uniq) >= 1 && total_time >= times_uniq[1]) {
-     image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = ifelse(title, paste0("time ", round(total_time, digit = 2)), ""))
+     image(m, axes=FALSE, col = c("#FFFFFF", "#000000"), breaks = c(0, 1/2, 1), main = ifelse(title, paste0("time ", round(total_time, digit = 0)), ""))
       if(animate) ani.record()
      # Remove the image time
      times_uniq <- times_uniq[-1]
@@ -123,24 +163,37 @@ simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_confi
   res
 }
 
+set.seed(13)
+png(here("figures/voter_simulation_1d_300.png"))
+plot_1d(n = 300, max_iter = 3e4)
+dev.off()
+
 set.seed(262)
 png(here("figures/voter_simulation_torus_50.png"))
 par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
 simulate_voter(n = 50, times = c(5,30,300))
 dev.off()
 
+set.seed(262)
+png(here("figures/voter_simulation_torus_100.png"))
+par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
+simulate_voter(n = 100, times = c(25,250,750))
+dev.off()
+
 
 set.seed(27)
 # Create an animation of the voter model
-ani.record(reset = TRUE)
-#img_dir <- here("gifs/voter_images/")
-#png(paste0(img_dir, "voter_sim%04d.png"))
+#ani.record(reset = TRUE)
+#oopts <- ani.options(interval = 0.1)
+img_dir <- here("gifs/voter_images/")
+png(paste0(img_dir, "voter_sim%04d.png"))
 par(mar=c(0, 0, 0, 0))
 simulate_voter(n = 50, times = seq(0, 500, by = 1), title = FALSE, animate = TRUE)
-saveGIF(ani.replay(), movie.name = paste0(here("gifs/test.gif")))
+# ani.replay()
+#saveGIF(ani.replay(), movie.name = paste0(here("gifs/test.gif")), )
 dev.off()
-#system(paste0("convert -delay 10 ", img_dir, "*.png test.gif"))
-#file.remove(list.files(path = img_dir, pattern=".png", full.names = TRUE))
+system(paste0("convert -delay 10 ", img_dir, "*.png ", here("gifs/"), "voter_sim.gif"))
+file.remove(list.files(path = img_dir, pattern=".png", full.names = TRUE))
 
 
 
