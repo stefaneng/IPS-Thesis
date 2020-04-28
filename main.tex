@@ -617,6 +617,9 @@ The \textbf{backwards equations} are
 \end{equation}
 \end{theorem}
 
+\subsection{Poisson Processes}
+TODO!
+
 \subsection{Matrix Exponential}
 
 \begin{defn}[Matrix Exponential]
@@ -1621,8 +1624,8 @@ as $\lambda \to \infty$.
 
 \subsection{Finite contact process on cycles}
 
-Now we look at the finite contact process with a cycle (circle) configuration.
-That is, each node has an edge with exactly two other nodes.
+Now we look at the finite contact process with a cycle (circle) configuration,$\Z/n$. The vertices are $\{1, 2,\ldots, n\}$, with edges between each $x$ and $y$ if $x \equiv y \pm 1 \mod n$.
+Each node has an edge with exactly two other nodes.
 For the two and three node case the graph is identical to the complete graph.
 
 % TODO: Maybe draw tikz graph of the cycle?
@@ -1926,20 +1929,66 @@ for all $x,y \in \Z^d$.
 This behavior is called \textbf{clustering}.
 \end{theorem}
 
-In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on a $50 \times 50$ grid.
+In Figure \ref{fig:voter_sim_1d_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on length 300 subset of $\Z$.
+In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on a $100 \times 100$ grid.
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=.80\textwidth]{figures/voter_simulation_torus_50.png}
-   \caption{Simulation for voter model with periodic boundary conditions on $50 \times 50$ grid.}
+    \includegraphics[width=.80\textwidth]{figures/voter_simulation_1d_300.png}
+   \caption{Simulation for voter model with periodic boundary conditions on length 300 subset of $\Z$}
+  \label{fig:voter_sim_1d_torus.png}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/voter_simulation_torus_100.png}
+   \caption{Simulation for voter model with periodic boundary conditions on $100 \times 100$ grid.}
   \label{fig:voter_sim_torus.png}
 \end{figure}
 
 \subsection{Finite Linear Voter Model}
+We will now look at the time for linear voter model on a finite cycle and complete graph to reach the configuration of all 1's or all 0's.
+In general there are $2^n$ configurations for the cycle but many of these have the same rates due to rotations and the property that interchanging 1's and 0's are equivalent.
+That is, if $\eta$ is a configuration then $1 - \eta$ should be in the same equivalence class.
 
-\subsubsection{Finite Linear Voter Model on cycle}
-We will now look at a linear voter model on a finite cycle.
-That is, for a
+In the complete graph each node in a configuration is connected to all of the others, we can project a configuration $\eta$ to the minimum number of ones in $\eta$ and $1 - \eta$.
+$$
+\eta \mapsto \min\left(|\{x : \eta(x) = 1\}|, |\{x : \eta(x) = 0\}|  \right)
+$$
+We will have $\lfloor n/2 \rfloor + 1$ new projected states for a voter model on a complete graph with $n$ nodes which will be a Markov chain
+by \ref{thm:mc_projection}.
+
+For all of the following models we will be using the following transition probability matrix
+$$
+P(x,y) = P(y,x) = \frac{1}{\deg(x)}
+$$
+Where $\deg(x)$ is the degree of the node $x$.
+So in the case of the cycle, $P(x,y) = 1/2$, and the complete graph with $n$ node $P(x,y) = 1/(n - 1)$.
+
+\subsubsection{Three node complete/cycle}
+A complete graph (or a cycle) with $n = 3$ nodes has quite trivial behavior.
+
+Here we have two projected states, $\{0,1\}$.
+Assuming that we initialize the the voter model to state 1, then we will just wait unit exponential time before going to the absorbing state 0.
+
+\subsection{Four node complete voter model \texorpdfstring{$VC_4$}{VC4}}
+The state space in the projected four node voter model is $\{0,1,2\}$.
+The infinitesimal generator matrix is
+$$
+Q_{VC_4} = \begin{blockarray}{cccc}
+    & 2 & 1 & 0\\
+    \begin{block}{c|ccc}
+        \cline{2-4}
+        2 & -\frac{8}{3} & \frac{8}{3} & 0 \\
+        1 & 1 & -2 & 1\\
+        0 & 0 & 0 & 0\\
+    \end{block}
+\end{blockarray}
+$$
+
+
+\subsection{Four node cycle \texorpdfstring{$VS_4$}{VS4}}
+With four nodes the behavior of the system is more interesting.
 
 % Is it possible that we can use Burnside Polya counting (group actions) to show how many different distinct cycle configurations we get?
 
