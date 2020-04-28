@@ -4,9 +4,18 @@ library(tidyr)
 library(here)
 library(animation)
 
-simulate_voter_1d <- function(n = 50, max_iter = 1e4, torus=TRUE) {
+#'
+#' complete means that all nodes are connected
+simulate_voter_1d <- function(n = 50, max_iter = 1e4, torus=TRUE, complete_graph = FALSE, init_config=c("random", "split")) {
   # Initial state
-  m <- round(runif(n))
+  if(length(init_config) != 1 || init_config == "random") {
+    m <- round(runif(n))
+  } else {
+    m <- rep(0, n)
+    # Set the first half to ones
+    m[1:floor(n/2)] <- 1
+  }
+
   # History of the voter model
   res <- matrix(0, ncol = n, nrow = max_iter)
 
@@ -17,39 +26,49 @@ simulate_voter_1d <- function(n = 50, max_iter = 1e4, torus=TRUE) {
   while(i <= max_iter && total_ones > 0 && total_ones < n) {
     # sample a random point
     s <- sample(1:n, 1)
-
+    old_value <- m[s]
     wait_time <- rexp(1, rate = n)
     total_time <- total_time + wait_time
 
     # Get the neighbors opinions
     neighbor_ones <- 0
-    if (torus) {
-      # Each node always has 2 neighbors with periodic boundary conditions
-      neighbors <- 2
-      left <- ifelse(s - 1 == 0, n, s - 1)
-      # Wrap around right side
-      right <- ifelse(s + 1 > n, 1, s + 1)
-
-      # Count all the neighbors that have 1
-      neighbor_ones <- m[left] + m[right]
+    if (complete_graph) {
+      # Sample one of the other points
+      s2 <- sample((1:n)[-s], 1)
+      # Update the value based on neighbors value
+      m[s] <- m[s2]
     } else {
-      neighbors <- 0
+      if (torus) {
+        # Each node always has 2 neighbors with periodic boundary conditions
+        neighbors <- 2
+        left <- ifelse(s - 1 == 0, n, s - 1)
+        # Wrap around right side
+        right <- ifelse(s + 1 > n, 1, s + 1)
 
-      if(s - 1 > 0) {
-        neighbors <- neighbors + 1
-        neighbor_ones <- neighbor_ones + m[s - 1, y]
+        # Count all the neighbors that have 1
+        neighbor_ones <- m[left] + m[right]
+      } else {
+        neighbors <- 0
+
+        if(s - 1 > 0) {
+          neighbors <- neighbors + 1
+          neighbor_ones <- neighbor_ones + m[s - 1, y]
+        }
+        if(s + 1 <= n) {
+          neighbors <- neighbors + 1
+          neighbor_ones <- neighbor_ones + m[s + 1, y]
+        }
       }
-      if(s + 1 <= n) {
-        neighbors <- neighbors + 1
-        neighbor_ones <- neighbor_ones + m[s + 1, y]
-      }
+
+      # Choose 1 or 0 based on neighbors
+      p <- neighbor_ones / neighbors
+      m[s] <- as.integer(runif(1) < p)
     }
 
-    # Choose 1 or 0 based on neighbors
-    p <- neighbor_ones / neighbors
-    m[s] <- as.integer(runif(1) < p)
+    # Keep track of total number of ones
+    total_ones <- total_ones + (m[s] - old_value)
+    #assertthat::are_equal(total_ones, sum(m))
 
-    total_ones <- sum(m)
     # Save the state history
     res[i,] <- m
     i <- i + 1
@@ -162,6 +181,12 @@ simulate_voter <- function(n = 50, times = c(1, 2, 5), torus=TRUE, include_confi
 
   res
 }
+
+# Complete graph with split config
+set.seed(13)
+png(here("figures/voter_simulation_1d_complete_split_100.png"))
+plot_1d(n = 100, max_iter = 3e4, complete_graph = TRUE, init_config = "split")
+dev.off()
 
 set.seed(13)
 png(here("figures/voter_simulation_1d_300.png"))
