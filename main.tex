@@ -1930,7 +1930,7 @@ This behavior is called \textbf{clustering}.
 \end{theorem}
 
 In Figure \ref{fig:voter_sim_1d_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on length 300 subset of $\Z$.
-In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on a $100 \times 100$ grid.
+In Figure \ref{fig:voter_sim_2d_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on a $100 \times 100$ grid.
 
 \begin{figure}[H]
   \centering
@@ -1943,7 +1943,7 @@ In Figure \ref{fig:voter_sim_torus.png} we show one realization from a simulatio
   \centering
     \includegraphics[width=.80\textwidth]{figures/voter_simulation_torus_100.png}
    \caption{Simulation for voter model with periodic boundary conditions on $100 \times 100$ grid.}
-  \label{fig:voter_sim_torus.png}
+  \label{fig:voter_sim_2d_torus.png}
 \end{figure}
 
 \subsection{Finite Linear Voter Model}
@@ -1965,15 +1965,24 @@ $$
 Where $\deg(x)$ is the degree of the node $x$.
 So in the case of the cycle, $P(x,y) = 1/2$, and the complete graph with $n$ node $P(x,y) = 1/(n - 1)$.
 
-\subsubsection{Three node complete/cycle}
-A complete graph (or a cycle) with $n = 3$ nodes has quite trivial behavior.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/voter_simulation_1d_complete_split_100.png}
+   \caption{Simulation for voter model on a complete graph with 100 nodes. The initial configuration is split with half 1's and half 0's.}
+  \label{fig:voter_sim_1d_complete.png}
+\end{figure}
 
-Here we have two projected states, $\{0,1\}$.
+\subsubsection{Three node complete/cycle}
+A complete graph (or a cycle) with $n = 3$ nodes has two projected states, $\{0,1\}$.
 Assuming that we initialize the the voter model to state 1, then we will just wait unit exponential time before going to the absorbing state 0.
 
 \subsection{Four node complete voter model \texorpdfstring{$VC_4$}{VC4}}
 The state space in the projected four node voter model is $\{0,1,2\}$.
-The infinitesimal generator matrix is
+When we are in state 2, then there are 4 possible nodes that can switch from 1 to 0 or 0 to 1.
+Each of these switch at a rate of $2 \cdot 1/(4 - 1) = 2/3$ since they are connected to 2 other nodes with the opposite value.
+Thus, the rate from $2 \to 1$ is $8/3$.
+Similarly reasoning leads us to the rates in the form of the infinitesimal generator matrix
+% 2 -> 1 rate 2 * 1/(4 - 1) * 2 = 4/3 is
 $$
 Q_{VC_4} = \begin{blockarray}{cccc}
     & 2 & 1 & 0\\
@@ -1985,10 +1994,144 @@ Q_{VC_4} = \begin{blockarray}{cccc}
     \end{block}
 \end{blockarray}
 $$
+Let
+\begin{align*}
+    \mathbf{S} &= \begin{bmatrix}
+    -\frac{8}{3} & \frac{8}{3}\\
+    1 & -2\\
+    \end{bmatrix}\\
+    \mathbf{S}_0 &= (0, 1)^T
+\end{align*}
+Then the eigenvalues are determined by the characteristic polynomial
+$$
+(8/3 + m)(2 + m) - 8/3 = m^2 + \frac{14}{3} m + \frac{8}{3}
+$$
+which has roots of $m_1 = -4$ and $m_2 = - \frac{2}{3}$.
+So the eigenvalues of $xS$ are $\lambda_1 = -4x$ and $\lambda_2 =  - \frac{2}{3} x$.
+These eigenvalue have corresponding eigenvectors of $v_1 = (-2, 1)$ and $v_2 = (4/3, 1)$.
+Let
+$$
+U = \begin{bmatrix}
+    -2 & 4/3\\
+    1 & 1
+\end{bmatrix}
+$$
+thus
+$$
+U^{-1} = \frac{1}{10} \begin{bmatrix}
+    -3 & 4\\
+    3 & 6
+\end{bmatrix}
+$$
+So the diagonalization of $S$ is given as 
+$$
+\mathbf{S} = \begin{bmatrix}
+    -2 & 4/3\\
+    1 & 1
+\end{bmatrix} \operatorname{diag}(-4x, - \frac{2}{3} x)
+\frac{1}{10} \begin{bmatrix}
+    -3 & 4\\
+    3 & 6
+\end{bmatrix}
+$$
+By Theorem \ref{thm:phase-type-pdf-cdf}, where $(\alpha_2, \alpha_1)$ is the probability of starting in state 2 and 1 respectively.
+\begin{align*}
+    f(x) &= (\alpha_2, \alpha_1) \exp(x\mathbf{S}) \mathbf{S}_0\\
+    &= \frac{1}{10} (\alpha_2, \alpha_1) \begin{bmatrix}
+    -2 & 4/3\\
+    1 & 1
+\end{bmatrix}
+\begin{bmatrix}
+\exp(-4x) & 0\\
+0 & \exp(- \frac{2}{3} x))
+\end{bmatrix}
+\begin{bmatrix}
+    -3 & 4\\
+    3 & 6
+\end{bmatrix}
+(0,1)^T\\
+&= \frac{1}{10} (\alpha_2, \alpha_1)
+\begin{bmatrix}
+-2 \exp(-4x) & \frac{4}{3} \exp(-\frac{2}{3} x)\\
+\exp(-4x) & \exp(- \frac{2}{3} x))
+\end{bmatrix}
+\begin{bmatrix}
+    4\\
+    6
+\end{bmatrix}\\
+&= \frac{1}{5} (\alpha_2, \alpha_1) 
+\begin{bmatrix}
+-4 \exp(-4x) + 4 \exp(-\frac{2}{3} x)\\
+2 \exp(-4x) + 3 \exp(-\frac{2}{3} x)
+\end{bmatrix}\\
+&= \frac{1}{5} \alpha_2 \left( -4 \exp(-4x) + 4 \exp\left(-\frac{2}{3} x\right) \right) + \alpha_1 \left( 2 \exp(-4x) + 3 \exp\left(-\frac{2}{3} x\right) \right)
+\end{align*}
+
+\subsection{N node complete voter model}
+When $N$ is even we have $\{0,\ldots, N/2\}$ projected states.
+Let $k = N/2$.
+Assume we are in state $i \not = k$.
+To transition to state $i + 1$, we have $n - i$ nodes that can flip to match the $i$ nodes.
+Each one of these nodes will flip with a rate of $\frac{i}{n - 1}$ since the graph is complete and each node is connected to $i$ nodes with the opposite rate.
+Thus, the rate is $(n - i) \frac{i}{n - 1}$.
+Similarly for $i \to i - 1$ transition we have $i$ nodes that can flip at a rate of $\frac{n - i}{n - 1}$ leading to the same rate.
+If $i = k$ then by symmetry we need to multiply the rate by $2$, since both the 1's or the 0's could switch.
+We can summarize the rates as follows:
+\begin{align*}
+    i \to i - 1 &= \begin{cases}
+        0 & i = 0\\
+        \frac{2 k^2}{n - 1} & i = k\\
+        \frac{i (n - i)}{n - 1} & i \in \{1,\ldots, k - 1\}
+    \end{cases}\\
+    i \to i + 1 &= \begin{cases}
+        0 & i \in \{0, k\}\\
+        \frac{i (n - i)}{n - 1} & i \in \{1,\ldots, k - 1\}
+    \end{cases}
+\end{align*}
+
+The embedded discrete Markov chain is just a random walk on $\{0, k\}$ where 0 is absorbing and $k$ reflects back.
+
+\subsubsection{M/M/1/K Queue}
+This process is what is known as a M/M/1/K queue.
+
 
 
 \subsection{Four node cycle \texorpdfstring{$VS_4$}{VS4}}
 With four nodes the behavior of the system is more interesting.
+
+\begin{figure}[H]
+    \centering
+   %\begin{tikzpicture}[auto, node distance=2cm, every loop/.style={-Triangle}, thick,main node/.style={circle,draw}]
+  \begin{tikzpicture}[start chain = going right,
+   -Triangle, every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (2s) [left of=1, yshift = -8mm, xshift = -15mm]  {2s};
+
+   \node[state, on chain]  (2t) [left of=1, yshift = 8mm, xshift = -15mm]  {2t};
+
+   \node[state, on chain]  (0) [right of=1]  {0};
+
+%   \draw (111) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{$2$} (110);
+%   \draw (110) edge [] node[yshift=-2mm, xshift=1.5mm]{$\lambda$} (111);
+
+%   \draw (111) edge [bend right] node[yshift=-3mm]{$1$} (101);
+%   \draw (101) edge [] node[yshift=1.5mm, xshift = 2mm]{$2\lambda$} (111);
+
+%   \draw (110) edge [bend left] node[yshift=3mm]{$1$} (010);
+%   \draw (010) edge [] node[yshift=-2mm, xshift=1.5mm]{$2 \lambda$} (110);
+
+%   \draw (101) edge [] node[yshift=-3mm]{$2$} (100);
+
+%   \draw (110) edge [] node[yshift=3mm]{$1$} (100);
+%   \draw (100) edge [bend left] node[yshift=3mm]{$\lambda$} (110);
+
+%   \draw (010) edge [] node[yshift=3mm]{$1$} (000);
+%   \draw (100) edge [] node[yshift=-3mm]{$1$} (000);
+
+\end{tikzpicture}
+    \caption{Projected rates of the four node voter model on cycle}
+    \label{fig:four_node_voter_cycle_rates}
+\end{figure}
 
 % Is it possible that we can use Burnside Polya counting (group actions) to show how many different distinct cycle configurations we get?
 
