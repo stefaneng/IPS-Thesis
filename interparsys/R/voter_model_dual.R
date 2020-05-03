@@ -3,12 +3,11 @@ library(tidyr)
 
 #' Creates a visualzation of the voter model dual
 #' If pretty = TRUE, then does not actually use exponential distributions but attempt to "look" random
-vm_dual_sim <- function(n = 4, pretty = FALSE) {
-  n <- 4
+vm_dual_sim <- function(n = 4, pretty = FALSE, delta = .1) {
   k <- 2 * n + 1
   m <- round(runif(k))
 
-  x_indices <- c(-seq_len(n), 0, seq_len(n))
+  x_indices <- c(-n:-1, 0, seq_len(n))
   # Poisson thinning/super...
   event_n <- rpois(1, lambda = k)
   event_time <- sort(rexp(event_n, rate = 1))
@@ -29,6 +28,7 @@ vm_dual_sim <- function(n = 4, pretty = FALSE) {
   res <- matrix(nrow = event_n + 1, ncol = k, byrow = TRUE)
 
   res[1,] <- m
+  dual_res[1, ] <- seq_len(k)
   for(i in 1:(event_n + 1)) {
    if(i > 1) {
      res[i, ] <- res[i - 1,]
@@ -38,7 +38,30 @@ vm_dual_sim <- function(n = 4, pretty = FALSE) {
     dual_res[i, arrow_end[i]] <- dual_res[i, event_i[i]]
   }
 
-  dual_res_df <- data.frame(
+  # Calculate the most switches for the dual process A(t)
+  # Will highlight this path to explain process
+  max_switches <- which.max(apply(dual_res, 2, function(x) length(unique(x))))
+
+  dual_example_df <- data.frame(x = integer(), xend = integer(), y = numeric(), yend = numeric())
+  j <- 1
+  x <- max_switches
+  xend <- max_switches
+  y <- max(event_time) + delta
+  for(i in nrow(arrow_df):1) {
+    if(arrow_df[i, "arrow_end"] == xend) {
+      yend <- arrow_df[i, "event_time"]
+      dual_example_df[j, ] <- c(x = x, xend = xend, y = y, yend = yend)
+      j <- j + 1
+      xend <- arrow_df[i, "event_i"]
+      y <- yend
+      dual_example_df[j, ] <- c(x = x, xend = xend, y = y, yend = yend)
+      x <- xend
+      j <- j + 1
+    }
+  }
+  dual_example_df[j, ] <- c(x = xend, xend = xend, y = yend, yend = 0)
+
+  dual_df <- data.frame(
     x = seq_len(k),
     dual = x_indices[dual_res[nrow(dual_res), ]]
   )
@@ -46,7 +69,7 @@ vm_dual_sim <- function(n = 4, pretty = FALSE) {
   res_df <-  data.frame(res)
   colnames(res_df) <- 1:ncol(res_df)
   res_df$event_time <- c(0, event_time)
-  res_df$event_end <- c(event_time, max(event_time) + .1)
+  res_df$event_end <- c(event_time, max(event_time) + delta)
   res_long <- gather(res_df, x, value, `1`:`9`)
   res_long$x <- as.integer(res_long$x)
 
@@ -77,6 +100,12 @@ vm_dual_sim <- function(n = 4, pretty = FALSE) {
    lines_df <- rbind(lines_df, tmp_lines)
   }
 
+  for(j in 1:k) {
+   tmp_lines[j, ] <- c(y = event_time[event_n], yend = event_time[event_n] + delta, x = j, xend = j, color = res[event_n, j])
+  }
+
+  lines_df <- rbind(lines_df, tmp_lines)
+
   dual_plot <- ggplot(arrow_df) +
    # Plot the arrows
    geom_segment(aes(x = event_i, xend = arrow_end, y = event_time, yend = event_time),
@@ -84,10 +113,10 @@ vm_dual_sim <- function(n = 4, pretty = FALSE) {
                 lineend = "round", linejoin = "bevel") +
    # Plot the line segements
    geom_segment(data = lines_df, aes(x = x, xend = xend, y = y, yend = yend, color = as.factor(color))) +
-   geom_text(data = dual_res_df, aes(x = x, y = max(event_time) + .2, label = dual)) +
+   geom_text(data = dual_df, aes(x = x, y = max(event_time) + .2, label = dual)) +
    # Show the dual process at finish time
-   scale_x_continuous("", breaks = seq_len(k), labels = c(-seq_len(n), 0, seq_len(n))) +
-   scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+   scale_x_continuous("", breaks = seq_len(k), labels = x_indices) +
+   scale_y_continuous(expand = expansion(mult = c(0, delta))) +
    theme_minimal(base_size = 18) +
    theme_minimal() +
    theme(
@@ -98,10 +127,42 @@ vm_dual_sim <- function(n = 4, pretty = FALSE) {
     legend.title = element_blank()
     )
 
-  #list(dual_plot = dual_plot, voter_plot = voter_plot)
-  dual_plot
+  example_path_plot <-
+   ggplot(arrow_df) +
+   # Plot the arrows
+   geom_segment(aes(x = event_i, xend = arrow_end, y = event_time, yend = event_time),
+                arrow = arrow(length = unit(0.02, "npc")),
+                lineend = "round", linejoin = "bevel", alpha = .3) +
+   # Plot the line segements
+   geom_segment(data = lines_df,
+                aes(x = x, xend = xend, y = y, yend = yend, color = as.factor(color)),
+                alpha = .3) +
+   # Plot the example line segement
+   # This line has the maximum number of changes
+   geom_segment(data = dual_example_df,
+                aes(x = x, xend = xend, y = y, yend = yend)) +
+   # Show the dual process at finish time
+   geom_text(data = dual_df, aes(x = x, y = max(event_time) + 2 * delta, label = dual)) +
+   # Annotate the dual process
+   annotate("text", x =  k + 1, y = max(event_time) + 2 * delta, label = "A(t)") +
+   scale_x_continuous("", breaks = seq_len(k), labels = x_indices) +
+   scale_y_continuous(expand = expansion(mult = c(0, delta))) +
+   coord_cartesian(xlim = c(1, k),clip = "off") +
+   theme_minimal(base_size = 18) +
+   theme_minimal() +
+   theme(
+    axis.line.x = element_line(colour = "grey", linetype = 2),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    panel.grid = element_blank(),
+    legend.title = element_blank()
+   )
+
+  list(dual_plot = dual_plot, voter_plot = voter_plot, example_path_plot = example_path_plot)
 }
 
-set.seed(134)
-vm_dual_sim(n = 4)
+set.seed(135)
+v <- vm_dual_sim(n = 5)
+v$example_path_plot
+v$dual_plot
 
