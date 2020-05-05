@@ -548,6 +548,11 @@ The canonical form of the transition matrix is
 where $B$ is an $t \times t$ matrix of transient states, $R$ is an $t \times r$ matrix of absorbing states and $I_{r}$ is the $r \times r$ identity matrix.
 \end{defn}
 
+\begin{theorem}\label{thm:visits_geom}
+Let $(X_n)$ be a discrete-time Markov chain with countable state space $S$.
+The number of visits to each state is geometrically distributed, with parameter equal to the probability of never returning back to the state.
+\end{theorem}
+
 \begin{theorem} \label{thm:fund_exp} \cite{grinstead2003}
 For an absorbing Markov chain with $B$ is an $t \times t$ matrix of transient states from the canonical form. Let $N$ be a matrix with the same dimensions as $B$. $N_{ij}$ is the expected number of times the chain is in state j when starting in state i for transient states $i$ and $j$. Then,
 \begin{equation}
@@ -713,9 +718,9 @@ $$
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25_below_crit.png}
-   \caption{Simulation for contact process with $\lambda = 0.25$ on $\{0,1\}^{(\Z/50) \times (\Z/50)}$. The initial configuration has all nodes as ones.}
-  \label{fig:contact_sim_torus_below_crit.png}
+    \includegraphics[width=.9\textwidth]{figures/poisson_realization.png}
+   \caption{One realization of a Poisson process showing the relationship between $N(t)$, $S_n$, and $X_n$.}
+  \label{fig:poisson_realization}
 \end{figure}
 
 \subsection{Matrix Exponential}
@@ -2182,6 +2187,7 @@ So when deterministically starting at state 2, we have that the expected value o
 \end{figure}
 
 \subsection{N node complete voter model}
+If $N$ is even, then let $k = N / 2$ and if $N$ is odd then $k = (N - 1)/2$.
 When $N$ is even we have $\{0,\ldots, N/2\}$ projected states.
 Let $k = N/2$.
 Assume we are in state $i \not = k$.
@@ -2190,23 +2196,104 @@ Each one of these nodes will flip with a rate of $\frac{i}{n - 1}$ since the gra
 Thus, the rate is $(n - i) \frac{i}{n - 1}$.
 Similarly for $i \to i - 1$ transition we have $i$ nodes that can flip at a rate of $\frac{n - i}{n - 1}$ leading to the same rate.
 If $i = k$ then by symmetry we need to multiply the rate by $2$, since both the 1's or the 0's could switch.
+We then multiply the rates by $(n - 1)$ since it is constant and will not affect the behavior of the system.
 We can summarize the rates as follows:
 \begin{align*}
     i \to i - 1 &= \begin{cases}
         0 & i = 0\\
-        \frac{2 k^2}{n - 1} & i = k\\
-        \frac{i (n - i)}{n - 1} & i \in \{1,\ldots, k - 1\}
+        2 k^2 & i = k\\
+        i (n - i) & i \in \{1,\ldots, k - 1\}
     \end{cases}\\
     i \to i + 1 &= \begin{cases}
         0 & i \in \{0, k\}\\
-        \frac{i (n - i)}{n - 1} & i \in \{1,\ldots, k - 1\}
+        i (n - i) & i \in \{1,\ldots, k - 1\}
     \end{cases}
 \end{align*}
 
 The embedded discrete Markov chain is just a random walk on $\{0, k\}$ where 0 is absorbing and $k$ reflects back.
 
-\subsubsection{M/M/1/K Queue}
-This process is what is known as a M/M/1/K queue.
+\begin{figure}[H]
+  \centering
+\begin{tikzpicture}[
+   start chain = going right,
+   -Triangle,
+   every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (n) {k};
+   \node[state, on chain]  (n1) {k - 1};
+   \node[state, on chain]  (n2) {k - 2};
+   \node[state without output/.append style={draw=none}, on chain]  (dots1) {...};
+   \node[state, on chain]  (2) {2};
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (0) {0};
+
+   \draw (n) edge[bend left] node[yshift=3mm]{$1$} (n1);
+   \draw (n1) edge[bend left] node[yshift=-3mm]{$1/2$}(n);
+
+   \draw (n1) edge[bend left] node[yshift=3mm]{$1/2$} (n2);
+   \draw (n2) edge[bend left] node[yshift=-3mm]{$1/2$}(n1);
+
+   \draw (n2) edge[left] node[xshift=3mm, yshift=-3mm]{} (dots1);
+
+   \draw (dots1) edge[left] node[xshift=3mm, yshift=-3mm]{} (2);
+
+  \draw (2) edge[bend left] node[yshift=3mm]{$1/2$} (1);
+   \draw (1) edge[bend left] node[yshift=-3mm]{$1/2$}(2);
+
+  \draw (1) edge[left] node[xshift=3mm, yshift=3mm]{$1/2$} (0);
+\end{tikzpicture}
+\caption{Embedded discrete Markov chain of the projected states of the $N$ node complete voter model.}
+  \label{fig:rw_voter_model_discrete}
+\end{figure}
+
+\begin{lemma}\label{lem:rw_hit_zero}
+Assume that we have a simple random walk on $\{0,1,\ldots, n\}$ where 0 is absorbing and $k$ is reflecting as shown in Figure \ref{fig:rw_voter_model_discrete}.
+If we start in state $i \in \{1,\ldots, k - 1\}$, then the probability of hitting state 0 before state $n$ is $1/i$.
+\end{lemma}
+
+\begin{proof}
+Let $A_j$ be the probability of hitting state 0 before state $n$ when starting from state $j \in \{1,\ldots, n - 1\}$ which is defined with the recurrence relations
+\begin{align*}
+    A_0 &= 1\\
+    A_{n} &= 0\\
+    A_j &= \frac{1}{2} A_{j + 1} + \frac{1}{2} A_{j - 1}
+\end{align*}
+
+The characteristic equation is $f(x) = x^2 - 2x + 1$ which has a double root at $1$.
+Thus the solution of is of the form $A_j = a + bj$ and using the boundary conditions of $A_0 = 1$ and $A_{i} = 0$ we get
+$$
+A_j = \frac{n - j}{n}
+$$
+\end{proof}
+
+\begin{theorem}
+Assume that we have a simple random walk on $\{0,1,\ldots, k\}$ where 0 is absorbing and $k$ is reflecting as shown in Figure \ref{fig:rw_voter_model_discrete}.
+Let $N_1, N_2, \ldots, N_k$ be the geometric random variables for the number of visits to each state.
+Then,
+$$
+E[N_i] = \begin{cases}
+    2i & 0 < i < k\\
+    k & i = k
+\end{cases}
+$$
+\end{theorem}
+
+\begin{proof}
+Using Lemma \ref{lem:rw_hit_zero} we have that for any $i \in \{1, \ldots, k - 1\}$ the probability of hitting 0 before hitting $i$ when starting in $i - 1$ is $\frac{1}{i}$.
+Since we always return to $i$ if we move to $i + 1$, then the probability of never returning to $i$ is given by $\frac{1}{2i}$.
+In the case when $i = k$, always go to the state $k - 1$ so the probability of never returning is simply $\frac{1}{k}$.
+The result follow since the parameter in the geometric distribution is the probability of never returning to the state.
+\end{proof}
+
+\begin{theorem}
+Let $\tau_{C_n^{v}}$ be the time until we reach state zero.
+Now let $N_1, N_2, \ldots, N_k$ be the number of visits to states $1, 2, \ldots, k$ respectively, which are geometrically distributed.
+Let $X_i^{(k)} \sim \exp(2k^2)$ be i.i.d random variables, $X_i^{(j)} \sim \exp(2i(n - i)\lambda)$ for each $j \in \{1, \ldots, k-1\}$ representing the exponential waiting time at each state.
+We can represent $\tau_{C_n^{v}}$ as random sums
+
+\begin{equation}\label{eq:wait_contact_sum}
+    \tau_{C_n^{v}} = \sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
+\end{equation}
+\end{theorem}
 
 
 \subsection{Four node cycle \texorpdfstring{$S^{v}_4$}{VS4}}
