@@ -39,7 +39,6 @@ alphas_s4 <-list(a1_s4, a2_s4, a3_s4, a4_s4)
 t_s4 <- seq(0, 7.5, length.out = 1000)
 dphtype(t_s4, p1, QS4(onlyTrans = TRUE))
 
-mphtype(1, c(1,0), QC4())
 mphtype(1, a2, QS4())
 mphtype(1, a3, QS4())
 
@@ -48,6 +47,8 @@ a2_c4 <- c(0, 1)
 a5_c4 <- c(1/2, 1/2)
 alphas_c4 <- list(a1_c4, a2_c4, a5_c4)
 t_c4 <- seq(0, 7, length.out = 1000)
+
+mphtype(1, c(1, 0), QC4())
 
 df_c4 <- do.call(rbind, lapply(alphas_c4, function(a) data.frame(alpha = paste(a, collapse = ","),
                                                                   t = t_c4,
@@ -59,7 +60,7 @@ df_s4 <- do.call(rbind, lapply(alphas_s4, function(a) data.frame(alpha = paste(a
 
 g_c4 <- ggplot(df_c4) +
   geom_line(aes(x = t, y = ft, color = alpha)) +
-  ylab("") +
+  ylab("density") +
   xlab("time") +
   theme_minimal(base_size = 18) +
   theme(panel.spacing = unit(2, "lines")) +
@@ -71,7 +72,7 @@ ggsave(plot = g_c4, filename = "voter_density_c4.png", path = here::here("figure
 
 g_s4 <- ggplot(df_s4) +
   geom_line(aes(x = t, y = ft, color = alpha)) +
-  ylab("") +
+  ylab("density") +
   xlab("time") +
   theme_minimal(base_size = 18) +
   theme(panel.spacing = unit(2, "lines")) +
