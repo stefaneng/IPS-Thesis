@@ -81,4 +81,3 @@ g_s4 <- ggplot(df_s4) +
                        labels=c("(1,0,0)","(0,1,0)", "(0,0,1)", "1/3"))
 
 ggsave(plot = g_s4, filename = "voter_density_s4.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
-

@@ -1,3 +1,5 @@
+library(ggplot2)
+
 harm <- function(n) {
   sum(1/seq_len(n))
 }
@@ -19,9 +21,6 @@ expected_time <- function(n) {
   }
 }
 
-expected_time(5)
-unlist(lapply(4:10, expected_time))
-
 #' Expected number of visits on a finite random walk with 0 as absorbing state
 #' p is probability of going from i to i + 1
 #' 1 - p is probability of going from i to i - 1
@@ -39,7 +38,7 @@ rw_visits <- function(n, p = 1/2, include_time = FALSE) {
     } else {
       t <- rexp(1, rate = 2 * state * (n - state))
     }
-    time <- time + (n - 1) *  t
+    time <- time + t
 
     visits[state] <- visits[state] + 1
     if(state == k) {
@@ -49,70 +48,25 @@ rw_visits <- function(n, p = 1/2, include_time = FALSE) {
       else state <- state - 1
     }
   }
-  res <- list(visits = visits, time = time)
+  res <- list(visits = visits,
+              # Exponential scaling for the constant
+              time = (n - 1) *  time)
   if(include_time) res
   else res$visits
 }
 
-
-cat(rw_visits(4, include_time = TRUE)$time, " expected: ", expected_time(4))
-
-rw_visits(4, include_time = TRUE)
-
-expected_time(4)
-
+# Testing that the expected time matches the simulation
+# Also, expected_time(4) = 1.75 just like the phase-type distribution
 unlist(lapply(4:10, expected_time))
 unlist(lapply(4:10, function(n) {
   mean(replicate(10000, rw_visits(n, include_time = TRUE)$time))
 }))
 
-N <- 100
-n <- 10
-k <- 10
-#res <- rowMeans(replicate(N, {
-#  res <- replicate(n, rw_visits(k, p = 2/3))
-#  rowMeans(res)
-#}))
-#res
-
-
-rw_q <- function(n, p = 1/2) {
-  q <- matrix(0, nrow = n + 1, ncol = n + 1)
-  q[1, 2] <- 1
-  q[n+1,n+1] <- 1
-  for(i in 2:n) {
-    q[i, i + 1] <- p
-    q[i, i - 1] <- 1 - p
-  }
-
-  q
-}
-
-rw_b <- function(n, p = 1/2) {
-  diag(nrow = n) - rw_q(n, p)[-(n + 1), -(n + 1)]
-}
-
-n <- 10
-
-solve(rw_b(4, 1/2))
-
-unlist(lapply(n:1, function(i) {2*n*i - i^2}))
-
-det(rw_b(3, 1/4))
-
-#diag(nrow = k) + Reduce('+', lapply(1:4, function(i) rw_q(k)^i))
-rw_q(k)
-rw_q(k) %*% rw_q(k)
-rw_q(k) %*% rw_q(k) %*% rw_q(k)
-rw_q(k) %*% rw_q(k) %*% rw_q(k) %*% rw_q(k)
-rw_q(k) %*% rw_q(k) %*% rw_q(k) %*% rw_q(k) %*% rw_q(k)
-
-k <- 4
-solve(diag(nrow = k) - rw_q(k)[-(k + 1), -(k + 1)])
-k <- 5
-solve(diag(nrow = k) - rw_q(k)[-(k + 1), -(k + 1)])
-k <- 6
-solve(diag(nrow = k) - rw_q(k)[-(k + 1), -(k + 1)]) %*% (diag(nrow = k) - rw_q(k)[-(k + 1), -(k + 1)])
-
-# inverse {{1, -1, 0}, {-p, 1, -(1 - p)}, {0, -p, 1}}
-# inverse {{1, -1, 0, 0}, {-p, 1, -(1 - p), 0}, {0, -p, 1, -(1 - p)}, {0, 0, -p, -1}}
+N <- 1e5
+res_df <- data.frame(n = seq(4, N), t = sapply(seq(4,N), expected_time))
+m <- lm(t ~ n, data = res_df)
+round(m$coefficients, 2)
+res_df$preds <- predict(m)
+# Boring plot, just linear
+#ggplot(res_df) +
+#  geom_line(aes(x = n, y = t))
