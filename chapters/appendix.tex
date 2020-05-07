@@ -1,0 +1,19 @@
+\section{Simulation}
+
+\subsection{Simulation of contact process on \texorpdfstring{$\Z^2$}{Z2}}
+In this section we describe how to simulate the linear voter model on the two-dimensional lattice $\Z^2$.
+By nature of the simulation we have to restrict $\Z^2$ to some finite subset of $\Z^2$.
+A new issue then arises with the boundaries.
+To capture the finite behavior of the system it makes sense to just keep the boundaries nodes with a reduced number of edges.
+If we want to simulate the behavior on $\Z^2$ then it is better to use \textit{periodic boundary conditions} where we let the state space be $\{0,1\}^{(\Z/n)^2}$ where $n$ is some finite number.
+This means that each node on the graph will have exactly
+
+The dynamics of the system are that each 1 waits exponential time with rate 1 and changes to 0.
+Each 1 waits an independent exponential time with rate $\lambda$ and then places a 1 onto one of the $d$ neighbors with probability $1/2^d$.
+If there already is a 1 at this spot then nothing happens.
+\cite{steif91}
+\subsection{Simulation of Linear Voter Model on \texorpdfstring{$\Z^2$}{Z2}}
+
+The behavior of the linear voter model can be described as each voter waits exponential time and then takes the opinion of one of its neighbors according to the transition probabilities.
+Assume that we are simulating on a $N \times N$ grid.
+Using the exponential scaling property, this behavior is equivalent to waiting exponential time with rate $N^2$ and selecting a voter at random and updating their opinion.
