@@ -78,6 +78,8 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 
 \tableofcontents
 
+\clearpage
+
 \section{Background}
 
 \subsection{Probability}
@@ -504,6 +506,13 @@ for all $s < t$ and $B \subset S$.
 %for all $t_1, \ldots, t_n \in \mathbb T$, with $t_1 < \cdots < t_n$.
 \end{defn}
 
+\begin{defn}
+A function $f$ is is $o(g(x))$ if 
+$$
+\lim_{x \to \infty} \frac{f(x)}{g(x)} = 0
+$$
+\end{defn}
+
 \begin{defn}[Infinitesimal generator matrix]
 The \textbf{infinitesimal generator matrix} (or \textbf{transition rate matrix}) $Q$, of a continuous-time Markov chain $(X_t)$ with countable state space $S$, is an $|S| \times |S|$ matrix.
 The element $q_{ij}$ of $Q$ denotes the rate departing from i and arriving in state j.
@@ -637,13 +646,6 @@ The \textbf{backwards equations} are
 \end{theorem}
 
 \subsubsection{Poisson Processes}
-
-\begin{defn}
-A function $f$ is is $o(g(x))$ if 
-$$
-\lim_{x \to \infty} \frac{f(x)}{g(x)} = 0
-$$
-\end{defn}
 
 \begin{defn}[Counting process] \cite{Ross_SP_95}
 A counting process is a stochastic process $\{N(t), t \geq 0\}$ that represents the number of events occurring up to a time $t$ which has the following properties
@@ -1973,19 +1975,6 @@ Since $\tau_{S_4}$ is much larger than $\tau_{C_2}$, $\tau_{C_3}$, and $\tau_{L_
   \label{fig:ev_phase_comparison_4.png}
 \end{figure}
 
-\subsection{Simulation of contact process on \texorpdfstring{$\Z^2$}{Z2}}
-In this section we describe how to simulate the linear voter model on the two-dimensional lattice $\Z^2$.
-By nature of the simulation we have to restrict $\Z^2$ to some finite subset of $\Z^2$.
-A new issue then arises with the boundaries.
-To capture the finite behavior of the system it makes sense to just keep the boundaries nodes with a reduced number of edges.
-If we want to simulate the behavior on $\Z^2$ then it is better to use \textit{periodic boundary conditions} where we let the state space be $\{0,1\}^{(\Z/n)^2}$ where $n$ is some finite number.
-This means that each node on the graph will have exactly
-
-The dynamics of the system are that each 1 waits exponential time with rate 1 and changes to 0.
-Each 1 waits an independent exponential time with rate $\lambda$ and then places a 1 onto one of the $d$ neighbors with probability $1/2^d$.
-If there already is a 1 at this spot then nothing happens.
-\cite{steif91}
-
 \section{Voter Model}
 
 \begin{defn} \cite{steif91}
@@ -2304,16 +2293,34 @@ In the case when $i = k$, always go to the state $k - 1$ so the probability of n
 The result follows since the parameter in the geometric distribution is the probability of never returning to the state.
 \end{proof}
 
+\begin{defn}[Harmonic Number]
+The $m$-th harmonic number defined as
+$$
+H_m = \sum_{j = 1}^m \frac{1}{j}
+$$
+Note that
+$$
+H_m = H_{m - 1} + \frac{1}{m}
+$$
+\end{defn}
+
+\begin{theorem}\label{thm:euler_harm_lim}
+$$
+\lim_{n \to \infty} H_n - \ln(n) = \gamma
+$$
+where $\gamma \approx 0.5772$ is the Euler-Mascheroni constant.
+\end{theorem}
+
 \begin{theorem}
 Let $\tau_{C_n^{v}}$ be the time until the voter model on the complete graph with $n$ nodes reaches $\equiv 1$ or $\equiv 0$.
 Now let $N_1, N_2, \ldots, N_k$ be the number of visits to states $1, 2, \ldots, k$ respectively, which are geometrically distributed.
-Let 
-% The constant (n - 1) is admitted here. Maybe should add?
+For all $i = 1,2,\ldots$ and $j = 1,2,\ldots, N_i$, let 
+
 $$
-X_i^{(i)} \sim \begin{cases}
-  \exp\left(\displaystyle \frac{nk}{n - 1}\right) & i = k, N \text{ even}\\
-  \exp\left(\displaystyle\frac{k (n - k)}{n - 1}\right) & i = k, N \text{ odd}\\
-  \exp\left(2 i \displaystyle \frac{(n - i)}{n - 1}\right) & i \in \{1, \ldots, k-1\}
+X_i^{(j)} \sim \begin{cases}
+  \exp\left(\displaystyle \frac{nk}{n - 1}\right) & j = k, N \text{ even}\\
+  \exp\left(\displaystyle\frac{k (n - k)}{n - 1}\right) & j = k, N \text{ odd}\\
+  \exp\left(2 i \displaystyle \frac{(n - j)}{n - 1}\right) & j \in \{1, \ldots, k-1\}
 \end{cases}
 $$
 be i.i.d random variables representing the exponential waiting time at each state.
@@ -2325,20 +2332,43 @@ We can represent $\tau_{C_n^{v}}$ as random sums
 and
 \begin{align*}
 E[\tau_{C_n^{v}}] &= \begin{cases}
-    \frac{(n - 1)}{n} + H_{n - 1} + H_{k + 1} & n \text{ even}\\
-    \frac{(n - 1)}{n - k} + H_{n - 1} + H_{k + 1} & n \text{ odd}
+    (n - 1) \left[H_{n} - H_{n - k}\right] & n \text{ even}\\
+    (n - 1) \left[H_{n - 1} - H_{n - k - 1}\right] & n \text{ odd}
 \end{cases}\\
-&\approx 0.69 n - 1.19
+    \approx 0.69 (n - 1)
 \end{align*}
-
-where $H_m$ is the $m$-th harmonic number defined as
-$$
-H_m = \sum_{j = 1}^m \frac{1}{j}
-$$
 \end{theorem}
 
 \begin{proof}
-TODO: ...
+Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is
+\begin{align*}
+    E[\tau_{C_n^{v}}] &= E\left[\sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}\right]\\
+    &= E[N_k] E[X^{(k)}] + E[N_{k - 1}] E[X^{(k - 1)}] + \cdots + E[N_1]E[X_i^{(1)}]\\
+    &= E[N_k] E[X^{(k)}] + \sum_{j = 1}^{k - 1} E[N_j]E[X^{(j)}]\\
+    &= k E[X^{(k)}] + \sum_{j = 1}^{k - 1} 2j \frac{n - 1}{2j (n - j)} \\
+    &= k E[X^{(k)}] + (n - 1) \sum_{j = 1}^{k - 1} \frac{1}{n - i}\\
+    &= k E[X^{(k)}] + (n - 1) \left[ \frac{1}{n - 1} + \frac{1}{n - 2} + \cdots + \frac{1}{n - k + 1} \right]\\
+    &= k E[X^{(k)}] + (n - 1) \left[ H_{n - 1} - H_{n - k} \right]\\
+    &= \begin{cases}
+    (n - 1) \left[\frac{1}{n} + H_{n - 1} + H_{n - k}\right] & n \text{ even}\\
+    (n - 1) \left[\frac{1}{n - k} + H_{n - 1} + H_{n - k}\right] & n \text{ odd}
+    \end{cases}\\
+    &= \begin{cases}
+    (n - 1) \left[H_{n} - H_{n - k}\right] & n \text{ even}\\
+    (n - 1) \left[H_{n - 1} - H_{n - k - 1}\right] & n \text{ odd}
+\end{cases}
+\end{align*}
+In the limit, it does not matter if $n$ is even or odd.
+We have from Theorem \ref{thm:euler_harm_lim} that
+\begin{align*}
+    \lim_{n \to \infty} [H_{n} - H_{n - k}] &=  \lim_{n \to \infty} H_{n} - \lim_{n \to \infty}  H_{n - n/2}\\
+    &= \gamma + \ln(n) - (\gamma + \ln(n/2)\\
+    &= \ln(2) \approx 0.69
+\end{align*}
+Therefore
+$$
+E[\tau_{C_n^{v}}] \approx 0.69 (n - 1)
+$$
 \end{proof}
 
 \subsection{Four node cycle \texorpdfstring{$S^{v}_4$}{VS4}}
@@ -2386,6 +2416,23 @@ State $2t$ is the configurations with the two matching values together such as $
 \end{figure}
 
 % Is it possible that we can use Burnside Polya counting (group actions) to show how many different distinct cycle configurations we get?
+
+\appendix
+
+\section{Simulation}
+
+\subsection{Simulation of contact process on \texorpdfstring{$\Z^2$}{Z2}}
+In this section we describe how to simulate the linear voter model on the two-dimensional lattice $\Z^2$.
+By nature of the simulation we have to restrict $\Z^2$ to some finite subset of $\Z^2$.
+A new issue then arises with the boundaries.
+To capture the finite behavior of the system it makes sense to just keep the boundaries nodes with a reduced number of edges.
+If we want to simulate the behavior on $\Z^2$ then it is better to use \textit{periodic boundary conditions} where we let the state space be $\{0,1\}^{(\Z/n)^2}$ where $n$ is some finite number.
+This means that each node on the graph will have exactly
+
+The dynamics of the system are that each 1 waits exponential time with rate 1 and changes to 0.
+Each 1 waits an independent exponential time with rate $\lambda$ and then places a 1 onto one of the $d$ neighbors with probability $1/2^d$.
+If there already is a 1 at this spot then nothing happens.
+\cite{steif91}
 
 \subsection{Simulation of Linear Voter Model on \texorpdfstring{$\Z^2$}{Z2}}
 
