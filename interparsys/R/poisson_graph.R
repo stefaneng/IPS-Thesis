@@ -24,7 +24,7 @@ g <- ggplot(df) +
  geom_point(aes(x = x, y = y)) +
  scale_x_continuous(
    breaks = c(0, df$x),
-   labels = c(0, TeX(sprintf("$T_{%d}$", df$y)))
+   labels = c(0, TeX(sprintf("$S_{%d}$", df$y)))
  ) +
  ylab("N(t)") +
  xlab("t") +
