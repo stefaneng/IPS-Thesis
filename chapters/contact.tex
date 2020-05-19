@@ -450,6 +450,30 @@ We sample and simulate from the phase-type distributions using the R package fro
 
 \subsubsection{Limiting Distribution}
 
+\begin{theorem}\label{thm:exp_limiting_dist}
+Assume that $X$ is exponentially distributed with parameter $\alpha(n)$.
+If $\alpha(n) \to \infty$ as $n \to \infty$ then $X$ approaches 0 in distribution.
+\end{theorem}
+
+\begin{proof}
+Assume $X$ is exponentially distributed with parameter $\alpha(n)$.
+Note that 0 has a CDF of
+$$
+F_0(x) = \begin{cases}
+    1 & x \geq 0\\
+    0 & x < 0
+\end{cases}
+$$
+Then $X$ has a CDF, with $x \in [0, \infty)$
+$$
+F_X(x) = 1 - \exp(-\alpha(n) x) \to 1 \quad \text{ as } n \to \infty
+$$
+So
+$$
+\exp(\alpha(n)) \Rightarrow 0 \quad \text{ as } n \to \infty
+$$
+\end{proof}
+
 \begin{theorem}
 Let $\tau_{C_2}$ be the time in which we hit $(0,0)$.
 Then $\frac{2}{1 + \lambda} \tau_{C_2}$ approaches an exponential distribution with rate 1 in distribution as $\lambda \to \infty$.
@@ -477,9 +501,14 @@ Using the scaling property of exponential random variables (Theorem \ref{thm:exp
     \frac{2}{1 + \lambda}\sum_{i = 1}^N Y_i &\sim \exp \left( \frac{1 + \lambda}{2} \right)
 \end{align*}
 
-Let $W_\lambda \sim \exp \left( \frac{1 + \lambda}{2} \right)$ with $F_\lambda$ the distribution function, that is $F_\lambda(x) = 1 - \exp(-(1 + \lambda)/2 x)$.
-As $\lambda \to \infty$, then $F_\lambda(x) \to 1$ for $x \in [x, \infty)$, so $W_n \Rightarrow 0$.
-Then by Theorem \ref{thm:conv_together_lemma}, we have that $\frac{2}{1 + \lambda} \tau_{C_2} \Rightarrow \exp(1)$.
+Since $(1 + \lambda)/2 \to \infty$ as $\lambda \to \infty$ then we have a limit of two sequences of random variables, one of which converges in distribution to a constant. So by Theorem \ref{thm:exp_limiting_dist} we can conclude that 
+$$
+\frac{2}{1 + \lambda}\sum_{i = 1}^N Y_i \Rightarrow 0
+$$
+Then by Theorem \ref{thm:conv_together_lemma}, we have that
+$$
+\frac{2}{1 + \lambda} \tau_{C_2} \Rightarrow \exp(1)
+$$
 \end{proof}
 
 \subsection{Three node contact process \texorpdfstring{$C_3$}{C3}}
@@ -664,11 +693,30 @@ Multiplying $\tau_{C_3}$ by $\frac{3}{2 \lambda^2 + \lambda + 1}$ and using Theo
         \right)\\
     \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_2} X_i^{(2)} &\sim \exp\left(
         \frac{(2 + 2\lambda)(2 \lambda^2 + \lambda + 1)}{3 (2 \lambda^2 + 3\lambda + 1)}
-    \right)  \Rightarrow 0 \quad \text{as } \lambda \to \infty\\
-    \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_1} X_i^{(1)} &\sim \exp\left(
-    \frac{2 \lambda^2 + \lambda + 1}{3}
-    \right) \Rightarrow 0 \quad \text{as } \lambda \to \infty
+    \right)\\
+    \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_1} X_i^{(11)} &\sim \exp\left(
+        \frac{2 \lambda^2 + \lambda + 1}{3}
+    \right)
+\end{align*}    
+Since
+\begin{align*}
+    \frac{(2 + 2\lambda)(2 \lambda^2 + \lambda + 1)}{3 (2 \lambda^2 + 3\lambda + 1)} &= \frac{4\lambda^3 + 6 \lambda^2 + 4 \lambda + 2}{6\lambda^2 + 9\lambda + 3}
+    \to \infty \quad \text{as } \lambda \to \infty
 \end{align*}
+It follows that
+$$
+    \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_2} X_i^{(2)} \sim \exp\left(
+        \frac{4\lambda^3 + 6 \lambda^2 + 4 \lambda + 2}{6\lambda^2 + 9\lambda + 3}
+    \right) \Rightarrow 0 \quad \text{as } \lambda \to \infty
+$$
+So
+$$
+\frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_2} X_i^{(2)} \Rightarrow 0 \quad \text{as } \lambda \to \infty
+$$
+Similarly we have that
+$$
+\frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_1} X_i^{(1)}
+$$
 
 Since we have a sum of three random variables, two of which approach 0 in distribution, we can use Theorem \ref{thm:conv_together_lemma} to conclude that  $\frac{3}{2 \lambda^2 + \lambda + 1} \tau_{C_3}$ converges in distribution to an exponential distribution with rate 1.
 \end{proof}
@@ -725,7 +773,7 @@ The rate of going state with $i - 1$ ones is $i$ since we have $i$ nodes that ha
 \end{align*}
 
 \begin{lemma}[This is a generalization of Lemma \ref{lem:rw_hit_zero}]\label{lem:rw_p_hit_zero}
-Assume that we have a random walk on $\{0,1,\ldots, n\}$ with transition probabilities 
+Assume that we have a random walk with $p \in (0, 1)$, $p \not = 1/2$, on $\{0,1,\ldots, n\}$ with transition probabilities 
 \begin{align*}
     i \to i - 1 &= \begin{cases}
         1 & i = n\\
@@ -734,8 +782,7 @@ Assume that we have a random walk on $\{0,1,\ldots, n\}$ with transition probabi
     i \to i + 1 &= \begin{cases}
         0 & i = n\\
         p & i \in \{1,\ldots, n-1\}
-    \end{cases}\\
-    1 \to 1 &= 0
+    \end{cases}
 \end{align*}
 With all other transition probabilities equal to 0.
 
@@ -798,7 +845,7 @@ Plugging these back into Equation \ref{eq:rw_eq_1} we get the solution
 \end{proof}
 
 \begin{theorem}\label{thm:expected_visits_rw_p}
-Assume that we have a random walk with transition probabilities as defined in Lemma \ref{lem:rw_p_hit_zero} on $\{0,1,\ldots, k\}$ where 0 is absorbing and $k$ is reflecting as shown in Figure \ref{fig:rw_voter_model_discrete}.
+Assume that we have a random walk with transition probabilities as defined in Lemma \ref{lem:rw_p_hit_zero} on $\{0,1,\ldots, k\}$ where 0 is absorbing and $k$ is reflecting.
 Let $N_1, N_2, \ldots, N_k$ be the geometric random variables for the number of visits to each state.
 Then,
 $$
@@ -819,7 +866,8 @@ $$
 \end{theorem}
 
 \begin{proof}
-Using Lemma \ref{lem:rw_p_hit_zero}, for state $i \in \{1, \ldots, n - 1\}$, the probability of never returning to state $i$, $\gamma_i$, is $1 - p$ time the probability of hitting 0 before $i$ when starting in state $i - 1$. That is,
+Using Lemma \ref{lem:rw_p_hit_zero}, for state $i \in \{1, \ldots, n - 1\}$, the probability of never returning to state $i$, $\gamma_i$, is $1 - p$ time the probability of hitting 0 before $i$ when starting in state $i - 1$.
+If we are in state $n$, then we always move to state $n - 1$. That is,
 $$
 \gamma_i = (1 - p) \frac{
         \left( \frac{1 - p}{p} \right)^{i} - \left( \frac{1 - p}{p} \right)^{i - 1}
@@ -864,14 +912,17 @@ X_i^{(j)} \sim \begin{cases}
   \exp\left( j + (n - j)\lambda \right) & j \in \{1,\ldots, k - 1\}\\
 \end{cases}
 $$
-be i.i.d random variables representing the exponential waiting time at each state.
+be i.i.d random variables representing the exponential waiting times at each state.
 We can again represent $\tau_{C_n}$ as random sums
 
 \begin{equation}\label{eq:wait_contact_sum}
     \tau_{C_n} = \sum_{i = 1}^{N_n} X_i^{(n)} + \sum_{i = 1}^{N_{n - 1}} X_i^{(n - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
 \end{equation}
 
-The limiting distribution of $E[N_{n}]^{-1} \cdot \tau_{C_n}$ is an exponential distribution with parameter 1.
+Then the limiting distribution as $\lambda \to \infty$ is
+$$
+\frac{\tau_{C_n}}{E[N_{n}]E[X^{(n)}]} \Rightarrow \exp(1)
+$$
 \end{theorem}
 
 \begin{proof}
@@ -924,8 +975,8 @@ The distribution of each of the random sums follows from Theorem \ref{thm:geom_s
 \right)
 \end{align*}
 
-Then we multiplying $\tau_{C_n}$ by 
-$E[N_{n}]^{-1}$ such that by exponential scaling
+Then we divide $\tau_{C_n}$ by 
+$E[N_{n}]E[X^{(n)}]$ such that by exponential scaling
 \begin{align*}
 \frac{\lambda - 1}{\lambda^j - 1} \sum_{i = 1}^{N_j} X_i^{(j)} &\sim \exp\left(
     \frac{\lambda^n - 1}{\lambda^j - 1} \right)\\
@@ -944,7 +995,7 @@ $$
 So all of the random sums $1, \ldots, n - 1$ approach 0 in distribution.
 By Theorem \ref{thm:conv_together_lemma}, we can conclude that
 $$
-\frac{\lambda - 1}{\lambda^j - 1} \tau_{C_n} = E[N_{n}]^{-1} \tau_{C_n} \Rightarrow \exp(1)
+\frac{\lambda - 1}{\lambda^j - 1} \tau_{C_n} = \frac{\tau_{C_n}}{E[N_{n}]E[X^{(n)}]} \Rightarrow \exp(1)
 $$
 
 \subsection{Finite contact process on cycles}

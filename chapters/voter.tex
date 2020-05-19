@@ -1,13 +1,5 @@
 \section{Overview}
 
-\begin{defn} \cite{steif91}
-If $\mu, \nu$ are probability measures on $\{0,1\}^S$ then $\nu \leq \mu$ if
-$$
-\int f~d\nu \leq \int f~d\mu
-$$
-for all bounded increasing functions on $\{0,1\}^S$
-\end{defn}
-
 \begin{defn}[Voter Model] \cite{Liggett2002}
 Let $\Z^d$ be the state space and $P$ be the transition probability matrix for a Markov chain on $S$.
 Then $\Omega = \{0,1\}^{\Z^d}$ is the state space for voter model which is a continuous-time Markov chain.
@@ -27,9 +19,24 @@ Thus, for any $\eta, \delta \in \Omega$ that differ by more than one sites,
 $$
 q(\eta, \delta) = 0
 $$
+For finite $S$ the configuration $\eta$ transitions to $\delta$ with probability
+$$
+P^\eta(\eta_t = \eta_x) = q(\eta, \delta) t + o(t)
+$$
+as $t \downarrow 0$.
 
 In general we assume that on $Z^d$ then $P(x,y) = P(0, x - y)$. Where $P(x- y) = \frac{1}{2d}$ if $x$ and $y$ are adjacent and $P(x-y) = 0$ otherwise.
+\end{defn}
 
+\begin{defn} \cite{steif91}
+If $\mu, \nu$ are probability measures on $\{0,1\}^S$ then $\nu \leq \mu$ if
+$$
+\int f~d\nu \leq \int f~d\mu
+$$
+for all bounded increasing functions on $\{0,1\}^S$
+\end{defn}
+
+\begin{theorem}
 The transition rates have the following properties:
 \begin{enumerate}
     \item $q(\eta, \eta_x) = 0$ for each $x \in \Z^d$ if $\eta \equiv 0$ or $\eta \equiv 1$
@@ -37,15 +44,6 @@ The transition rates have the following properties:
     \item $q(\eta, \eta_x) \leq q(\zeta, \zeta_x)$ if $\eta \leq \zeta$ and $\eta(x) = \zeta(x) = 0$
     \item $q(\eta, \eta_x)$ is invariant under shifts in $\Z^d$.
 \end{enumerate}
-\end{defn}
-
-\begin{theorem}[\cite{Liggett1999}]
-For $d = 1,2$ the voter model on $\Z^d$ with any initial configuration then
-$$
-\lim_{t \to \infty} P(\eta_t(x) \not = \eta_t(y)) = 0
-$$
-for all $x,y \in \Z^d$.
-This behavior is called \textbf{clustering}.
 \end{theorem}
 
 In Figure \ref{fig:voter_sim_1d_torus.png} we show one realization from a simulation of the voter model with periodic boundaries on length 300 subset of $\Z$.
@@ -68,7 +66,58 @@ In Figure \ref{fig:voter_sim_2d_torus.png} we show one realization from a simula
 \section{Voter Model Dual Process}
 
 Assume that we have a voter model on $\Z^d$.
-We introduce the graphical representation as follows: For every $x \in \Z^d$... TODO.
+The dual process for the voter model is a summary of \cite{steif91}.
+We introduce the graphical representation as follows: For every $x \in \Z^d$ there are $d$ corresponding Poisson processes, denoted $\{N_{x,x'}(t), t \geq 0\}$ for each $|x - x'| = 1$, with rate $\frac{1}{2d}$.
+This is shown in Figure \ref{fig:voter_model_dual} for one dimension.
+The arrows from $x$ to $y$ represent the points of the Poisson process $\{N_{x,y}(t), t \geq 0\}$ represent when $y$ changes its value to the value at site $x$.
+Then by Poisson superposition (Theorem \ref{thm:poisson_super}) we can combine all the $d$ Poisson processes at each site $x$ into one Poisson process with rate $1$.
+The site $x$ waits exponential time with rate $1$ and then select one of its $\frac{1}{2d}$ neighbors to conform.
+Then the voter model with initial state $\eta_0$ is $\{\eta_t^{\eta_0}\}$ where $\eta_t^{\eta_0}(x)$ is the value of the voter model at site $x$.
+This corresponds to sliding down the graphical representation, following arrows backwards until we reach the value at $\eta_0$.
+
+Now we can define the dual process.
+For each $x \in \Z^d$ at a time $t \geq 0$, 
+denote $A_{x,t}(s) \in \Z^d$ for $0 \leq s \leq t$ as the location on $Z^d$ as we follow the path downwards and moving in the reverse direction on the arrows. This is illustrated in the right figure of Figure \ref{fig:voter_model_dual}.
+The process is $\{A_{x,t}(s) : 0 \leq s \leq t, x \in \Z^d\}$, which is a continuous time random walk with rate $1$ jumps with probability $\frac{1}{2d}$ to each of its neighbors.
+For 2 sites $x, y \in \Z^d$ we have 
+$\{A_{x,t}(s) : 0 \leq s \leq t, x \in \Z^d\}$ and $\{A_{y,t}(s) : 0 \leq s \leq t, y \in \Z^d\}$ that are independent until they meet.
+The difference between two random walks is also a random walk.
+Thus, $\{A_{x,t}(s) - A_{y,t}(s) : 0 \leq s \leq t, x,y \in \Z^d\}$ is a random walk with rate $2$ that moves to one of its $2d$ neighbors.
+Once it hits 0 then it will remain 0.
+
+We will need this important fact about random walks
+
+\begin{theorem}[Random walk recurrent/transient] \label{thm:rw_recurrent}
+Assume that $\{X_t\}$ is a random walk on $\Z^d$.
+If $d = 1,2$ then it is recurrent.
+If $d \geq 3$ then it is transient.
+\end{theorem}
+
+\begin{theorem}[\cite{Liggett1999}]
+For $d = 1,2$ the voter model on $\Z^d$ with any initial configuration then
+$$
+\lim_{t \to \infty} P(\eta_t(x) \not = \eta_t(y)) = 0
+$$
+for all $x,y \in \Z^d$.
+This behavior is called \textbf{clustering}.
+\end{theorem}
+
+\begin{proof}
+Take $x, y \in \Z^d$ and let $\{A_{x,t}(s) : 0 \leq s \leq t, x \in \Z^d\}$ and $\{A_{y,t}(s) : 0 \leq s \leq t, y \in \Z^d\}$ be the random walks for a fixed time $t$.
+Once $A_{x,t}(\tau) = A_{y,t}(\tau)$ for some $\tau \in [0, t]$ then the voter model process must agree, e.g. $\eta_t(x) = \eta_t(y)$.
+Thus
+\begin{align*}
+P(\eta_t(x) \not = \eta_t(y)) \leq P(A_{x,t}(s) - A_{y,t}(s) \not = 0 : 0 \leq s \leq t, x,y \in \Z^d)
+\end{align*}
+
+% Then $\eta_t(x) = \eta_t(y)$ can happen for one of two reasons
+% \begin{itemize}
+%     \item $A_{x,t}(s) = A_{y,t}(s)$ and $s < \tau$,
+%     \item $s > \tau$
+% \end{itemize}
+
+Taking the limit as $t \to \infty$ the RHS goes to 0 by Theorem \ref{thm:rw_recurrent} since the random walk $\{A_{x,t}(s) - A_{y,t}(s) : 0 \leq s \leq t, x,y \in \Z^d\}$ is recurrent for $d = 1,2$.
+\end{proof}
 
 \begin{figure}[H]
   \centering
@@ -365,7 +414,7 @@ E[\tau_{C_n^{v}}] &= \begin{cases}
     (n - 1) \left[H_{n} - H_{n - k}\right] & n \text{ even}\\
     (n - 1) \left[H_{n - 1} - H_{n - k - 1}\right] & n \text{ odd}
 \end{cases}\\
-    \approx \ln(2) (n - 1)
+    &\approx \ln(2) (n - 1)
 \end{align*}
 \end{theorem}
 
@@ -380,8 +429,8 @@ Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is
     &= k E[X^{(k)}] + (n - 1) \left[ \frac{1}{n - 1} + \frac{1}{n - 2} + \cdots + \frac{1}{n - k + 1} \right]\\
     &= k E[X^{(k)}] + (n - 1) \left[ H_{n - 1} - H_{n - k} \right]\\
     &= \begin{cases}
-    (n - 1) \left[\frac{1}{n} + H_{n - 1} + H_{n - k}\right] & n \text{ even}\\
-    (n - 1) \left[\frac{1}{n - k} + H_{n - 1} + H_{n - k}\right] & n \text{ odd}
+    (n - 1) \left[\frac{1}{n} + H_{n - 1} - H_{n - k}\right] & n \text{ even}\\
+    (n - 1) \left[\frac{1}{n - k} + H_{n - 1} - H_{n - k}\right] & n \text{ odd}
     \end{cases}\\
     &= \begin{cases}
     (n - 1) \left[H_{n} - H_{n - k}\right] & n \text{ even}\\
