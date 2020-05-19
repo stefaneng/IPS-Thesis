@@ -1,7 +1,7 @@
-\documentclass{report}
+\documentclass[11pt]{report}
 \usepackage[utf8]{inputenc}
 
-\title{Interacting Particle Systems Thesis}
+\title{Phase-Type Distributions for Finite Interacting Particle Systems}
 \author{Stefan Eng}
 \date{2019/2020}
 
@@ -76,8 +76,11 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 
 \maketitle
 
-% \chapter*{Abstract}
-% Abstract goes here
+\chapter*{Abstract}
+Phase-type distributions model the absorption time in an absorbing Markov chain with one absorbing state.
+We look at the phase-type distributions of the linear voter model and the contact process on finite graphs.
+The limiting distribution of the contact process is computed for a fixed sized graph as the infection rate goes to infinity.
+
 
 % \chapter*{Dedication}
 % To mum and dad
@@ -89,8 +92,10 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 % I want to thank...
 
 \tableofcontents
-
 \clearpage
+
+\chapter{Introduction}
+\include{chapters/intro}
 
 \chapter{Background}
 \include{chapters/background}
