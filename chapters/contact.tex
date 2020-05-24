@@ -15,6 +15,11 @@ q(\eta, \delta) = \begin{cases}
 \end{cases}
 $$
 
+For finite $S$ the configuration $\eta$ transitions to $\delta$ with probability
+$$
+P^\eta(\eta_t = \eta_x) = q(\eta, \delta) t + o(t)
+$$
+
 Denote $\delta_0$, $\delta_1$ be point masses on the configuration of all zeros and all ones respectively.
 \end{defn}
 
@@ -694,7 +699,7 @@ Multiplying $\tau_{C_3}$ by $\frac{3}{2 \lambda^2 + \lambda + 1}$ and using Theo
     \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_2} X_i^{(2)} &\sim \exp\left(
         \frac{(2 + 2\lambda)(2 \lambda^2 + \lambda + 1)}{3 (2 \lambda^2 + 3\lambda + 1)}
     \right)\\
-    \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_1} X_i^{(11)} &\sim \exp\left(
+    \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_1} X_i^{(1)} &\sim \exp\left(
         \frac{2 \lambda^2 + \lambda + 1}{3}
     \right)
 \end{align*}    
@@ -715,7 +720,7 @@ $$
 $$
 Similarly we have that
 $$
-\frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_1} X_i^{(1)}
+\frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_1} X_i^{(1)} \Rightarrow 0 \quad \text{as } \lambda \to \infty
 $$
 
 Since we have a sum of three random variables, two of which approach 0 in distribution, we can use Theorem \ref{thm:conv_together_lemma} to conclude that  $\frac{3}{2 \lambda^2 + \lambda + 1} \tau_{C_3}$ converges in distribution to an exponential distribution with rate 1.

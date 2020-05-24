@@ -2,33 +2,35 @@
 
 \begin{defn}[Voter Model] \cite{Liggett2002}
 Let $\Z^d$ be the state space and $P$ be the transition probability matrix for a Markov chain on $S$.
-Then $\Omega = \{0,1\}^{\Z^d}$ is the state space for voter model which is a continuous-time Markov chain.
-For $\eta \in \Omega$ denote $\eta(x)$ as the value of the node $x \in \Z^d$ on the configuration $\eta$.
-Let $\eta_x$ be the configuration from changing the value of $\eta$ at the site $x$. That is,
+Then $S = \{0,1\}^{\Z^d}$ is the state space for voter model which is a continuous-time Markov chain.
+For $\eta \in \Omega$ denote $\eta(x)$ as the value of the node $x \in \Z^d$ in the configuration $\eta$.
+Let $\eta_x$ be the configuration obtained by changing the value of $\eta$ at the site $x$. That is,
 $$
 \eta_x(y) = \begin{cases}
     \eta(y) & x \not = y\\
     1 - \eta(y) & x = y
 \end{cases}
 $$
-The transition rates $Q$ are defined as
+On a finite or countable subset $A$ of $S$
+the transition rate from $\eta$ to $\eta_x$ is 
 $$
 q(\eta, \eta_x) = \sum_{y : \eta(y) \not = \eta(x)} P(x,y)
 $$
-Thus, for any $\eta, \delta \in \Omega$ that differ by more than one sites,
+Thus, for any $\eta, \delta \in A$ that differ by more than one sites,
 $$
 q(\eta, \delta) = 0
 $$
-For finite $S$ the configuration $\eta$ transitions to $\delta$ with probability
+and $\eta \in A$ transitions to $\delta \in A$ with probability
 $$
-P^\eta(\eta_t = \eta_x) = q(\eta, \delta) t + o(t)
+P^\eta(\eta_t = \delta) = q(\eta, \delta) t + o(t)
 $$
 as $t \downarrow 0$.
 
-In general we assume that on $Z^d$ then $P(x,y) = P(0, x - y)$. Where $P(x- y) = \frac{1}{2d}$ if $x$ and $y$ are adjacent and $P(x-y) = 0$ otherwise.
+In general we assume that on $Z^d$ then $P(x,y) = P(0, x - y)$
+where $P(x- y) = \frac{1}{2d}$ if $x$ and $y$ are adjacent and $P(x-y) = 0$ otherwise.
 \end{defn}
 
-\begin{defn} \cite{steif91}
+\begin{defn} \cite{Liggett1999}
 If $\mu, \nu$ are probability measures on $\{0,1\}^S$ then $\nu \leq \mu$ if
 $$
 \int f~d\nu \leq \int f~d\mu
@@ -41,7 +43,7 @@ The transition rates have the following properties:
 \begin{enumerate}
     \item $q(\eta, \eta_x) = 0$ for each $x \in \Z^d$ if $\eta \equiv 0$ or $\eta \equiv 1$
     \item $q(\eta, \eta_x) = q(\zeta, \zeta_x)$ for every $x \in \Z^d$ if $\eta(y) + \zeta(y) = 1$ for all $y \in \Z^d$. That is, the dynamics of the system are not changed by interchanging 1 and 0.
-    \item $q(\eta, \eta_x) \leq q(\zeta, \zeta_x)$ if $\eta \leq \zeta$ and $\eta(x) = \zeta(x) = 0$
+    \item (Monotonicity) $q(\eta, \eta_x) \leq q(\zeta, \zeta_x)$ if $\eta \leq \zeta$ and $\eta(x) = \zeta(x) = 0$
     \item $q(\eta, \eta_x)$ is invariant under shifts in $\Z^d$.
 \end{enumerate}
 \end{theorem}
@@ -66,21 +68,21 @@ In Figure \ref{fig:voter_sim_2d_torus.png} we show one realization from a simula
 \section{Voter Model Dual Process}
 
 Assume that we have a voter model on $\Z^d$.
-The dual process for the voter model is a summary of \cite{steif91}.
+This description of the dual process for the voter model is a summary of \cite{Liggett1999}.
 We introduce the graphical representation as follows: For every $x \in \Z^d$ there are $d$ corresponding Poisson processes, denoted $\{N_{x,x'}(t), t \geq 0\}$ for each $|x - x'| = 1$, with rate $\frac{1}{2d}$.
 This is shown in Figure \ref{fig:voter_model_dual} for one dimension.
-The arrows from $x$ to $y$ represent the points of the Poisson process $\{N_{x,y}(t), t \geq 0\}$ represent when $y$ changes its value to the value at site $x$.
-Then by Poisson superposition (Theorem \ref{thm:poisson_super}) we can combine all the $d$ Poisson processes at each site $x$ into one Poisson process with rate $1$.
-The site $x$ waits exponential time with rate $1$ and then select one of its $\frac{1}{2d}$ neighbors to conform.
-Then the voter model with initial state $\eta_0$ is $\{\eta_t^{\eta_0}\}$ where $\eta_t^{\eta_0}(x)$ is the value of the voter model at site $x$.
+The arrows from $x$ to $y$ depict the points of the Poisson process $\{N_{x,y}(t), t \geq 0\}$ which represent when $y$ changes its value to the value at site $x$.
+Then by Poisson superposition (Theorem \ref{thm:poisson_super}) we can combine all the $d$ Poisson processes emanating at each site $x$ into one Poisson process with rate $1$.
+The site $x$ waits exponential time with rate $1$ and then selects one of its $\frac{1}{2d}$ neighbors to conform to the same value as $x$.
+Then the voter model with initial state $\eta_0$ is denoted by $\{\eta_t^{\eta_0}\}$ where $\eta_t^{\eta_0}(x)$ is the value of the voter model at site $x$.
 This corresponds to sliding down the graphical representation, following arrows backwards until we reach the value at $\eta_0$.
 
 Now we can define the dual process.
 For each $x \in \Z^d$ at a time $t \geq 0$, 
 denote $A_{x,t}(s) \in \Z^d$ for $0 \leq s \leq t$ as the location on $Z^d$ as we follow the path downwards and moving in the reverse direction on the arrows. This is illustrated in the right figure of Figure \ref{fig:voter_model_dual}.
-The process is $\{A_{x,t}(s) : 0 \leq s \leq t, x \in \Z^d\}$, which is a continuous time random walk with rate $1$ jumps with probability $\frac{1}{2d}$ to each of its neighbors.
+The process is $\{A_{x,t}(s) : 0 \leq s \leq t\}$, which is a continuous time random walk with rate $1$ jumps with probability $\frac{1}{2d}$ to each of its neighbors.
 For 2 sites $x, y \in \Z^d$ we have 
-$\{A_{x,t}(s) : 0 \leq s \leq t, x \in \Z^d\}$ and $\{A_{y,t}(s) : 0 \leq s \leq t, y \in \Z^d\}$ that are independent until they meet.
+$\{A_{x,t}(s) : 0 \leq s \leq t\}$ and $\{A_{y,t}(s) : 0 \leq s \leq t\}$ that are independent until they meet.
 The difference between two random walks is also a random walk.
 Thus, $\{A_{x,t}(s) - A_{y,t}(s) : 0 \leq s \leq t, x,y \in \Z^d\}$ is a random walk with rate $2$ that moves to one of its $2d$ neighbors.
 Once it hits 0 then it will remain 0.
@@ -103,7 +105,7 @@ This behavior is called \textbf{clustering}.
 \end{theorem}
 
 \begin{proof}
-Take $x, y \in \Z^d$ and let $\{A_{x,t}(s) : 0 \leq s \leq t, x \in \Z^d\}$ and $\{A_{y,t}(s) : 0 \leq s \leq t, y \in \Z^d\}$ be the random walks for a fixed time $t$.
+Take $x, y \in \Z^d$ and let $\{A_{x,t}(s) : 0 \leq s \leq t, x \in \Z^d\}$ and $\{A_{y,t}(s) : 0 \leq s \leq t\}$ be the random walks for a fixed time $t$.
 Once $A_{x,t}(\tau) = A_{y,t}(\tau)$ for some $\tau \in [0, t]$ then the voter model process must agree, e.g. $\eta_t(x) = \eta_t(y)$.
 Thus
 \begin{align*}
@@ -116,7 +118,7 @@ P(\eta_t(x) \not = \eta_t(y)) \leq P(A_{x,t}(s) - A_{y,t}(s) \not = 0 : 0 \leq s
 %     \item $s > \tau$
 % \end{itemize}
 
-Taking the limit as $t \to \infty$ the RHS goes to 0 by Theorem \ref{thm:rw_recurrent} since the random walk $\{A_{x,t}(s) - A_{y,t}(s) : 0 \leq s \leq t, x,y \in \Z^d\}$ is recurrent for $d = 1,2$.
+Taking the limit as $t \to \infty$ the RHS goes to 0 by Theorem \ref{thm:rw_recurrent} since $\{A_{x,t}(s) - A_{y,t}(s) : 0 \leq s \leq t, x,y \in \Z^d\}$ is recurrent for $d = 1,2$.
 \end{proof}
 
 \begin{figure}[H]
@@ -126,8 +128,8 @@ Taking the limit as $t \to \infty$ the RHS goes to 0 by Theorem \ref{thm:rw_recu
   \label{fig:voter_model_dual}
 \end{figure}
 
-\section{Finite Linear Voter Model}
-We will now look at the time for linear voter model on a finite cycle and complete graph to reach the configuration of all 1's or all 0's.
+\section{Finite Voter Model}
+We will now look at the time for voter model on a finite cycle and complete graph to reach the configuration of all 1's or all 0's.
 In general there are $2^n$ configurations for the cycle but many of these have the same rates due to rotations and the property that interchanging 1's and 0's are equivalent.
 That is, if $\eta$ is a configuration then $1 - \eta$ should be in the same equivalence class.
 
@@ -143,7 +145,7 @@ $$
 P(x,y) = P(y,x) = \frac{1}{\deg(x)}
 $$
 Where $\deg(x)$ is the degree of the node $x$.
-So in the case of the cycle, $P(x,y) = 1/2$, and the complete graph with $n$ node $P(x,y) = 1/(n - 1)$.
+So in the case of the cycle, $P(x,y) = 1/2$, and the complete graph with $n$ nodes $P(x,y) = 1/(n - 1)$.
 
 \begin{figure}[H]
   \centering
@@ -152,13 +154,18 @@ So in the case of the cycle, $P(x,y) = 1/2$, and the complete graph with $n$ nod
   \label{fig:voter_sim_1d_complete.png}
 \end{figure}
 
+\subsection{Two node complete/cycle}
+A complete graph (or a cycle) with $N = 3$ nodes has two projected states, $\{0,1\}$.
+Assuming that we initialize the voter model to state 1, then we will just wait exponential time with rate 1 before going to the absorbing state 0.
+
 \subsection{Three node complete/cycle}
-A complete graph (or a cycle) with $n = 3$ nodes has two projected states, $\{0,1\}$.
-Assuming that we initialize the the voter model to state 1, then we will just wait exponential time with rate 2 before going to the absorbing state 0.
+A complete graph (or a cycle) with $N = 3$ nodes has two projected states, $\{0,1\}$.
+Similarly to the two node case, if we initialize the voter model to state 1, then we will just wait exponential time with rate 1 before going to the absorbing state 0.
 
 \subsection{Four node complete voter model \texorpdfstring{$C^{v}_4$}{VC4}}
+We will now see that when we move to $N = 4$, we will get a more interesting distribution for the absorption time.
 The state space in the projected four node voter model is $\{0,1,2\}$.
-When we are in state 2, then there are 4 possible nodes that can switch from 1 to 0 or 0 to 1.
+When we are in state 2, then all nodes can switch from 1 to 0 or 0 to 1.
 Each of these switch at a rate of $2 \cdot 1/(4 - 1) = 2/3$ since they are connected to 2 other nodes with the opposite value.
 Thus, the rate from $2 \to 1$ is $8/3$.
 Similarly reasoning leads us to the rates in the form of the infinitesimal generator matrix
@@ -267,30 +274,30 @@ So when deterministically starting at state 2, we have that the expected value o
   \label{fig:voter_density_c4}
 \end{figure}
 
-\subsection{N node complete voter model}
-If $N$ is even, then let $k = N / 2$ and if $N$ is odd then $k = (N - 1)/2$.
+\subsection{N node complete voter model \texorpdfstring{$C^{v}_N$}{VC_N}}
+If $N$ is even, then let $k = N / 2$ and if $N$ is odd then let $k = (N - 1)/2$.
 We have $\{0,\ldots, k\}$ projected states.
 Assume we are in state $i \not = k$.
-To transition to state $i + 1$, we have $n - i$ nodes that can flip to match the $i$ nodes.
-Each one of these nodes will flip with a rate of $\frac{i}{n - 1}$ since the graph is complete and each node is connected to $i$ nodes with the opposite rate.
-Thus, the rate is $(n - i) \frac{i}{n - 1}$.
-Similarly for $i \to i - 1$ transition we have $i$ nodes that can flip at a rate of $\frac{n - i}{n - 1}$ leading to the same rate.
-If $i = k$, and $N$ is even, then we have $n$ sites that can switch, each at a rate of $k / (n - 1)$.
-If $i = k$, and $N$ is odd, then we have $k$ sites that can switch, each at a rate of $(n - k ) / (n - 1)$.
+To transition to state $i + 1$, we have $N - i$ nodes that can flip to match the $i$ nodes.
+Each one of these nodes will flip with a rate of $\frac{i}{N - 1}$ since the graph is complete and each node is connected to $i$ nodes with the opposite rate.
+Thus, the rate is $(N - i) \frac{i}{N - 1}$.
+Similarly for $i \to i - 1$ transition we have $i$ nodes that can flip at a rate of $\frac{N - i}{N - 1}$ leading to the same rate.
+If $i = k$, and $N$ is even, then we have all $n$ sites that can switch, each at a rate of $k / (N - 1)$.
+If $i = k$, and $N$ is odd, then we have $k$ sites that can switch, each at a rate of $(N - k ) / (N - 1)$.
 We can summarize the rates as follows:
 \begin{align*}
     i \to i - 1 &= \begin{cases}
         0 & i = 0\\
-        nk & i = k, N \text{ even}\\
-        k (n - k) & i = k, N \text{ odd}\\
-        i (n - i) & i \in \{1,\ldots, k - 1\}
+        Nk & i = k, N \text{ even}\\
+        k (N - k) & i = k, N \text{ odd}\\
+        i (N - i) & i \in \{1,\ldots, k - 1\}
     \end{cases}\\
     i \to i + 1 &= \begin{cases}
         0 & i \in \{0, k\}\\
-        i (n - i) & i \in \{1,\ldots, k - 1\}
+        i (N - i) & i \in \{1,\ldots, k - 1\}
     \end{cases}
 \end{align*}
-Where each of the rates are scaled by $1/(n - 1)$.
+Where each of the rates are scaled by $1/(N - 1)$.
 The embedded discrete Markov chain is just a random walk on $\{0, k\}$ where 0 is absorbing and $k$ reflects back.
 
 \begin{figure}[H]
@@ -332,7 +339,7 @@ If we start in state $i \in \{1,\ldots, n - 1\}$, then the probability of hittin
 \end{lemma}
 
 \begin{proof}
-Let $A_i$ be the probability of hitting state 0 before state $k$ when starting from state $i \in \{1,\ldots, n - 1\}$ which is defined with the recurrence relations
+Let $A_i$ be the probability of hitting state 0 before state $k$ when starting from state $i \in \{1,\ldots, n - 1\}$ which is satisfied by the recurrence relations
 \begin{align*}
     A_0 &= 1\\
     A_{k} &= 0\\
@@ -404,7 +411,7 @@ E[X_i^{(j)}] = E[X^{(j)}] = \begin{cases}
 \end{cases}
 $$
 
-We can represent $\tau_{C_n^{v}}$ as random sums
+Assuming that we start in state $k$ we can represent $\tau_{C_n^{v}}$ as random sums
 \begin{equation}\label{eq:wait_contact_sum_voter}
     \tau_{C_n^{v}} = \sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
 \end{equation}
@@ -419,6 +426,7 @@ E[\tau_{C_n^{v}}] &= \begin{cases}
 \end{theorem}
 
 \begin{proof}
+The random sums are not independent of each other but the expected value  
 Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is
 \begin{align*}
     E[\tau_{C_n^{v}}] &= E\left[\sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}\right]\\
@@ -450,48 +458,32 @@ E[\tau_{C_n^{v}}] \approx \ln(2) (n - 1)
 $$
 \end{proof}
 
-\subsection{Four node cycle \texorpdfstring{$S^{v}_4$}{VS4}}
-State $2t$ is the configurations with the two matching values together such as $\{1100\}$ and $2s$ is the configuration with matching values apart such as $\{0101\}$
+% \subsection{Four node cycle \texorpdfstring{$S^{v}_4$}{VS4}}
+% State $2t$ is the configurations with the two matching values together such as $\{1100\}$ and $2s$ is the configuration with matching values apart such as $\{0101\}$
 
-\begin{figure}[H]
-    \centering
-   %\begin{tikzpicture}[auto, node distance=2cm, every loop/.style={-Triangle}, thick,main node/.style={circle,draw}]
-  \begin{tikzpicture}[start chain = going right,
-   -Triangle, every loop/.append style = {-Triangle}]
-   \node[state, on chain]  (1) {1};
-   \node[state, on chain]  (2s) [left of=1, yshift = -10mm, xshift = -20mm]  {2s};
+% \begin{figure}[H]
+%     \centering
+%   \begin{tikzpicture}[start chain = going right,
+%   -Triangle, every loop/.append style = {-Triangle}]
+%   \node[state, on chain]  (1) {1};
+%   \node[state, on chain]  (2s) [left of=1, yshift = -10mm, xshift = -20mm]  {2s};
 
-   \node[state, on chain]  (2t) [left of=1, yshift = 10mm, xshift = -20mm]  {2t};
+%   \node[state, on chain]  (2t) [left of=1, yshift = 10mm, xshift = -20mm]  {2t};
 
-   \node[state, on chain]  (0) [right of=1]  {0};
+%   \node[state, on chain]  (0) [right of=1]  {0};
 
-    \draw (2t) edge [bend left] node[yshift=3mm, xshift=1mm]{$2$} (1);
-    \draw (1) edge [] node[yshift=-2mm, xshift=-1mm]{$1$} (2t);
+%     \draw (2t) edge [bend left] node[yshift=3mm, xshift=1mm]{$2$} (1);
+%     \draw (1) edge [] node[yshift=-2mm, xshift=-1mm]{$1$} (2t);
     
-    \draw (2s) edge [] node[yshift=-3.5mm, xshift=1mm]{$4$} (1);
+%     \draw (2s) edge [] node[yshift=-3.5mm, xshift=1mm]{$4$} (1);
     
-    \draw (1) edge [] node[yshift=-2mm, xshift=-1mm]{$1$} (0);
+%     \draw (1) edge [] node[yshift=-2mm, xshift=-1mm]{$1$} (0);
     
-%   \draw (111) edge [bend left] node[yshift=3.5mm, xshift=-1mm]{$2$} (110);
-%   \draw (110) edge [] node[yshift=-2mm, xshift=1.5mm]{$\lambda$} (111);
+% \end{tikzpicture}
+%     \caption{Projected rates of the four node voter model on cycle. State $2t$ are the configurations with the two matching values together such as $\{1100\}$ and $2s$ are the configurations with matching values apart such as $\{0101\}$}
+%     \label{fig:four_node_voter_cycle_rates}
+% \end{figure}
 
-%   \draw (111) edge [bend right] node[yshift=-3mm]{$1$} (101);
-%   \draw (101) edge [] node[yshift=1.5mm, xshift = 2mm]{$2\lambda$} (111);
+% % Is it possible that we can use Burnside Polya counting (group actions) to show how many different distinct cycle configurations we get?
 
-%   \draw (110) edge [bend left] node[yshift=3mm]{$1$} (010);
-%   \draw (010) edge [] node[yshift=-2mm, xshift=1.5mm]{$2 \lambda$} (110);
-
-%   \draw (101) edge [] node[yshift=-3mm]{$2$} (100);
-
-%   \draw (110) edge [] node[yshift=3mm]{$1$} (100);
-%   \draw (100) edge [bend left] node[yshift=3mm]{$\lambda$} (110);
-
-%   \draw (010) edge [] node[yshift=3mm]{$1$} (000);
-%   \draw (100) edge [] node[yshift=-3mm]{$1$} (000);
-
-\end{tikzpicture}
-    \caption{Projected rates of the four node voter model on cycle. State $2t$ are the configurations with the two matching values together such as $\{1100\}$ and $2s$ are the configurations with matching values apart such as $\{0101\}$}
-    \label{fig:four_node_voter_cycle_rates}
-\end{figure}
-
-% Is it possible that we can use Burnside Polya counting (group actions) to show how many different distinct cycle configurations we get?
+% \subsection{Torus in \texorpdfstring{$Z^d${Zd}}

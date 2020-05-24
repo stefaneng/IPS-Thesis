@@ -1,5 +1,5 @@
 \section{Continuous phase-type distributions}
-\begin{defn}[Phase-shift distribution] % \cite{mle_phase_type2011}
+\begin{defn}[Phase-type distribution] % \cite{mle_phase_type2011}
 \cite{neuts1981}, \cite{maier1992}
 Let $(X_t)$ be a continuous-time Markov chain with a finite state space $\Omega$ with exactly one absorbing state and $n$ transient states.
 Let $Q$ be the infinitesimal generator matrix ($n + 1 \times n + 1$) for the process which has the form
@@ -9,14 +9,14 @@ Q = \begin{pmatrix}
 \mathbf{0} & 0
 \end{pmatrix}
 $$
-Where $\mathbf{S}$ is $n \times n$, and $\mathbf{S}_0 = - \mathbf{S} \mathbf{1}$ is $n \times 1$ where $\mathbf{1}$ is a $n$ dimensional column vector of ones.
+where $\mathbf{S}$ is $n \times n$, and $\mathbf{S}_0 = - \mathbf{S} \mathbf{1}$ is $n \times 1$ where $\mathbf{1}$ is the $n$ dimensional column vector of ones.
 Let $\boldsymbol{\alpha}$ be a $1 \times n$ matrix of initial probabilities of starting in each state.
 
 The distribution of the finite absorption time of the  continuous Markov chain $(X_t)$ is said to be \textbf{phase-type distributed} which we denote as $PH_c(\boldsymbol{\alpha}, S)$.
 \end{defn}
 
 \begin{theorem} \label{thm:phase-type-pdf-cdf}
-Let $\tau \sim PH(\boldsymbol{\alpha}, \mathbf{S})$.
+Let $\tau \sim PH_c(\boldsymbol{\alpha}, \mathbf{S})$.
 Then $\tau$ has distribution function
 $$
 F(x) = 1 - \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{1}
@@ -26,7 +26,7 @@ $$
 f(x) = \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0
 $$
 where
-$\mathbf{S}_0 = - S \mathbf{1}$.
+$\mathbf{S}_0 = - \mathbf{S 1}$.
 \end{theorem}
 
 \begin{proof}
@@ -59,7 +59,7 @@ See \cite{neuts1981} or \cite{mle_phase_type2011}
 \end{proof}
 
 \begin{example}
-The exponential distribution distribution is a phase-type distribution:
+The exponential distribution is a phase-type distribution:
 Let $\mathbf S = - \lambda$, $\mathbf{S}_0 = \lambda$ and $\boldsymbol{\alpha} = 1$.
 \end{example}
 
@@ -77,11 +77,7 @@ A mixture of 3 exponential distributions with rates $\lambda_1, \lambda_2, \lamb
 \end{example}
 
 \begin{defn}[Erlang Distribution] \label{defn:erlang}
-A random variable $X$ is said to be Erlang distributed if it is supported on $[0, \infty)$ with two parameters: $k \in \{1,2,\ldots\}$ for the shape and $\lambda \in (0,\infty)$ for the rate with probability density function
-$$
-f(x) = \frac{\lambda ^{k}x^{{k-1}}e^{{-\lambda x}}}{(k-1)!}
-$$
-for $x, \lambda \geq 0$
+A random variable $X$ is said to be Erlang distributed if it is gamma distributed with $\alpha \in \{1,2,\ldots\}$ and rate $\beta$.
 \end{defn}
 
 \begin{example}
@@ -99,7 +95,6 @@ As an example we show that $k = 4$ has representation
     \mathbf{S}_0 &= (0, 0, 0, \lambda)^T\\
     \alpha &= (1,0,0,0)
 \end{align*}
-which is easy to verify that the PDF from Theorem \ref{thm:phase-type-pdf-cdf} has the same PDF as the Erlang distribution from Definition \ref{defn:erlang}.
 \end{example}
 
 \section{Discrete phase-type distributions}
@@ -116,33 +111,28 @@ $$
 Where $\mathbf{S}$ is $n \times n$, and $\mathbf{S} \mathbf{1}  + \mathbf{S}_0 = \mathbf{1}$ where $\mathbf{1}$ is a $n$ dimensional column vector of ones.
 Let $\boldsymbol{\alpha}$ be a $1 \times n$ matrix of initial probabilities of starting in each state.
 
-The distribution of the first passage time to the absorbing state in the discrete-time Markov chain $(X_n)$ is denoted as $PH_d(\boldsymbol{\alpha}, S)$.
+The distribution of the time to the absorbing state in the discrete-time Markov chain $(X_n)$ is denoted as $PH_d(\boldsymbol{\alpha}, S)$.
 
 The CDF is given by
 $$
 F(k) = 1 - \boldsymbol{\alpha} \mathbf{S}^k \mathbf{1}
 $$
-with density
+with probability mass function
 $$
 f(k) = \boldsymbol{\alpha} \mathbf{S}^{k - 1} \mathbf{S}_0
 $$
 \end{defn}
 
 \begin{example}
-The geometric distribution distribution with parameter $p$ is a discrete phase-type distribution:
+The geometric distribution  with parameter $p$ is a discrete phase-type distribution:
 Let $\mathbf S = 1 - p$, $\mathbf{S}_0 = p$ and $\boldsymbol{\alpha} = 1$.
 \end{example}
-
-\begin{lemma}\cite{neuts1981}
-The matrix $S$ is non-singular if and only if the states $1,\ldots, n$ of $S$ are transient.
-\end{lemma}
 
 % TODO: Add table of continuous/discrete analogs
 
 \section{Closure characterisation}
 
-\cite{neuts1975} proved the closure properties of the phase-type distributions.
-That is, that the class of phase-type distributions is closed under finite mixture, finite convolutions, and geometric mixtures.
+\cite{neuts1975} proved that the class of phase-type distributions is closed under finite mixture, finite convolutions, and geometric mixtures.
 Later it was shown in \cite{maier1992}, that the phase-type distributions are the smallest class of distributions that have these properties.
 
 \begin{defn}[Geometric Mixture] \cite{maier1992}
@@ -156,9 +146,6 @@ where $*$ denotes convolution.
 \end{defn}
 
 \begin{theorem}\cite{maier1992} Theorem 2.1
-
-Denote $PH_c$ as the class of (continuous) phase-type distributions.
-
 $PH_c$ is the smallest family of positive, real-valued distributions which satisfy:
 \begin{enumerate}
     \item Contains all exponential distributions and the point mass at 0
@@ -168,9 +155,6 @@ $PH_c$ is the smallest family of positive, real-valued distributions which satis
 \end{theorem}
 
 \begin{theorem}\cite{maier1992} Theorem 2.2
-
-Denote $PH_d$ as the class of discrete phase-type distributions.
-
 $PH_d$ is the smallest family of positive, real-valued distributions which satisfy:
 \begin{enumerate}
     \item Contains the point mass at 0 and point mass at 1

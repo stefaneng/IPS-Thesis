@@ -12,14 +12,30 @@ Unless otherwise specified, in this paper a geometric distribution is assumed to
 
 \begin{defn}[Exponential Distribution]
 Let $X$ be a random variable.
-If $X$ has a probability density function of
+If $X$ has a probability density function
 $$
-f(x) = \begin{cases}
+f(x; \lambda) = \begin{cases}
     \lambda e^{-\lambda x} & x > 0\\
     0 & x \leq 0
     \end{cases}
 $$
 then we say that $X$ is exponentially distributed with rate $\lambda$, denoted as $X \sim \exp(\lambda)$.
+\end{defn}
+
+\begin{defn}[Gamma Distribution]
+Let $X$ be a random variable.
+If $X$ has a probability density function
+$$
+f(x; \alpha, \beta) = \frac{1}{\Gamma(\alpha)} \beta^\alpha x^{\alpha - 1} e^{-\beta x} \quad x > 0, \alpha, \beta > 0
+$$
+where
+$$
+\Gamma(\alpha) = \begin{cases}
+    (\alpha + 1) ! & \alpha \in \{1,2,\ldots\}\\
+    \int_{0}^\infty x^{\alpha - 1} e^{-\alpha} ~dx \quad \alpha \in (0, \infty)
+\end{cases}
+$$
+then we say that $X$ has a gamma distribution with a shape parameter $\alpha \in (0, \infty)$ and rate parameter $\beta \in (0, \infty)$.
 \end{defn}
 
 \begin{theorem}\label{thm:exp_x_less_y}
@@ -41,7 +57,7 @@ $$
 \end{proof}
 
 \begin{theorem}\label{thm:exp_t_cond}
-Let $X \sim \exp(\alpha)$ and $Y \sim \exp(\beta)$ be independent random variables with $T = \min(X,Y)$
+Let $X$ be exponentially distributed with parameter $\alpha$ (denoted $X \sim \exp(\alpha)$) and $Y \sim \exp(\beta)$ be independent random variables with $T = \min(X,Y)$
 Then $T \sim \exp(\alpha + \beta)$.
 \end{theorem}
 
@@ -80,7 +96,7 @@ for all $z \in \R$ in which the sum converges.
 \begin{note}
 For a discrete non-negative integer-valued random variable $X$,
 \begin{itemize}
-    \item $G_X(0) = P(X = 0)$ since $0^0 = 1$
+    \item $G_X(0) = P(X = 0)$ since we define $0^0 = 1$
     \item $G_X(1) = 1$
 \end{itemize}
 \end{note}
@@ -96,7 +112,7 @@ $$
 Some properties about the characteristic function
 \begin{itemize}
     \item $\varphi_X(0) = 1$
-    \item If the $k$th moment exists for $X$ then $\varphi_X$ is $k$ times differentiable and $E[X^k] = i^{-k} \varphi_{X}^{(k)}(0)$
+    \item If the $k$th moment exists for $X$ then $\varphi_X$ is $k$ times differentiable and $E[X^k] = \varphi_{X}^{(k)}(0) i^{-k}$
 \end{itemize}
 \end{remark}
 
@@ -106,7 +122,7 @@ Let $X$ be a discrete random variable on the non-negative integers and $G_X(z)$ 
     \item $E[X] = G'(1)$
     \item $E[X (X - 1) \cdots (X - k + 1)] = G^{(k)}(1)$
 \end{itemize}
-Provided the derivatives exist.
+provided the derivatives exist.
 \end{theorem}
 
 \begin{proof}
@@ -120,6 +136,10 @@ G_{X + Y}(z) = G_X(z) G_Y(z)
 $$
 for $z \in \R$ in which the sums converge.
 \end{theorem}
+
+\begin{proof}
+See \cite{grimmett2001} or \cite{Ross_SP_95}
+\end{proof}
 
 \begin{theorem}
 For any independent random variables $X$ and $Y$,
@@ -176,18 +196,18 @@ $$
 
 \begin{defn}[Finite mixture]
 Let $X_1,\ldots, X_n$ be random variables.
-First sample from the random variables according to weights $\alpha = (\alpha_1, \ldots, \alpha_n)$ with $\sum_i \alpha_i = 1$ and $\alpha_i \geq 0$.
-Then realize the selected random variable.
+We first sample from the random variables according to weights $\alpha = (\alpha_1, \ldots, \alpha_n)$ with $\sum_i \alpha_i = 1$ and $\alpha_i \geq 0$.
+Then choose a realization from the selected random variable.
 This new random variable $X$ is called a \textbf{mixture} of $X_1,\ldots, X_n$.
 
-Let $F_1, \ldots, F_n$ be the corresponding cumulative density functions of $X_1, \ldots, X_n$ and $f_1, \ldots, f_n$ the probability density functions (if they exist).
+Let $F_1, \ldots, F_n$ be the corresponding cumulative distribution functions (CDF) of $X_1, \ldots, X_n$ and $f_1, \ldots, f_n$ the probability density functions (if they exist).
 Then the CDF of $X$ is defined as
 $$
 F(x) = \sum_{j = 1}^n \alpha_j F_j(x)
 $$
 and the PDF is defined as
 $$
-f(x) = \sum_{j = 1}^n \alpha_j F_j(x)
+f(x) = \sum_{j = 1}^n \alpha_j f_j(x)
 $$
 \end{defn}
 
@@ -199,13 +219,13 @@ $$
 \end{defn}
 
 \begin{theorem}
-Let $X$ and $Y$ be independent continuous random variables with density functions $f$ and $g$.
+Let $X$ and $Y$ be independent absolutely continuous random variables with density functions $f$ and $g$.
 
 Then the distribution of $Z = X + Y$ has a density function
 $$
 h(z) = (f * g)(z)
 $$
-where $*$ is the convolution.
+where $*$ is convolution.
 
 If $X$ and $Y$ are independent integer random variables, then
 $$
@@ -213,13 +233,15 @@ P(Z = z) = \sum_{k = -\infty}^\infty P(X = k) P(Y = z - k)
 $$
 \end{theorem}
 
-\begin{defn}[Hazard Function]\cite{ross1996stochastic}
-Let $T$ random variable with PDF $f(t)$ and CDF $F(t)$ and the survival function $S(t) = 1 - F(t)$.
-Then the hazard function is defined as
-$$
-h(t) = \frac{f(t)}{S(t)}
-$$
-\end{defn}
+% \begin{defn}[Hazard Function]\cite{ross1996stochastic}
+% Let $T$ random variable with PDF $f(t)$ and CDF $F(t)$ and the survival function $S(t) = 1 - F(t)$.
+% Then the hazard function is defined as
+% $$
+% h(t) = \frac{f(t)}{S(t)}
+% $$
+
+% If $T$ represents some event, then the hazard function $h(t)$ is the probability of an event occurring in $t + dt$ given that no event has occurred until time $t$. 
+% \end{defn}
 
 \subsection{Random Sums}
 
@@ -279,9 +301,9 @@ $$
 $$
 It follows that
 \begin{align*}
-    E[S] &= \varphi'_S(1)\\
-    &= i^{-1} G'_N(\varphi_X(0)) \cdot \varphi'_X(0)\\
-    &= G'_N(1) [i^{-1} \varphi'_X(0)]   \\
+    E[S] &= \varphi'_S(1) i^{-1}\\
+    &=  G'_N(\varphi_X(0)) \cdot \varphi'_X(0) i^{-1}\\
+    &= G'_N(1) [\varphi'_X(0) i^{-1}]   \\
     &= E[N] E[X]
 \end{align*}
 
@@ -296,7 +318,7 @@ It follows that
 \end{proof}
 
 \begin{theorem} \label{thm:random_sum_var}
-Let $X_1, X_2, \ldots$ be i.i.d random variables and $N$ a non-negative integer random variable independent of ($X_n$).
+Let $X_1, X_2, \ldots$ be i.i.d random variables with finite variance and $N$ a non-negative integer random variable with finite variance, independent of ($X_n$).
 Then,
 $$
 \Var\left( \sum_{i = 1}^N X_i \right) = E[N]\Var(X) + (E[X])^2 \Var(N)
@@ -355,7 +377,7 @@ $$
 \lim_{n \to \infty} \int f d\mu_n = \int f d\mu
 $$
 for all bounded and continuous functions $f$.
-If $F_n$ and $F$ are the CDFs of $\mu_n$ and $F$ then this is equivalent to
+If $F_n$ and $F$ are the CDFs of $\mu_n$ and $\mu$ then this is equivalent to
 $$
 \lim_{n \to \infty} F_n(x) = F(x)
 $$
@@ -377,7 +399,7 @@ If $X_n \Rightarrow X$ and $Y_n \Rightarrow c$, where $c$ is a constant, then $X
 \begin{defn}[Discrete Markov chain] \cite{schapira2017}
 Let $\{X_n : n \geq 0\}$ be a stochastic process with a finite or countable state space $S$.
 Each $X_n$ is a discrete random variable with $X_n \in S$.
-Let $\mathscr{F}_n = \sigma\{X_0, X_1, \ldots, X_n\}$ which is the $\sigma$-algebra generated by the process up to time $t$.
+Let $\mathscr{F}_n = \sigma\{X_0, X_1, \ldots, X_n\}$ which is the $\sigma$-algebra generated by the process up to time $n$.
 The process $(X_n)$ is a discrete-time Markov chain if
 $$
 P(X_{n + 1} \in B | \mathscr{F}_n) = P(X_{n + 1} \in B | X_n)
@@ -394,7 +416,7 @@ We say that a discrete-time Markov chain $(X_n)$ with state space $S$ is \textbf
 $$
 P(X_{n + 1} = j | X_n = i) = P(X_{1} = j | X_0 = i) = \mathbf{P}(i,j) = p_{ij}
 $$
-$\mathbf{P} = (p_{ij})$ is the $|S| \times |S|$ matrix of transition probabilities
+where $\mathbf{P} = (p_{ij})$ is the $|S| \times |S|$ matrix of transition probabilities
 $$
 p_{ij} = P(X_{n + 1} = i | X_n = j)
 $$
@@ -408,16 +430,15 @@ Since for a fixed $i$, $P(i, \cdot)$ is a probability measure then we have that
     \item $p_{ij} \geq 0$ for all $i,j$
     \item $\mathbf{P}$ row sums equal one
     $$
-    \sum_{j = 0}^\infty p_{ij} = 1
+    \sum_{j \in S} p_{ij} = 1 \quad \text{for each } i \in S
     $$
-    for $i = 0, 1, \ldots$
 \end{itemize}
 \end{remark}
 
 \begin{defn}[Continuous-time Markov chain] \cite{schapira2017}
-Let $(X_t) = \{X(t) : t \in \mathbb T\}$, where $\mathbb T$ is some index set (generally $\mathbb T = [0, \infty)$ represents time), be a stochastic processes with countable state space $S$.
+Let $(X_t) = \{X(t) : t \in \mathbb T\}$, where $\mathbb T$ is some index set (generally $\mathbb T = [0, \infty)$ representing time), be a stochastic process with countable state space $S$.
 Let $(\mathscr{F}_t)$ be the natural filtration of $(X_t)$, i.e., $\mathscr{F}_t = \sigma\{ X_s : s \leq t \}$.
-The process $(X_t)$ is a continuous-time Markov chain if
+The process $(X_t)$ is a continuous-time Markov chain (CTMC) if
 $$
 P(X_{t} \in B | \mathscr{F}_s) = P(X_{t} \in B | X_s)
 $$
@@ -431,7 +452,7 @@ for all $s < t$ and $B \subset S$.
 \end{defn}
 
 \begin{defn}
-A function $f$ is $o(h)$ if 
+A function $f$ is $o(h)$ as $h$ goes to 0 if 
 $$
 \lim_{h \to 0} \frac{f(h)}{h} = 0
 $$
@@ -455,6 +476,18 @@ $$
 \begin{defn}[Embedded Markov Chain]
 Let $(X_t)$ be a continuous-time Markov chain with infinitesimal generator matrix $Q$ and $Y_n$ be the position of the $n$th jump of the process $(X_t)$ with $Y_0$ the initial state of the chain $(X_t)$.
 This discrete-time Markov chain $(Y_n)$ is called the \textbf{embedded} (discrete) Markov chain of the process $(X_t)$.
+\end{defn}
+
+\begin{defn}[Transient and Recurrent States] \cite{grimmett2001}
+Assume we have a Markov chain with state space $S$.
+A state $i \in S$ is transient if
+$$
+P(X_n = i \text{ for some } n \geq 1 | X_0 = i) < 1
+$$
+and recurrent if
+$$
+P(X_n = i \text{ for some } n \geq 1 | X_0 = i) = 1
+$$
 \end{defn}
 
 \begin{defn}[Absorbing State] \cite{grinstead2003}
@@ -487,7 +520,10 @@ The number of visits to each state is geometrically distributed, with parameter 
 \end{theorem}
 
 \begin{theorem} \label{thm:fund_exp} \cite{grinstead2003}
-For an absorbing Markov chain with $B$ is an $t \times t$ matrix of transient states from the canonical form. Let $N$ be a matrix with the same dimensions as $B$. $N_{ij}$ is the expected number of times the chain is in state j when starting in state i for transient states $i$ and $j$. Then,
+Assume that we have an absorbing Markov chain.
+Let $B$ be the  $t \times t$ matrix of transient states from the canonical form.
+Let $N$ be a matrix with the same dimensions as $B$.
+$N_{ij}$ is the expected number of times the chain is in state j when starting in state i for transient states $i$ and $j$. Then,
 \begin{equation}
     N = I + B + B^2 + \cdots = (I - B)^{-1}
 \end{equation}
@@ -501,10 +537,10 @@ See \cite{grinstead2003}
 Let $(X_n)$ be a discrete-time Markov chain with state space $\Omega$ and transition matrix $P$.
 Let $\sim$ be an equivalence relation on $\Omega$ and denote the equivalences classes as $\Omega' = \{[x]: x \in \Omega\}$.
 
-If $x \sim x'$ implies that $P(x,[y]) = P(x', [y])$ (where $P(x,A)$ is probability that the chain moves to one of the states $y \in A$ from $x$) then $([X_n])$  is a Markov chain.
-The state space is the equivalence classes $\Omega'$ and transition matrix $P'$ defined as $P'([x],[y]) := P(x, [y])$
+If $x \sim x'$ implies that $P(x,[y]) = P(x', [y])$ (where $P(x,A)$ is probability that the chain moves in one step to one of the states $y \in A$ from $x$) then $([X_n])$  is a Markov chain.
+The state space is the equivalence classes $\Omega'$ and transition matrix $P'$ defined as $P'([x],[y]) := P(x, [y])$.
 
-We call this new Markov chain $([X_n])$ a projection of $(X_n)$ or that we projected $(X_n)$ onto $([X_n])$.
+We call this new Markov chain $([X_n])$ a projection of $(X_n)$ and say that we projected $(X_n)$ onto $([X_n])$.
 \end{theorem}
 
 \begin{theorem}\label{thm:x_N_indep}
@@ -515,16 +551,16 @@ The sequence of holding times $(U_n)$ is conditionally independent given the seq
 Also, each $U_i | (Y_n) \sim \exp(Q(Y_i,Y_i))$
 \end{theorem}
 
-The core of the proof is included in the following theorem:
+While we do not prove this, we mention that the core of the proof is included in the following theorem:
 
 \begin{theorem}
 Let $X \sim \exp(\alpha)$ and $Y \sim \exp(\beta)$ be independent random variables with $T = \min(X,Y)$.
-Then $T$ is independent of $X < Y$.
+Then $T$ is independent of $\{X < Y\}$.
 \end{theorem}
 
 \begin{proof}
 Let $f(x,y)$ be the joint distribution of $X$ and $Y$.
-Since $X$ and $Y$ are independent, then $f(x,y) = \alpha \beta e^{-\alpha x} e^{-\beta y}$.
+Since $X$ and $Y$ are independent, then $f(x,y) = \alpha \beta e^{-\alpha x} e^{-\beta y}, x,y \geq 0$.
 \begin{align*}
     P((T > t) \cap (X < Y)) &= P((X > t) \cap (Y > t) \cap (X < Y))\\
     &= \int_t^\infty \int_t^y f(x,y) dx dy\\
@@ -548,7 +584,7 @@ Since both $T | \{X < Y\} \sim \exp(\alpha + \beta)$ and $T \sim \exp(\alpha + \
 \end{proof}
 
 \begin{theorem}[Forward and backward equations] \cite{grimmett2001}
-Assume that we have a CTMC on a finite state space $\Omega$ with $P_t = p_{ij}(t)$ where $p_{ij}(t)$ is the homogeneous transition probability from state $i$ to state $j$ in a time interval of length $t$.
+Assume that we have a continuous-time Markov chain on a finite state space $\Omega$ with $P_t = p_{ij}(t)$ where $p_{ij}(t)$ is the homogeneous transition probability from state $i$ to state $j$ in a time interval of length $t$.
 
 The \textbf{forward equations} are
 \begin{equation}
@@ -558,7 +594,7 @@ The \textbf{forward equations} are
 
 that is
 $$
-p_{ij}'(t) = \sum_{k} p_{ik}(t) g_{kj}
+p_{ij}'(t) = \sum_{k} p_{ik}(t) q_{kj}
 $$
 for each state $i,j \in \Omega$.
 
@@ -583,7 +619,7 @@ A counting process is a stochastic process $\{N(t), t \geq 0\}$ that represents 
 
 \begin{defn}[Independent increments]
 Let $(X_t)_{t \in \mathbf T}$ be a stochastic process (with $\mathbf T = \N$ or $\mathbf T = \R^+$).
-Then for times $t_0, \ldots, t_n \in \mathbf T$ with $t_0 < \cdots < t_n$ we have that
+We say that $(X_t)_{t \in \mathbf T}$ has independent increments if for times $t_0, \ldots, t_n \in \mathbf T$ with $t_0 < \cdots < t_n$ we have that
 $$
 (X_{t_1} - X_{t_0}), (X_{t_2} - X_{t_1}), \ldots, (X_{t_n} - X_{t_{n - 1}})
 $$
@@ -591,7 +627,7 @@ are independent.
 \end{defn}
 
 \begin{defn}[Stationary increments]
-A stochastic process $(X_t)_{t \in \mathbf T}$ has stationary if for $s,t \in \mathbf{T}$ with $s \leq t$ then $X_t - X_s$ has the same distribution as $X_{t - s}$
+A stochastic process $(X_t)_{t \in \mathbf T}$ has stationary increments if for $s,t \in \mathbf{T}$ with $s \leq t$ then $X_t - X_s$ has the same distribution as $X_{t - s}$
 \end{defn}
 
 \begin{defn}[Poisson Process] \cite{Ross_SP_95}
@@ -610,8 +646,8 @@ equivalently
 \begin{enumerate}
     \item $N(0) = 0$
     \item $\{N(t)\}$ has independent and stationary increments.
-    \item $P(N(h) = 1) = \lambda h + o(h)$
-    \item $P(N(h) \geq 2) = o(h)$
+    \item $P(N(h) = 1) = \lambda h + o(h)$ as $h$ goes to 0.
+    \item $P(N(h) \geq 2) = o(h)$ as $h$ goes to 0.
 \end{enumerate}
 \end{defn}
 
@@ -651,14 +687,15 @@ $$
 
 \begin{theorem}[Poisson Thinning] \label{thm:poisson_thinning}
 Let $\{N(t), t \geq 0\}$ be a Poisson process with rate $\lambda$ and $\{X_n\}$ interarrival times.
-Assume that for each $X_n$ in the process, we classify as 1 with rate $p$ and 0 at rate $1 - p$.
+Assume that for each $X_n$ in the process, we classify as 1 with probability $p$ and 0 with probability $1 - p$.
 The set of all 1 classified points is a Poisson process $\{N_1(t), t \geq 0\}$ with rate $p \lambda$.
 Similarly the set of all 0 classified points is a Poisson process $\{N_0(t), t \geq 0\}$ with rate $(1 - p) \lambda$.
+$\{N_0(t), t \geq 0\}$ and $\{N_1(t), t \geq 0\}$ are also independent.
 \end{theorem}
 
 \begin{theorem}[Poisson Superposition] \label{thm:poisson_super}
-Let $\{N_{\lambda_1}(t), t \geq 0\}$ and $\{N_{\lambda_2}(t), t \geq 0\}$ be Poisson processes with rate $\lambda_1$ and $\lambda_2$ respectively.
-Combining the points from each process we get a new process $\{N(t) = N_{\lambda_1}(t) + N_{\lambda_2}(t), t \geq 0\}$ with rate $\lambda_1 + \lambda_2$.
+Let $\{N_{\lambda_1}(t), t \geq 0\}$ and $\{N_{\lambda_2}(t), t \geq 0\}$ be independent Poisson processes with rate $\lambda_1$ and $\lambda_2$ respectively.
+Combining the points from each process we get a new Poisson process $\{N(t) = N_{\lambda_1}(t) + N_{\lambda_2}(t), t \geq 0\}$ with rate $\lambda_1 + \lambda_2$.
 \end{theorem}
 
 \section{Matrix Exponential}
