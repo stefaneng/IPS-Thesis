@@ -20,7 +20,7 @@ $$
 P^\eta(\eta_t = \eta_x) = q(\eta, \delta) t + o(t)
 $$
 
-Denote $\delta_0$, $\delta_1$ be point masses on the configuration of all zeros and all ones respectively.
+Denote $\delta_0$, $\delta_1$ be point masses on the configuration of all 0's and all 1's respectively.
 \end{defn}
 
 \begin{defn}
@@ -31,15 +31,15 @@ $$
 $$
 \end{defn}
 
-If the graph $S$ is finite, then the process will eventually converge to the configuration of all zeros.
+If the graph $S$ is finite, then the process will eventually converge to the configuration of all 0's.
 When the graph $S$ is infinite, then the limiting behavior of the system varies depending on $\lambda$.
-The point mass on the configuration of all zeros, $\delta_0$, is clearly a stationary distribution since no 0 is able to change to a 1.
+The point mass on the configuration of all 0's, $\delta_0$, is clearly a stationary distribution since no 0 is able to change to a 1.
 
 \begin{theorem} \cite{Liggett2002}
 For a contact process on d-dimensional lattice $\Z^d$ there is a critical value $\lambda_c = \lambda_c(d) \in \left( \frac{1}{2d - 1}, \frac{2}{d} \right)$ such that
 \begin{itemize}
     \item If $\lambda \leq \lambda_c$ then $\eta_t$ converges weakly to $\delta_0$. % TODO: More detail on this
-    \item If $\lambda > \lambda_c$ then there is some other stationary distribution $\nu \not = \delta_0$ such that $\eta_t$ converges weakly to $\nu$ for all initial configurations with infinitely many ones.
+    \item If $\lambda > \lambda_c$ then there is some other stationary distribution $\nu \not = \delta_0$ such that $\eta_t$ converges weakly to $\nu$ for all initial configurations with infinitely many 1's.
 \end{itemize}
 \end{theorem}
 
@@ -81,7 +81,7 @@ The behavior seen on the graph matches shows that the extinction time is proport
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/contact_simulation_torus_25_below_crit.png}
-   \caption{Simulation for contact process with $\lambda = 0.25$ on $\{0,1\}^{(\Z/50) \times (\Z/50)}$. The initial configuration has all nodes as ones.}
+   \caption{Simulation for contact process with $\lambda = 0.25$ on $\{0,1\}^{(\Z/50) \times (\Z/50)}$. The initial configuration has all nodes as 1's.}
   \label{fig:contact_sim_torus_below_crit.png}
 \end{figure}
 
@@ -132,7 +132,7 @@ Q = \begin{blockarray}{ccccc}
 \end{blockarray}
 $$
 Start the process with both nodes at 1.
-We can project this continuous-time Markov chain to the number of ones in the process at a given time.
+We can project this continuous-time Markov chain to the number of 1's in the process at a given time.
 Map $(1,1)$ to 2, $\{(1,0),(0,1)\}$ to a single state 1, and $(0,0)$ to 0.
 This new chain is also a Markov chain by Theorem \ref{thm:mc_projection}.
 
@@ -506,7 +506,7 @@ Using the scaling property of exponential random variables (Theorem \ref{thm:exp
     \frac{2}{1 + \lambda}\sum_{i = 1}^N Y_i &\sim \exp \left( \frac{1 + \lambda}{2} \right)
 \end{align*}
 
-Since $(1 + \lambda)/2 \to \infty$ as $\lambda \to \infty$ then we have a limit of two sequences of random variables, one of which converges in distribution to a constant. So by Theorem \ref{thm:exp_limiting_dist} we can conclude that 
+Since $(1 + \lambda)/2 \to \infty$ as $\lambda \to \infty$ then we have a limit of two sequences of random variables, one of which converges in distribution to a constant. So by Theorem \ref{thm:exp_limiting_dist} we can conclude that
 $$
 \frac{2}{1 + \lambda}\sum_{i = 1}^N Y_i \Rightarrow 0
 $$
@@ -518,7 +518,7 @@ $$
 
 \subsection{Three node contact process \texorpdfstring{$C_3$}{C3}}
 Now we look at the three node contact process on a complete graph.
-Again we project the states to the number of ones in the process which will be a Markov chain by Theorem \ref{thm:mc_projection}, as shown in Figure \ref{fig:mc_three_contact}.
+Again we project the states to the number of 1's in the process which will be a Markov chain by Theorem \ref{thm:mc_projection}, as shown in Figure \ref{fig:mc_three_contact}.
 
 % {{-3x, 3x, 0}, {2\[Lambda] x, -(2 + 2 \[Lambda]) x, 2x}, {0, 2\[Lambda]x, -(1 + 2\[Lambda])x}}
 % Computing the matrix exponential is crazy. Better to leave numeric.
@@ -559,7 +559,7 @@ We can again represent $\tau_{C_3}$ as a random sum
    \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$1$} (0);
 
 \end{tikzpicture}
-    \caption{Projected Markov chain rates of number of ones for three node contact process}
+    \caption{Projected Markov chain rates of number of 1's for three node contact process}
     \label{fig:mc_three_contact}
 \end{figure}
 
@@ -603,7 +603,7 @@ $$
    \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$\frac{1}{1 + 2\lambda}$} (0);
 
 \end{tikzpicture}
-    \caption{Embedded discrete Markov chain for projection to number of ones for three node contact process}
+    \caption{Embedded discrete Markov chain for projection to number of 1's for three node contact process}
     \label{fig:discrete_mc_three_contact}
 \end{figure}
 
@@ -702,7 +702,7 @@ Multiplying $\tau_{C_3}$ by $\frac{3}{2 \lambda^2 + \lambda + 1}$ and using Theo
     \frac{3}{2 \lambda^2 + \lambda + 1} \sum_{i = 1}^{N_1} X_i^{(1)} &\sim \exp\left(
         \frac{2 \lambda^2 + \lambda + 1}{3}
     \right)
-\end{align*}    
+\end{align*}
 Since
 \begin{align*}
     \frac{(2 + 2\lambda)(2 \lambda^2 + \lambda + 1)}{3 (2 \lambda^2 + 3\lambda + 1)} &= \frac{4\lambda^3 + 6 \lambda^2 + 4 \lambda + 2}{6\lambda^2 + 9\lambda + 3}
@@ -764,7 +764,7 @@ Since we have a sum of three random variables, two of which approach 0 in distri
 In Figure \ref{fig:complete_contact_n_node_rates}, we show the transition rates for between the states of the contact process on the complete graph.
 Note that for $i \in \{1,\ldots, n - 1\} $ nodes that have a state of one, we have that the rate of going to $i + 1$ nodes is one of the $n - i$ nodes turning to one, each at a rate of $\lambda i$.
 Thus, a total rate of $i (n - i) \lambda$.
-The rate of going state with $i - 1$ ones is $i$ since we have $i$ nodes that have a potential to switch to zero, each with a rate of one.
+The rate of going to state $i - 1$ in one step is $i$ since we have $i$ nodes that have a potential to switch to zero, each with a rate of one.
 
 \begin{align*}
     i \to i - 1 &= \begin{cases}
@@ -778,7 +778,7 @@ The rate of going state with $i - 1$ ones is $i$ since we have $i$ nodes that ha
 \end{align*}
 
 \begin{lemma}[This is a generalization of Lemma \ref{lem:rw_hit_zero}]\label{lem:rw_p_hit_zero}
-Assume that we have a random walk with $p \in (0, 1)$, $p \not = 1/2$, on $\{0,1,\ldots, n\}$ with transition probabilities 
+Assume that we have a random walk with $p \in (0, 1)$, $p \not = 1/2$, on $\{0,1,\ldots, n\}$ with transition probabilities
 \begin{align*}
     i \to i - 1 &= \begin{cases}
         1 & i = n\\
@@ -810,7 +810,7 @@ Let $A_i$ be the probability of hitting state 0 before state $k$ when starting f
 \end{align*}
 
 The characteristic equation is $f(x) = p x^2 - x + (1 - p)$.
-The roots of this are 
+The roots of this are
 $$
 x = 1 \text{ or } \frac{1 - p}{p}
 $$
@@ -880,7 +880,7 @@ $$
         \left( \frac{1 - p}{p} \right)^{i} - 1
     }
 $$
-If $i = n$, then 
+If $i = n$, then
 $$
 \gamma_n = \frac{
         \left( \frac{1 - p}{p} \right)^{n} - \left( \frac{1 - p}{p} \right)^{n - 1}
@@ -973,14 +973,14 @@ E[N_i] &= (1 + \lambda) \frac{
 
 The distribution of each of the random sums follows from Theorem \ref{thm:geom_sum_exp}
 \begin{align*}
-\sum_{i = 1}^{N_j} X_i^{(j)} &\sim \exp\left( 
+\sum_{i = 1}^{N_j} X_i^{(j)} &\sim \exp\left(
     \frac{\lambda - 1}{\lambda^j - 1} \right)\\
-\sum_{i = 1}^{N_n} X_i^{(n)} &\sim \exp\left( 
+\sum_{i = 1}^{N_n} X_i^{(n)} &\sim \exp\left(
     \frac{\lambda - 1}{\lambda^n - 1}
 \right)
 \end{align*}
 
-Then we divide $\tau_{C_n}$ by 
+Then we divide $\tau_{C_n}$ by
 $E[N_{n}]E[X^{(n)}]$ such that by exponential scaling
 \begin{align*}
 \frac{\lambda - 1}{\lambda^j - 1} \sum_{i = 1}^{N_j} X_i^{(j)} &\sim \exp\left(
@@ -1014,7 +1014,7 @@ For the two and three node case the graph is identical to the complete graph.
 \subsubsection{Four node cycle \texorpdfstring{$S_4$}{S4}}
 We have $2^4 = 16$ possible configurations with four nodes.
 We can combine some of these states which are equivalent under the contact process.
-The state in the original process is denoted as a 4 character string of ones and zeros.
+The state in the original process is denoted as a 4 character string of 1's and 0's.
 There is an edge between neighboring indices which wraps around so that the first and last digits are connected as well.
 
 \begin{align*}
@@ -1027,8 +1027,8 @@ There is an edge between neighboring indices which wraps around so that the firs
 \end{align*}
 
 It is easy to see that this is an equivalence relation that satisfies Theorem \ref{thm:mc_projection}.
-The notation $2_t$ means two nodes with one where the ones have an edge between them (the $t$ is for together),
-and $2_s$ are nodes where the two ones do not have an edge between them.
+The notation $2_t$ means two nodes with one where the 1's have an edge between them (the $t$ is for together),
+and $2_s$ are nodes where the two 1's do not have an edge between them.
 
 % \begin{figure}
 %    \centering

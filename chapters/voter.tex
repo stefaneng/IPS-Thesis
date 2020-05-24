@@ -12,7 +12,7 @@ $$
 \end{cases}
 $$
 On a finite or countable subset $A$ of $S$
-the transition rate from $\eta$ to $\eta_x$ is 
+the transition rate from $\eta$ to $\eta_x$ is
 $$
 q(\eta, \eta_x) = \sum_{y : \eta(y) \not = \eta(x)} P(x,y)
 $$
@@ -78,10 +78,10 @@ Then the voter model with initial state $\eta_0$ is denoted by $\{\eta_t^{\eta_0
 This corresponds to sliding down the graphical representation, following arrows backwards until we reach the value at $\eta_0$.
 
 Now we can define the dual process.
-For each $x \in \Z^d$ at a time $t \geq 0$, 
+For each $x \in \Z^d$ at a time $t \geq 0$,
 denote $A_{x,t}(s) \in \Z^d$ for $0 \leq s \leq t$ as the location on $Z^d$ as we follow the path downwards and moving in the reverse direction on the arrows. This is illustrated in the right figure of Figure \ref{fig:voter_model_dual}.
 The process is $\{A_{x,t}(s) : 0 \leq s \leq t\}$, which is a continuous time random walk with rate $1$ jumps with probability $\frac{1}{2d}$ to each of its neighbors.
-For 2 sites $x, y \in \Z^d$ we have 
+For 2 sites $x, y \in \Z^d$ we have
 $\{A_{x,t}(s) : 0 \leq s \leq t\}$ and $\{A_{y,t}(s) : 0 \leq s \leq t\}$ that are independent until they meet.
 The difference between two random walks is also a random walk.
 Thus, $\{A_{x,t}(s) - A_{y,t}(s) : 0 \leq s \leq t, x,y \in \Z^d\}$ is a random walk with rate $2$ that moves to one of its $2d$ neighbors.
@@ -133,7 +133,7 @@ We will now look at the time for voter model on a finite cycle and complete grap
 In general there are $2^n$ configurations for the cycle but many of these have the same rates due to rotations and the property that interchanging 1's and 0's are equivalent.
 That is, if $\eta$ is a configuration then $1 - \eta$ should be in the same equivalence class.
 
-In the complete graph each node in a configuration is connected to all of the others, we can project a configuration $\eta$ to the minimum number of ones in $\eta$ and $1 - \eta$.
+In the complete graph each node in a configuration is connected to all of the others, we can project a configuration $\eta$ to the minimum number of 1's in $\eta$ and $1 - \eta$.
 $$
 \eta \mapsto \min\left(|\{x : \eta(x) = 1\}|, |\{x : \eta(x) = 0\}|  \right)
 $$
@@ -393,7 +393,7 @@ where $\gamma \approx 0.5772$ is the Euler-Mascheroni constant.
 \begin{theorem}
 Let $\tau_{C_n^{v}}$ be the time until the voter model on the complete graph with $n$ nodes reaches $\equiv 1$ or $\equiv 0$.
 Now let $N_1, N_2, \ldots, N_k$ be the number of visits to states $1, 2, \ldots, k$ respectively, which are geometrically distributed.
-For all $i = 1,2,\ldots, N_i$ and $j = 1,2,\ldots, k$, let 
+For all $i = 1,2,\ldots, N_i$ and $j = 1,2,\ldots, k$, let
 
 $$
 X_i^{(j)} \sim \begin{cases}
@@ -426,7 +426,7 @@ E[\tau_{C_n^{v}}] &= \begin{cases}
 \end{theorem}
 
 \begin{proof}
-The random sums are not independent of each other but the expected value  
+The random sums are not independent of each other but the expected value
 Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is
 \begin{align*}
     E[\tau_{C_n^{v}}] &= E\left[\sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}\right]\\
@@ -474,11 +474,11 @@ $$
 
 %     \draw (2t) edge [bend left] node[yshift=3mm, xshift=1mm]{$2$} (1);
 %     \draw (1) edge [] node[yshift=-2mm, xshift=-1mm]{$1$} (2t);
-    
+
 %     \draw (2s) edge [] node[yshift=-3.5mm, xshift=1mm]{$4$} (1);
-    
+
 %     \draw (1) edge [] node[yshift=-2mm, xshift=-1mm]{$1$} (0);
-    
+
 % \end{tikzpicture}
 %     \caption{Projected rates of the four node voter model on cycle. State $2t$ are the configurations with the two matching values together such as $\{1100\}$ and $2s$ are the configurations with matching values apart such as $\{0101\}$}
 %     \label{fig:four_node_voter_cycle_rates}
