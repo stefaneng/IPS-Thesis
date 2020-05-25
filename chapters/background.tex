@@ -106,6 +106,8 @@ The characteristic function of a random variable $X$ is the function $\varphi_X 
 $$
 \varphi_X(t) = E[e^{itX}]
 $$
+
+where $i = \sqrt{-1}$.
 \end{defn}
 
 \begin{remark}
@@ -511,7 +513,8 @@ The canonical form of the transition matrix is
     \end{pmatrix}
 \end{equation}
 
-where $B$ is an $t \times t$ matrix of transient states, $R$ is an $t \times r$ matrix of absorbing states and $I_{r}$ is the $r \times r$ identity matrix.
+where $B$ is an $t \times t$ matrix, $R$ is an $t \times r$ matrix and $I_{r}$ is the $r \times r$ identity matrix and $0$ is the $r \times t$ matrix of all 0's.
+The first $t$ states are transient and the last $r$ states are absorbing.
 \end{defn}
 
 \begin{theorem}\label{thm:visits_geom}

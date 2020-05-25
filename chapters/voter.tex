@@ -1,9 +1,9 @@
 \section{Overview}
 
 \begin{defn}[Voter Model] \cite{Liggett2002}
-Let $\Z^d$ be the state space and $P$ be the transition probability matrix for a Markov chain on $S$.
-Then $S = \{0,1\}^{\Z^d}$ is the state space for voter model which is a continuous-time Markov chain.
-For $\eta \in \Omega$ denote $\eta(x)$ as the value of the node $x \in \Z^d$ in the configuration $\eta$.
+Let $G = (V,E)$ be a graph with finite or countably infinite vertices (such as $\Z^d$) and $P$ be the transition probability matrix for a Markov chain on $G$.
+Then $S = \{0,1\}^{V}$ is the state space for voter model which is a continuous-time Markov chain.
+For $\eta \in S$ denote $\eta(x)$ as the value of the node $x \in V$ in the configuration $\eta$.
 Let $\eta_x$ be the configuration obtained by changing the value of $\eta$ at the site $x$. That is,
 $$
 \eta_x(y) = \begin{cases}
@@ -11,20 +11,22 @@ $$
     1 - \eta(y) & x = y
 \end{cases}
 $$
-On a finite or countable subset $A$ of $S$
-the transition rate from $\eta$ to $\eta_x$ is
+
+If $S$ is a finite, e.g. a subset of $\{0,1\}^{\Z^d}$, then $\eta$ transitions to $\eta_x$ at a rate of
 $$
 q(\eta, \eta_x) = \sum_{y : \eta(y) \not = \eta(x)} P(x,y)
 $$
-Thus, for any $\eta, \delta \in A$ that differ by more than one sites,
+Thus, for any $\eta, \delta \in S$ that differ by more than one sites,
 $$
 q(\eta, \delta) = 0
 $$
-and $\eta \in A$ transitions to $\delta \in A$ with probability
+and $\eta \in S$ transitions to $\delta \in S$ with probability
 $$
 P^\eta(\eta_t = \delta) = q(\eta, \delta) t + o(t)
 $$
 as $t \downarrow 0$.
+
+If $S$ is infinite then it is more technical to define the process. In this thesis we focus on finite $S$ but the reader can find descriptions of the infinite case in \cite{Liggett1999} or \cite{Liggett2002}.
 
 In general we assume that on $Z^d$ then $P(x,y) = P(0, x - y)$
 where $P(x- y) = \frac{1}{2d}$ if $x$ and $y$ are adjacent and $P(x-y) = 0$ otherwise.
@@ -71,8 +73,8 @@ Assume that we have a voter model on $\Z^d$.
 This description of the dual process for the voter model is a summary of \cite{Liggett1999}.
 We introduce the graphical representation as follows: For every $x \in \Z^d$ there are $d$ corresponding Poisson processes, denoted $\{N_{x,x'}(t), t \geq 0\}$ for each $|x - x'| = 1$, with rate $\frac{1}{2d}$.
 This is shown in Figure \ref{fig:voter_model_dual} for one dimension.
-The arrows from $x$ to $y$ depict the points of the Poisson process $\{N_{x,y}(t), t \geq 0\}$ which represent when $y$ changes its value to the value at site $x$.
-Then by Poisson superposition (Theorem \ref{thm:poisson_super}) we can combine all the $d$ Poisson processes emanating at each site $x$ into one Poisson process with rate $1$.
+The arrows from $x$ to $y$ depicts the points of the Poisson process $\{N_{x,y}(t), t \geq 0\}$ which represent when $y$ changes its value to the value at site $x$.
+Then by Poisson superposition (Theorem \ref{thm:poisson_super}) we can combine all the $d$ Poisson processes emanating from each site $x$ into one Poisson process with rate $1$.
 The site $x$ waits exponential time with rate $1$ and then selects one of its $\frac{1}{2d}$ neighbors to conform to the same value as $x$.
 Then the voter model with initial state $\eta_0$ is denoted by $\{\eta_t^{\eta_0}\}$ where $\eta_t^{\eta_0}(x)$ is the value of the voter model at site $x$.
 This corresponds to sliding down the graphical representation, following arrows backwards until we reach the value at $\eta_0$.
@@ -109,7 +111,7 @@ Take $x, y \in \Z^d$ and let $\{A_{x,t}(s) : 0 \leq s \leq t, x \in \Z^d\}$ and 
 Once $A_{x,t}(\tau) = A_{y,t}(\tau)$ for some $\tau \in [0, t]$ then the voter model process must agree, e.g. $\eta_t(x) = \eta_t(y)$.
 Thus
 \begin{align*}
-P(\eta_t(x) \not = \eta_t(y)) \leq P(A_{x,t}(s) - A_{y,t}(s) \not = 0 : 0 \leq s \leq t, x,y \in \Z^d)
+P(\eta_t(x) \not = \eta_t(y)) \leq P(A_{x,t}(s) - A_{y,t}(s) \not = 0 : 0 \leq s \leq t)
 \end{align*}
 
 % Then $\eta_t(x) = \eta_t(y)$ can happen for one of two reasons
@@ -118,7 +120,7 @@ P(\eta_t(x) \not = \eta_t(y)) \leq P(A_{x,t}(s) - A_{y,t}(s) \not = 0 : 0 \leq s
 %     \item $s > \tau$
 % \end{itemize}
 
-Taking the limit as $t \to \infty$ the RHS goes to 0 by Theorem \ref{thm:rw_recurrent} since $\{A_{x,t}(s) - A_{y,t}(s) : 0 \leq s \leq t, x,y \in \Z^d\}$ is recurrent for $d = 1,2$.
+Taking the limit as $t \to \infty$ the RHS goes to 0 by Theorem \ref{thm:rw_recurrent} since $\{A_{x,t}(s) - A_{y,t}(s) : 0 \leq s \leq t\}$ is recurrent for $d = 1,2$.
 \end{proof}
 
 \begin{figure}[H]
@@ -130,7 +132,7 @@ Taking the limit as $t \to \infty$ the RHS goes to 0 by Theorem \ref{thm:rw_recu
 
 \section{Finite Voter Model}
 We will now look at the time for voter model on a finite cycle and complete graph to reach the configuration of all 1's or all 0's.
-In general there are $2^n$ configurations for the cycle but many of these have the same rates due to rotations and the property that interchanging 1's and 0's are equivalent.
+In general there are $2^n$ configurations for the these graph but many of these have the same rates due to rotations and the property that interchanging 1's and 0's are equivalent.
 That is, if $\eta$ is a configuration then $1 - \eta$ should be in the same equivalence class.
 
 In the complete graph each node in a configuration is connected to all of the others, we can project a configuration $\eta$ to the minimum number of 1's in $\eta$ and $1 - \eta$.
@@ -147,6 +149,9 @@ $$
 Where $\deg(x)$ is the degree of the node $x$.
 So in the case of the cycle, $P(x,y) = 1/2$, and the complete graph with $n$ nodes $P(x,y) = 1/(n - 1)$.
 
+Denote $C_i$ as a complete graph with $i$ vertices.
+In the complete graph each vertex has an edge between all $i - 1$ other vertices in the graph.
+
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/voter_simulation_1d_complete_split_100.png}
@@ -155,15 +160,15 @@ So in the case of the cycle, $P(x,y) = 1/2$, and the complete graph with $n$ nod
 \end{figure}
 
 \subsection{Two node complete/cycle}
-A complete graph (or a cycle) with $N = 3$ nodes has two projected states, $\{0,1\}$.
+A complete graph (or a cycle) with $n = 2$ nodes has two projected states, $\{0,1\}$.
 Assuming that we initialize the voter model to state 1, then we will just wait exponential time with rate 1 before going to the absorbing state 0.
 
 \subsection{Three node complete/cycle}
-A complete graph (or a cycle) with $N = 3$ nodes has two projected states, $\{0,1\}$.
+A complete graph (or a cycle) with $n = 3$ nodes has two projected states, $\{0,1\}$.
 Similarly to the two node case, if we initialize the voter model to state 1, then we will just wait exponential time with rate 1 before going to the absorbing state 0.
 
-\subsection{Four node complete voter model \texorpdfstring{$C^{v}_4$}{VC4}}
-We will now see that when we move to $N = 4$, we will get a more interesting distribution for the absorption time.
+\subsection{Four node complete voter model \texorpdfstring{$C_4$}{VC4}}
+We will now see that when we move to $n = 4$, we will get a more interesting distribution for the absorption time.
 The state space in the projected four node voter model is $\{0,1,2\}$.
 When we are in state 2, then all nodes can switch from 1 to 0 or 0 to 1.
 Each of these switch at a rate of $2 \cdot 1/(4 - 1) = 2/3$ since they are connected to 2 other nodes with the opposite value.
@@ -171,7 +176,7 @@ Thus, the rate from $2 \to 1$ is $8/3$.
 Similarly reasoning leads us to the rates in the form of the infinitesimal generator matrix
 % 2 -> 1 rate 2 * 1/(4 - 1) * 2 = 4/3 is
 $$
-Q_{C^{v}_4} = \begin{blockarray}{cccc}
+Q_{C_4} = \begin{blockarray}{cccc}
     & 2 & 1 & 0\\
     \begin{block}{c|ccc}
         \cline{2-4}
@@ -221,9 +226,9 @@ $$
     3 & 6
 \end{bmatrix}
 $$
-By Theorem \ref{thm:phase-type-pdf-cdf}, where $(\alpha_2, \alpha_1)$ is the probability of starting in state 2 and 1 respectively, we have the density of the absorption time $\tau_{C^{v}_4}$ is given as
+By Theorem \ref{thm:phase-type-pdf-cdf}, where $(\alpha_2, \alpha_1)$ is the probability of starting in state 2 and 1 respectively, we have the density of the absorption time $\tau_{C_4}$ is given as
 \begin{align*}
-    f_{C^{v}_4}(x) &= (\alpha_2, \alpha_1) \exp(x\mathbf{S}) \mathbf{S}_0\\
+    f_{C_4}(x) &= (\alpha_2, \alpha_1) \exp(x\mathbf{S}) \mathbf{S}_0\\
     &= \frac{1}{10} (\alpha_2, \alpha_1) \begin{bmatrix}
     -2 & 4/3\\
     1 & 1
@@ -255,10 +260,10 @@ By Theorem \ref{thm:phase-type-pdf-cdf}, where $(\alpha_2, \alpha_1)$ is the pro
 &= \frac{1}{5} \left[ (-4 \alpha_2 + 2 \alpha_1) \exp(-4x) + (4 \alpha_2 + 3 \alpha_1) \exp\left(-\frac{2}{3} x\right)\right]
 \end{align*}
 
-In Figure \ref{fig:voter_density_c4} we plot the density function for $\tau_{C^{v}_4}$ for varying $\boldsymbol{\alpha} = (\alpha_2, \alpha_1)$ values.
-The expected value of $\tau_{C^{v}_4}$ is given by Theorem \ref{thm:phase-moments}
+In Figure \ref{fig:voter_density_c4} we plot the density function for $\tau_{C_4}$ for varying $\boldsymbol{\alpha} = (\alpha_2, \alpha_1)$ values.
+The expected value of $\tau_{C_4}$ is given by Theorem \ref{thm:phase-moments}
 \begin{align*}
-    E[\tau_{C^{v}_4}] &= -1 (\alpha_2, \alpha_1) \mathbf{S}^{-1} (1, 1)^T\\
+    E[\tau_{C_4}] &= -1 (\alpha_2, \alpha_1) \mathbf{S}^{-1} (1, 1)^T\\
     &= \frac{1}{8} (\alpha_2, \alpha_1) \begin{bmatrix}
     6 & 8\\
     3 & 8
@@ -270,34 +275,33 @@ So when deterministically starting at state 2, we have that the expected value o
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/voter_density_c4.png}
-   \caption{Density of the absorption time for the voter model on the complete graph with four nodes, $C^{v}_4$. The initial stating position is varied between always stating at state $2$, starting at start $1$ and an equal mixture of starting at either 1 or 2.}
+   \caption{Density of the absorption time for the voter model on the complete graph with four nodes, $C_4$. The initial stating position is varied between always stating at state $2$, starting at start $1$ and an equal mixture of starting at either 1 or 2.}
   \label{fig:voter_density_c4}
 \end{figure}
 
-\subsection{N node complete voter model \texorpdfstring{$C^{v}_N$}{VC_N}}
-If $N$ is even, then let $k = N / 2$ and if $N$ is odd then let $k = (N - 1)/2$.
+\subsection{Complete voter model n nodes  \texorpdfstring{$C_n$}{VCn}}
+If $n$ is even, then let $k = n / 2$ and if $n$ is odd then let $k = (n - 1)/2$.
 We have $\{0,\ldots, k\}$ projected states.
 Assume we are in state $i \not = k$.
-To transition to state $i + 1$, we have $N - i$ nodes that can flip to match the $i$ nodes.
-Each one of these nodes will flip with a rate of $\frac{i}{N - 1}$ since the graph is complete and each node is connected to $i$ nodes with the opposite rate.
-Thus, the rate is $(N - i) \frac{i}{N - 1}$.
-Similarly for $i \to i - 1$ transition we have $i$ nodes that can flip at a rate of $\frac{N - i}{N - 1}$ leading to the same rate.
-If $i = k$, and $N$ is even, then we have all $n$ sites that can switch, each at a rate of $k / (N - 1)$.
-If $i = k$, and $N$ is odd, then we have $k$ sites that can switch, each at a rate of $(N - k ) / (N - 1)$.
+To transition to state $i + 1$, we have $n - i$ nodes that can flip to match the $i$ nodes.
+Each one of these nodes will flip with a rate of $\frac{i}{n - 1}$ since the graph is complete and each node is connected to $i$ nodes with the opposite rate.
+Thus, the rate is $(n - i) \frac{i}{n - 1}$.
+Similarly for $i \to i - 1$ transition we have $i$ nodes that can flip at a rate of $\frac{n - i}{n - 1}$ leading to the same rate.
+If $i = k$, and $n$ is even, then we have all $n$ sites that can switch, each at a rate of $k / (n - 1)$.
+If $i = k$, and $n$ is odd, then we have $k$ sites that can switch, each at a rate of $(n - k ) / (n - 1)$.
 We can summarize the rates as follows:
 \begin{align*}
     i \to i - 1 &= \begin{cases}
         0 & i = 0\\
-        Nk & i = k, N \text{ even}\\
-        k (N - k) & i = k, N \text{ odd}\\
-        i (N - i) & i \in \{1,\ldots, k - 1\}
+        \frac{1}{n - 1} nk & i = k, n \text{ even}\\
+        \frac{1}{n - 1}k (n - k) & i = k, n \text{ odd}\\
+        \frac{1}{n - 1} i (n - i) & i \in \{1,\ldots, k - 1\}
     \end{cases}\\
     i \to i + 1 &= \begin{cases}
         0 & i \in \{0, k\}\\
-        i (N - i) & i \in \{1,\ldots, k - 1\}
+        \frac{1}{n - 1} i (n - i) & i \in \{1,\ldots, k - 1\}
     \end{cases}
 \end{align*}
-Where each of the rates are scaled by $1/(N - 1)$.
 The embedded discrete Markov chain is just a random walk on $\{0, k\}$ where 0 is absorbing and $k$ reflects back.
 
 \begin{figure}[H]
@@ -329,7 +333,7 @@ The embedded discrete Markov chain is just a random walk on $\{0, k\}$ where 0 i
 
   \draw (1) edge[left] node[xshift=3mm, yshift=3mm]{$1/2$} (0);
 \end{tikzpicture}
-\caption{Embedded discrete Markov chain of the projected states of the $N$ node complete voter model.}
+\caption{Embedded discrete Markov chain of the projected states of the $n$ node complete voter model.}
   \label{fig:rw_voter_model_discrete}
 \end{figure}
 
@@ -339,7 +343,7 @@ If we start in state $i \in \{1,\ldots, n - 1\}$, then the probability of hittin
 \end{lemma}
 
 \begin{proof}
-Let $A_i$ be the probability of hitting state 0 before state $k$ when starting from state $i \in \{1,\ldots, n - 1\}$ which is satisfied by the recurrence relations
+Let $A_i$ be the probability of hitting state 0 before state $k$ when starting from state $i \in \{1,\ldots, n - 1\}$ which satisfies the recurrence relations
 \begin{align*}
     A_0 &= 1\\
     A_{k} &= 0\\
@@ -391,45 +395,45 @@ where $\gamma \approx 0.5772$ is the Euler-Mascheroni constant.
 \end{theorem}
 
 \begin{theorem}
-Let $\tau_{C_n^{v}}$ be the time until the voter model on the complete graph with $n$ nodes reaches $\equiv 1$ or $\equiv 0$.
+Let $\tau_{C_n}$ be the time until the voter model on the complete graph with $n$ nodes reaches $\equiv 1$ or $\equiv 0$.
 Now let $N_1, N_2, \ldots, N_k$ be the number of visits to states $1, 2, \ldots, k$ respectively, which are geometrically distributed.
 For all $i = 1,2,\ldots, N_i$ and $j = 1,2,\ldots, k$, let
 
 $$
 X_i^{(j)} \sim \begin{cases}
-  \exp\left(\displaystyle \frac{nk}{n - 1}\right) & j = k, N \text{ even}\\[10pt]
-  \exp\left(\displaystyle\frac{k (n - k)}{n - 1}\right) & j = k, N \text{ odd}\\[10pt]
+  \exp\left(\displaystyle \frac{nk}{n - 1}\right) & j = k, n \text{ even}\\[10pt]
+  \exp\left(\displaystyle\frac{k (n - k)}{n - 1}\right) & j = k, n \text{ odd}\\[10pt]
   \exp\left(\displaystyle \frac{2j (n - j)}{n - 1}\right) & j \in \{1, \ldots, k-1\}
 \end{cases}
 $$
 be i.i.d random variables representing the exponential waiting time at each state. Note that
 $$
 E[X_i^{(j)}] = E[X^{(j)}] = \begin{cases}
-  \displaystyle \frac{n - 1}{nk} & j = k, N \text{ even}\\[10pt]
-  \displaystyle \frac{n - 1}{k (n - k)} & j = k, N \text{ odd}\\[10pt]
+  \displaystyle \frac{n - 1}{nk} & j = k, n \text{ even}\\[10pt]
+  \displaystyle \frac{n - 1}{k (n - k)} & j = k, n \text{ odd}\\[10pt]
   \displaystyle \frac{n - 1}{2j (n - j)} & j \in \{1,\ldots, k - 1\}\\
 \end{cases}
 $$
 
-Assuming that we start in state $k$ we can represent $\tau_{C_n^{v}}$ as random sums
+Assuming that we start in state $k$ we can represent $\tau_{C_n}$ as random sums
 \begin{equation}\label{eq:wait_contact_sum_voter}
-    \tau_{C_n^{v}} = \sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
+    \tau_{C_n} = \sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
 \end{equation}
 and
 \begin{align*}
-E[\tau_{C_n^{v}}] &= \begin{cases}
+E[\tau_{C_n}] &= \begin{cases}
     (n - 1) \left[H_{n} - H_{n - k}\right] & n \text{ even}\\
     (n - 1) \left[H_{n - 1} - H_{n - k - 1}\right] & n \text{ odd}
 \end{cases}\\
-    &\approx \ln(2) (n - 1)
 \end{align*}
+Also, $E[\tau_{C_n}]$ is approximately (denoted $\approx$) $\ln(2) (n - 1)$ for large $n$.
 \end{theorem}
 
 \begin{proof}
-The random sums are not independent of each other but the expected value
+The random sums are not independent and have rather complicated dependencies but the expected value can be computed without independence.
 Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is
 \begin{align*}
-    E[\tau_{C_n^{v}}] &= E\left[\sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}\right]\\
+    E[\tau_{C_n}] &= E\left[\sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}\right]\\
     &= E[N_k] E[X^{(k)}] + E[N_{k - 1}] E[X^{(k - 1)}] + \cdots + E[N_1]E[X_i^{(1)}]\\
     &= E[N_k] E[X^{(k)}] + \sum_{j = 1}^{k - 1} E[N_j]E[X^{(j)}]\\
     &= k E[X^{(k)}] + \sum_{j = 1}^{k - 1} 2j \frac{n - 1}{2j (n - j)} \\
@@ -448,17 +452,18 @@ Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is
 In the limit, it does not matter if $n$ is even or odd.
 We have from Theorem \ref{thm:euler_harm_lim} that
 \begin{align*}
-    \lim_{n \to \infty} [H_{n} - H_{n - k}] &=  \lim_{n \to \infty} H_{n} - \lim_{n \to \infty}  H_{n - n/2}\\
-    &= \gamma + \ln(n) - (\gamma + \ln(n/2)\\
+    \lim_{n \to \infty} [H_{n} - H_{n - k}] &=  \lim_{n \to \infty} [H_{n} - \gamma - (H_{n - k} - \gamma)]\\
+    &= \lim_{n \to \infty} (\ln(n) - \ln(n/2))\\
     &= \ln(2) \approx 0.69
 \end{align*}
-Therefore
+Convergence is quite quick and at $n = 30$ we have that $|[H_{n} - H_{n - k}] - ln(2)| = 0.016$.
+Therefore for large $n$ we can say that
 $$
-E[\tau_{C_n^{v}}] \approx \ln(2) (n - 1)
+E[\tau_{C_n}] \approx \ln(2) (n - 1)
 $$
 \end{proof}
 
-% \subsection{Four node cycle \texorpdfstring{$S^{v}_4$}{VS4}}
+% \subsection{Four node cycle \texorpdfstring{$S_4$}{VS4}}
 % State $2t$ is the configurations with the two matching values together such as $\{1100\}$ and $2s$ is the configuration with matching values apart such as $\{0101\}$
 
 % \begin{figure}[H]

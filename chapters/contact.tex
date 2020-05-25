@@ -2,11 +2,12 @@
 \section{Overview}
 \begin{defn}[Contact process]
 Let $S = (V,E)$ be a graph where $V$ is the set of vertices (that have bounded degree) and $E$ is the set of edges.
-Let $X =  \{0,1\}^S$ be the state space.
+Let $X =  \{0,1\}^V$ be the state space.
 A contact process $(\eta_t)$, is a continuous-time Markov chain on $X$ in which each 1 on the graph waits a random time, exponentially distributed, with rate 1 and then becomes a 0.
 Every 0 waits exponentially with rate $k \lambda$, where $k$ is the number of edges shared with a 1.
 Let $\eta$ and $\delta$ be two configurations of the graph $S$ in the process.
-The transition rate matrix can be described as follow
+
+If $S$ is finite, the transition rates can be described as follows
 $$
 q(\eta, \delta) = \begin{cases}
     0 & \eta, \delta \text{ differ in more than one point}\\
@@ -14,57 +15,70 @@ q(\eta, \delta) = \begin{cases}
     \lambda |\{ (x,y) \in E : \eta(y) = 1\}| & \text{differ only at } x, \eta(x) = 0, \delta(x) = 1
 \end{cases}
 $$
-
-For finite $S$ the configuration $\eta$ transitions to $\delta$ with probability
+and $\eta$ transitions to $\delta$ with probability
 $$
-P^\eta(\eta_t = \eta_x) = q(\eta, \delta) t + o(t)
+P^\eta(\eta_t = \delta) = q(\eta, \delta) t + o(t)
 $$
 
 Denote $\delta_0$, $\delta_1$ be point masses on the configuration of all 0's and all 1's respectively.
 \end{defn}
 
 \begin{defn}
-Let $G = (V,E)$ be a graph and $X = \{0,1\}^G$ be the state space for the contact process $(\eta_t)$.
+Let $G = (V,E)$ be a graph and $X = \{0,1\}^V$ be the state space for the contact process $(\eta_t)$.
 Then the extinction time of the process is denoted as
 $$
 \tau_{G} = \inf\{ t \geq 0 : \eta_t \equiv 0 \}
 $$
+which is assumed to have an initial configuration of 1's unless otherwise specified.
 \end{defn}
 
-If the graph $S$ is finite, then the process will eventually converge to the configuration of all 0's.
-When the graph $S$ is infinite, then the limiting behavior of the system varies depending on $\lambda$.
+If the graph $G$ is finite, then the process will eventually converge to the configuration of all 0's.
+When the graph $G$ is infinite, then the limiting behavior of the system varies depending on $\lambda$.
 The point mass on the configuration of all 0's, $\delta_0$, is clearly a stationary distribution since no 0 is able to change to a 1.
 
 \begin{theorem} \cite{Liggett2002}
-For a contact process on d-dimensional lattice $\Z^d$ there is a critical value $\lambda_c = \lambda_c(d) \in \left( \frac{1}{2d - 1}, \frac{2}{d} \right)$ such that
+For the contact process on d-dimensional lattice $\Z^d$ there is a critical value $\lambda_c = \lambda_c(d) \in \left( \frac{1}{2d - 1}, \frac{2}{d} \right)$ such that
 \begin{itemize}
-    \item If $\lambda \leq \lambda_c$ then $\eta_t$ converges weakly to $\delta_0$. % TODO: More detail on this
+    \item If $\lambda \leq \lambda_c$ then $\eta_t$ converges weakly to $\delta_0$ for any initial configuration.
     \item If $\lambda > \lambda_c$ then there is some other stationary distribution $\nu \not = \delta_0$ such that $\eta_t$ converges weakly to $\nu$ for all initial configurations with infinitely many 1's.
 \end{itemize}
 \end{theorem}
 
 In the finite case, the system will eventually be $\equiv 0$ but \cite{Liggett1999} showed that for a finite subset $N^d$ of $Z^d$, then $\tau_{N^d}$ is logarithmic if $\lambda < \lambda_c(\Z^d)$, exponential if $\lambda > \lambda_c(\Z^d)$ and polynomial if $\lambda = \lambda_c(\Z^d)$.
-Later, \cite{schapira2017}, \cite{mourrat2014phase}, and \cite{Mountford2016} showed bounds for general graphs with finite vertices.
-Denote $\mathbb T^d$ as an infinite tree has exactly $d \geq 3$ edges connected to each vertex.
-There are two critical values for a contact process on $\mathbb T^d$, which we denote $\lambda_c^{(1)}(\mathbb T^d)$ and $\lambda_c^{(2)}(\mathbb T^d)$.
-See \cite{mourrat2014phase} for a complete description of what phase transitions occur at each of the critical values.
-% TODO: Describe what happens at the two critical values?
 
-\begin{theorem}[\cite{mourrat2014phase}]\label{thm:contact_finite_log}
-For any $d \in \N$ and $\lambda < \lambda_c^{(1)}(\mathbb T^d)$ there is a constant $C > 0$ such that for any graph $G$ with at least two vertices and with bounded degree less than $d$
+\begin{theorem}[Subcritical Case]\cite{Liggett1999}
+If $\lambda < \lambda_c(\Z^d)$, then
 $$
-E[\tau_{G}] \leq C \log(|G|)
+\frac{\tau_{N^d}}{\log(N)} \to \frac{d}{f(\lambda)}
 $$
-where $|G|$ is the number of vertices of $G$.
+where $f$ is decreasing in $\lambda$ with $f(0) = 1$.
 \end{theorem}
 
-\begin{theorem}[\cite{Mountford2016}] \label{thm:contact_finite_exp}
-For any $d \in \N$ and $\lambda > \lambda_c(\Z)$ there is a constant $k > 0$ such that for any connected graph $G$ with at least two vertices and with bounded degree less than $d$
-$$
-E[\tau_{G}] \geq \exp(k |G|)
-$$
-where $|G|$ is the number of vertices of $G$.
+\begin{theorem}[Supercritical Case]\cite{Liggett1999}
+TODO
 \end{theorem}
+
+% Later, \cite{schapira2017}, \cite{mourrat2014phase}, and \cite{Mountford2016} showed bounds for general graphs with finite vertices.
+% Denote $\mathbb T^d$ as an infinite tree has exactly $d \geq 3$ edges connected to each vertex.
+% There are two critical values for a contact process on $\mathbb T^d$, which we denote $\lambda_c^{(1)}(\mathbb T^d)$ and $\lambda_c^{(2)}(\mathbb T^d)$.
+% See \cite{mourrat2014phase} for a complete description of what phase transitions occur at each of the critical values.
+% % TODO: Describe what happens at the two critical values?
+
+% \begin{theorem}[\cite{mourrat2014phase}]\label{thm:contact_finite_log}
+% For any $d \in \N$ and $\lambda < \lambda_c^{(1)}(\mathbb T^d)$ there is a constant $C > 0$ such that for any graph $G$ with at least two vertices and with bounded degree less than $d$
+% $$
+% E[\tau_{G}] \leq C \log(|G|)
+% $$
+% where $|G|$ is the number of vertices of $G$.
+% \end{theorem}
+
+% \begin{theorem}[\cite{Mountford2016}] \label{thm:contact_finite_exp}
+% For any $d \in \N$ and $\lambda > \lambda_c(\Z)$ there is a constant $k > 0$ such that for any connected graph $G$ with at least two vertices and with bounded degree less than $d$
+% $$
+% E[\tau_{G}] \geq \exp(k |G|)
+% $$
+% where $|G|$ is the number of vertices of $G$.
+% \end{theorem}
 
 \begin{figure}[H]
   \centering
@@ -183,10 +197,10 @@ Q_{C_2} = \begin{blockarray}{cccc}
 \end{figure}
 
 Let $\tau_{C_2}$ be the time in which we hit 0.
-The waiting time while in state 2 is exponentially distributed random variable $X$ with parameter $- q_{2} = 2$ and similarly the waiting time while in state 1 is exponentially distributed with parameter $- q_{(1,0)} = 1 + \lambda$.
+The waiting time while in state 2 is an exponentially distributed random variable $X$ with parameter $- q_{2} = 2$ and similarly the waiting time while in state 1 is exponentially distributed with parameter $- q_{(1,0)} = 1 + \lambda$.
 
 The embedded Markov chain for the process is the discrete-time Markov chain of the jumps in the process.
-For example if the original process $(A_t)$ is $A_{0} = 2, A_{.75} = 1, A_{1.2} = 2, \ldots, A_{23.2} = 0$ then the embedded chain $(B_n)$ is $B_{0} = 2, B_1 = 1, B_2 = 2, \ldots, B_n = 0$.
+For example if the original process $(A_t)$ is $A_{0} = 2, A_{.75} = 1, A_{1.2} = 2, \ldots, A_{23.2} = 0$ without any other jumps, then the embedded chain $(B_n)$ is $B_{0} = 2, B_1 = 1, B_2 = 2, \ldots, B_n = 0$.
 The probability of going from one state to another is shown in Figure \ref{fig:discrete_mc_two_contact}.
 
 Let $N$ be a geometric random variable which denotes the number of times that the process waits at state 1 before moving to the absorbing state 0.
@@ -329,18 +343,6 @@ It follows that
     \end{bmatrix}
 \end{align*}
 
-% Now by Theorem \ref{thm:eigen_matrix_exp}, we can compute $\exp(xS)$ as
-% \begin{align*}
-% \exp(xS) &= T \begin{bmatrix}
-%     \exp(\frac{1}{2}(-3 - \lambda + C)) & 0\\
-%     0 & \exp(\frac{1}{2}(-3 - \lambda - C))
-% \end{bmatrix} T^{-1}\\
-% &= - \frac{1}{2 C} T \begin{bmatrix}
-%     \exp(\frac{-3 - \lambda + C}{2}) & \exp(\frac{-3 - \lambda + C}{2}) \frac{1 - \lambda - C}{2\lambda} \\
-%     - \exp(\frac{-3 - \lambda - C}{2}) & \exp(\frac{1}{2}(-3 - \lambda - C)) \frac{-1 + \lambda - C}{2\lambda}
-% \end{bmatrix}
-% \end{align*}
-
 The density of $\tau_{C_2}$ is defined as
 \begin{align*}
  f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0 \nonumber\\
@@ -387,59 +389,18 @@ Finally plugging back in $C$ we get
       f(x; \lambda) = \frac{2 \exp\left(\frac{1}{2}(-3 - \lambda + \sqrt{\lambda^2 + 6 \lambda + 1}) x\right)}{\sqrt{\lambda^2 + 6 \lambda + 1}}  - \frac{2 \exp\left(\frac{1}{2}(-3 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}) x\right)}{\sqrt{\lambda^2 + 6 \lambda + 1}}
 \end{equation}
 
-% \begin{align}
-% f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0 \nonumber\\
-% &= (1, 0) \exp(\mathbf{S} x) (0,1)^T \nonumber\\
-% &= (1, 0) T \begin{bmatrix}
-%     \exp(\frac{1}{2}(-3 - \lambda + \sqrt{\lambda^2 + 6 \lambda + 1})) & 0\\
-%     0 & \exp(\frac{1}{2}(-3 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}))
-% \end{bmatrix} T^{-1}
-% (0,1)^T \nonumber\\
-% &=
-% \left(\frac{-1 + \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}}{2\lambda}, 1\right) \nonumber \\
-% &\quad\quad \begin{bmatrix}
-%     \exp(\frac{1}{2}(-3 - \lambda + \sqrt{\lambda^2 + 6 \lambda + 1})) & 0\\
-%     0 & \exp(\frac{1}{2}(-3 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}))
-% \end{bmatrix} \nonumber\\
-% &\quad\quad  \begin{bmatrix}
-%     \frac{1 - \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}}{2\lambda}\\
-%     \frac{-1 + \lambda - \sqrt{\lambda^2 + 6 \lambda + 1}}{2\lambda}
-% \end{bmatrix} \nonumber
-% \end{align}
+What does it mean when $\lambda = 0$? This is equivalent to having a graph with two nodes and no edges as no 1's can turn to 0's.
+Each of these nodes starts as 1 and turns to 0 with rate 1.
+If we let $X$ and $Y$ denote these exponential random variables (which are i.i.d), then  the time until both turn to 0 is simply $\max(X,Y)$.
+Let $F$ denote the CDF of $\max(X,Y)$, which by independence is $F(x) = (1 - e^{-x})^2$.
+So if we denote $f$ as the PDF of $\max(X,Y)$ then $f(x) = F'(x) = 2e^{-x}(1 - e^{-x})$.
+We can check that this is equivalent to Equation \eqref{eq:t_density} by plugging in $\lambda = 0$ to get
+\begin{align*}
+f(x) &= 2 e^{\frac{1}{2}(-3 + 1)x} - 2e^{\frac{1}{2}(-3 - 1)x}\\
+&= 2 e^{-x}(1 - e^{-x})
+\end{align*}
 
 % MatrixExp[{{-2 x, 2 x}, {\[Lambda] x, -((1 + \[Lambda]) x)}}] // TeXForm
-
-% Using Wolfram Language we can compute the matrix exponential which is complicated even in this simple case. Let $A = \exp(Sx)$.
-
-% \begin{align*}
-% A_{11} &= \frac{\left(C+\lambda -1\right) e^{\frac{1}{2}
-%   \left(C-\lambda -3\right) x}}{2 C}\\
-%   &\quad\quad- \frac{\left(-C+\lambda -1\right)
-%   e^{\frac{1}{2} \left(-C-\lambda -3\right) x}}{2
-%   C}\\
-%   A_{12} &= \frac{2 e^{\frac{1}{2} \left(C-\lambda -3\right) x}}{C}-\frac{2
-%   e^{\frac{1}{2} \left(-C-\lambda -3\right)
-%   x}}{C}\\
-%   A_{21} &= \frac{\lambda  e^{\frac{1}{2} \left(C-\lambda -3\right)
-%   x}}{C}-\frac{\lambda  e^{\frac{1}{2}
-%   \left(-C-\lambda -3\right) x}}{C}\\
-%   A_{22} &= \frac{\left(C-\lambda +1\right)
-%   e^{\frac{1}{2} \left(C-\lambda -3\right) x}}{2
-%   C}\\
-%   &\quad\quad-\frac{\left(-C-\lambda +1\right) e^{\frac{1}{2} \left(-C-\lambda
-%   -3\right) x}}{2 C}
-% \end{align*}
-
-% Then the density of $\tau_{C_2}$ is defined as
-% \begin{align}
-% f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0 \nonumber\\
-% &= (1, 0) \exp(\mathbf{S} x) (0,1)^T \nonumber\\
-% &= \exp(\mathbf{S} x)_{12} \nonumber\\
-% &= \frac{2 e^{\frac{1}{2} \left(\sqrt{\lambda ^2+6
-%   \lambda +1}-\lambda -3\right) x}}{C}-\frac{2
-%   e^{\frac{1}{2} \left(-C-\lambda -3\right)
-%   x}}{C} \label{eq:t_density}
-% \end{align}
 
 \begin{figure}[H]
   \centering
@@ -499,7 +460,7 @@ By Theorem \ref{thm:geom_sum_exp}, we have that
     \sum_{i = 1}^N X_i &\sim \exp\left( \frac{2}{1 + \lambda} \right)\\
     \sum_{i = 1}^N Y_i &\sim \exp( 1 )
 \end{align*}
-
+Note that these random variable are not independent.
 Using the scaling property of exponential random variables (Theorem \ref{thm:exp_scaling}) we have that
 \begin{align*}
     \frac{2}{1 + \lambda}\sum_{i = 1}^N X_i &\sim \exp( 1 )\\
@@ -538,7 +499,7 @@ Q_{C_3} = \begin{blockarray}{ccccc}
 
 Now let $N_1, N_2, N_3$ be the number of visits to states 1, 2, and 3, respectively.
 Let $X_i^{(1)} \sim \exp(1 + 2\lambda)$ be i.i.d random variables, $X_i^{(2)} \sim \exp(2 + 2\lambda)$ i.i.d and $X_i^{(3)} \sim \exp(3)$ i.i.d.
-Note that $N_1, N_2, N_3$ are not independent of each other, but for each $i$ each state is independent of the waiting times at the state.
+Note that $N_1, N_2, N_3$ are not independent of each other, but for each $j$ we have that $N_j$ is independent of each $(X_i^{(j)})$.
 We can again represent $\tau_{C_3}$ as a random sum
 
 \begin{figure}[H]
@@ -983,9 +944,9 @@ The distribution of each of the random sums follows from Theorem \ref{thm:geom_s
 Then we divide $\tau_{C_n}$ by
 $E[N_{n}]E[X^{(n)}]$ such that by exponential scaling
 \begin{align*}
-\frac{\lambda - 1}{\lambda^j - 1} \sum_{i = 1}^{N_j} X_i^{(j)} &\sim \exp\left(
+\frac{\lambda - 1}{\lambda^n - 1} \sum_{i = 1}^{N_j} X_i^{(j)} &\sim \exp\left(
     \frac{\lambda^n - 1}{\lambda^j - 1} \right)\\
-\frac{\lambda - 1}{\lambda^j - 1} \sum_{i = 1}^{N_n} X_i^{(n)} &\sim \exp(1)
+\frac{\lambda - 1}{\lambda^n - 1} \sum_{i = 1}^{N_n} X_i^{(n)} &\sim \exp(1)
 \end{align*}
 Since $n > j$, then
 $$
@@ -1000,7 +961,7 @@ $$
 So all of the random sums $1, \ldots, n - 1$ approach 0 in distribution.
 By Theorem \ref{thm:conv_together_lemma}, we can conclude that
 $$
-\frac{\lambda - 1}{\lambda^j - 1} \tau_{C_n} = \frac{\tau_{C_n}}{E[N_{n}]E[X^{(n)}]} \Rightarrow \exp(1)
+\frac{\lambda - 1}{\lambda^n - 1} \tau_{C_n} = \frac{\tau_{C_n}}{E[N_{n}]E[X^{(n)}]} \Rightarrow \exp(1)
 $$
 
 \subsection{Finite contact process on cycles}
@@ -1094,59 +1055,6 @@ Q_{S_4} =
     \end{block}
 \end{blockarray}
 \end{equation}
-
-% TODO: See if better way to do this
-% Increase spacing between row
-% \begingroup
-% \renewcommand*{\arraystretch}{2}
-% \begin{equation}
-% P_{S_4} =
-% \begin{blockarray}{ccccccc}
-%     & 4 & 3 & 2_t & 2_s & 1 & 0\\
-%     \begin{block}{c|ccccc|c}
-%     \cline{2-7}
-%     4 & 0 & 1 & 0 & 0 & 0 & 0\\
-%     3 & \frac{2\lambda}{2\lambda + 3} & 0 & \frac{2}{2\lambda + 3} & \frac{1}{2\lambda + 3} & 0 & 0\\
-%     2_t & 0 & \frac{\lambda}{\lambda + 1} & 0 & 0 & \frac{1}{\lambda + 1} & 0\\
-%     2_s & 0 & \frac{2\lambda}{2\lambda + 1} & 0 & 0 & \frac{1}{2\lambda + 1} & 0\\
-%     1 & 0 & 0 & \frac{2\lambda}{2\lambda + 1} & 0 & 0 & \frac{1}{2\lambda + 1}\\
-%     \cline{2-6}
-%     \end{block}
-%     \begin{block}{c|cccccc}
-%     0 & 0 & 0 & 0 & 0 & 0 & 1\\
-%     \end{block}
-% \end{blockarray}
-% \end{equation}
-
-% Let $B_{S_4}$ be the transient states from $P_{S_4}$ which are inside the inner box.
-
-%\begin{gather}
-%\notag
-%\mathclap{
-%    \begin{multlined}
-%    I + B_{S_4} + B_{S_4}^2 + \cdots = (I - B_{S_4})^{-1} = \\
-%    \begin{blockarray}{cccccc}
-%    & 4 & 3 & 2_t & 2_s & 1\\
-%    \begin{block}{c|ccccc}
-%    \cline{2-6}
-%    4 & \frac{8 \lambda^4 + 8 \lambda^3 + 6 \lambda^2 + 7 \lambda + 3}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda + 3) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & \frac{2 (\lambda + 1)^2 (4 \lambda + 1)}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & 2 \lambda + 1
-%\\
-%    3 &   \frac{2 \lambda (2 \lambda + 1) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda + 3) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & \frac{2 (\lambda + 1)^2 (4 \lambda + 1)}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda^2 + \lambda + 1)}{5 \lambda + 3} & 2 \lambda + 1
-%\\
-%    2_t &   \frac{2 \lambda^2 (2 \lambda + 1)^2}{5 \lambda + 3} & \frac{\lambda (2 \lambda + 1)^2 (2 \lambda + 3)}{5 \lambda + 3} & \frac{(\lambda + 1) (2 \lambda + 1) (4 \lambda + 3)}{5 \lambda + 3} & \frac{\lambda (2 \lambda + 1)^2}{5 \lambda + 3} & 2 \lambda + 1
-%\\
-%    2_s &   \frac{4 \lambda^2 (2 \lambda^2 + 2 \lambda + 1)}{5 \lambda + 3} & \frac{2 \lambda (2 \lambda + 3) (2 \lambda^2 + 2 \lambda + 1)}{5 \lambda + 3} & \frac{2 \lambda (\lambda + 1) (4 \lambda + 5)}{5 \lambda + 3} & \frac{(2 \lambda + 1) (2 \lambda^2 + \lambda + 3)}{5 \lambda + 3} & 2 \lambda + 1
-%\\
-%    1 &   \frac{4 \lambda^3 (2 \lambda + 1)}{5 \lambda + 3} & \frac{2 \lambda^2 (2 \lambda + 1) (2 \lambda + 3)}{5 \lambda + 3} & \frac{2 \lambda (\lambda + 1) (4 \lambda + 3)}{5 \lambda + 3} & \frac{2 \lambda^2 (2 \lambda + 1)}{5 \lambda + 3} & 2 \lambda + 1
-%\\
-%    \end{block}
-%\end{blockarray}
-%\end{multlined}
-%    }
-%\end{gather}
-%\endgroup
-
-% The top row of this matrix indicates the expected number of visits to each state when starting at state 4 (all ones configuration).
 
 \subsubsection{Phase-type Distribution}
 
