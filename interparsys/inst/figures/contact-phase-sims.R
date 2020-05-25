@@ -1,3 +1,4 @@
+library(interparsys)
 library(ggplot2)
 #library(gridExtra)
 library(ggpubr)
@@ -5,7 +6,7 @@ library(actuar)
 library(tidyr)
 
 t <- seq(0, 10, length.out = 1000)
-lambdas <- c(1, 2, 3, 4)
+lambdas <- c(0, 1, 2, 3, 4)
 pi2 <- c(1, 0)
 pi3 <- c(1, 0, 0)
 pi5 <- c(1, 0, 0, 0, 0)
@@ -14,11 +15,12 @@ f <- function(lambda, x) {
   (2 * exp(1/2 * (sqrt(lambda^2 + 6 * lambda + 1) - lambda - 3) * x))/sqrt(lambda^2 + 6 * lambda + 1) - (2 * exp(1/2 * (-sqrt(lambda^2 + 6 * lambda + 1) - lambda - 3) * x))/sqrt(lambda^2 + 6 * lambda + 1)
 }
 
-# Compute the variance of the phase-type distributions
-# var_phtype(pi5, QL3(4 ,onlyTrans = TRUE))
-var_phtype <- function(prob, rates) {
-  mphtype(2, prob, rates) - mphtype(1, prob, rates)^2
-}
+# Testing when lambda = 0
+# x <- seq(0, 10, length.out = 100)
+#plot(x, f(0,x), type = "l")
+#lines(x, 2 * (exp(-x) - exp(-2* x)), type = "l", col = "red")
+
+# integrate(function(x) 2 * (exp(-x) - exp(-2* x)), lower = 0, upper = 100)
 
 contact_density <- function(df, title) {
   ggplot(df) +
@@ -48,11 +50,13 @@ QC2 <- function(lambda, onlyTrans = FALSE) {
   else A
 }
 
+# plot(t, hazard_phtype(t, pi2, QC2(lambda = .001, onlyTrans = TRUE)), type = "l")
+
 df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = f(l, t), ft2 =  dphtype(t, pi2, QC2(l,onlyTrans = TRUE))))))
 
 contact_density(df, "Complete contact process 2 nodes")
 
-ggsave(filename = "complete_2_contact_phase_densities.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
+ggsave(filename = "complete_2_contact_phase_densities.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
 
 # Check that it integrates to 1 (e.g is a density)
 g <- function(x) {
@@ -92,7 +96,7 @@ df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t,
 
 contact_density(df, "Complete contact process 3 nodes")
 
-ggsave(filename = "complete_3_contact_phase_densities.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
+ggsave(filename = "complete_3_contact_phase_densities.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
 
 # Get the moments
 # mphtype(1, pi, QC3(3,onlyTrans = TRUE))
@@ -115,9 +119,12 @@ QS4 <- function(lambda, onlyTrans=FALSE) {
 
 df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = dphtype(t, pi5, QS4(l,onlyTrans = TRUE))))))
 
+# lambda <- 2
+# plot(t, hazard_phtype(t, c(0,0,0,0,1), QS4(2,onlyTrans = TRUE)), type = "l")
+
 contact_density(df, "Cycle contact process 4 nodes")
 
-ggsave(filename = "cycle_4_contact_phase_densities.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
+ggsave(filename = "cycle_4_contact_phase_densities.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
 
 QL3 <- function(lambda, onlyTrans=FALSE) {
  A <- matrix(c(
@@ -137,7 +144,7 @@ df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t,
 
 contact_density(df, "Contact process 3 nodes on 1D lattice")
 
-ggsave(filename = "lattice_3_contact_phase_densities.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
+ggsave(filename = "lattice_3_contact_phase_densities.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
 
 # Compute the means and variances
 mean_lambdas <- seq(.1, 15, length.out = 50)
@@ -170,10 +177,10 @@ g2 <-ggplot(res_mean_long_s4) +
 ggarrange(g2, g1, nrow = 1, common.legend = TRUE, legend="bottom")
 
 # Show without S4
-ggsave(plot = g1, filename = "ev_phase_comparison_3.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
+ggsave(plot = g1, filename = "ev_phase_comparison_3.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
 
 # Include S4
-ggsave(plot = g2, filename = "ev_phase_comparison_4.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
+ggsave(plot = g2, filename = "ev_phase_comparison_4.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
 
 var_lambdas <- seq(.1, 15, length.out = 50)
 res_var_c2 <-unlist(lapply(mean_lambdas, function(l) var_phtype(pi2, QC2(l ,onlyTrans = TRUE))))
@@ -191,21 +198,4 @@ ggplot(res_var_long) +
  ylab("variance") +
  xlab("λ") +
  theme_minimal(base_size = 18)
-
-
-library(mapfit)
-
-# TODO: Set seed
-L <- 2
-qs4_sample <- rphtype(200, pi5, QS4(L ,onlyTrans = TRUE))
-# qs4_group <- hist(x=qs4_sample, breaks="fd", plot=FALSE)
-
-#phfit.group(ph=cf1(size = 5, alpha = pi5), counts=qs4_group$counts, breaks = qs4_group$breaks)
-
-qs4_cf1 <- phfit.point(ph=cf1(sum(QS4(L ,onlyTrans = TRUE) != 0)), x = qs4_sample)
-
-t <- seq(0, 10, length.out = 1000)
-hist(qs4_sample, freq = FALSE)
-#plot(t, dphtype(t, qs4_cf1$model@alpha, as.matrix(qs4_cf1$model@Q)), type = "l")
-lines(t, dphtype(t, pi5, QS4(L,onlyTrans = TRUE)))
 

@@ -1,72 +1,61 @@
-library(ggplot2)
-
-harm <- function(n) {
-  sum(1/seq_len(n))
-}
-
-h <- function(n) {
-  k <- floor(n / 2)
-  sum(1/(n - seq(1,k-1)))
-}
-
-expected_time <- function(n) {
-  is_even = n %% 2 == 0
-  k <- floor(n / 2)
-
-  res <- h(n) # (harm(n - 1) - harm(k + 1))
-  if(is_even) {
-    (n - 1) * (1/n  + res)
-  } else {
-    (n - 1) * (1/(n - k) + res)
+rw_expected_prob <- function(n, i, p) {
+  odds <- (1 - p) / p
+  if(p != 1/2) {
+    res <- (odds^i - odds^(i - 1)) / (odds^i - 1)
+    if(i != n) (1 - p) * res
+    else res
   }
 }
 
-#' Expected number of visits on a finite random walk with 0 as absorbing state
-#' p is probability of going from i to i + 1
-#' 1 - p is probability of going from i to i - 1
-rw_visits <- function(n, p = 1/2, include_time = FALSE) {
-  is_even = n %% 2 == 0
-  k = floor(n / 2)
-  time <- 0
-  state <- k
-  visits <- rep(0, k)
+rw_expected_visits <- function(n, p) {
+  if(p != 1/2) {
+    sapply(1:n, function(i) 1/expected_prob(n, i, p))
+  }
+}
+
+#' Random walk simulation
+rw_sim <- function(n, p = 1/2, include_steps = FALSE) {
+  steps <- 0
+  state <- n
+  visits <- rep(0, n)
   while(state != 0) {
-    if(state == k && is_even) {
-      t <- rexp(1, rate = n * k)
-    } else if (state == k && !is_even) {
-      t <- rexp(1, rate = n * k - k^2)
-    } else {
-      t <- rexp(1, rate = 2 * state * (n - state))
-    }
-    time <- time + t
+    # if(state == k && is_even) {
+    #   t <- rexp(1, rate = n * k)
+    # } else if (state == k && !is_even) {
+    #   t <- rexp(1, rate = n * k - k^2)
+    # } else {
+    #   t <- rexp(1, rate = 2 * state * (n - state))
+    # }
+    steps <- steps + 1
 
     visits[state] <- visits[state] + 1
-    if(state == k) {
-      state <- k - 1
+    if(state == n) {
+      state <- n - 1
     } else {
       if(runif(1) < p) state <- state + 1
       else state <- state - 1
     }
   }
-  res <- list(visits = visits,
-              # Exponential scaling for the constant
-              time = (n - 1) *  time)
-  if(include_time) res
+  res <- list(visits = visits, steps = steps)
+  if(include_steps) res
   else res$visits
 }
 
-# Testing that the expected time matches the simulation
-# Also, expected_time(4) = 1.75 just like the phase-type distribution
-unlist(lapply(4:10, expected_time))
-unlist(lapply(4:10, function(n) {
-  mean(replicate(10000, rw_visits(n, include_time = TRUE)$time))
-}))
+# For the contact proces
+rw_rates <- function(n, lambda = 1) {
+  c(sapply(seq(1, n - 1), function(j) {
+    j + (n - j) * lambda
+    }), n)
+}
 
-N <- 1e5
-res_df <- data.frame(n = seq(4, N), t = sapply(seq(4,N), expected_time))
-m <- lm(t ~ n, data = res_df)
-round(m$coefficients, 2)
-res_df$preds <- predict(m)
-# Boring plot, just linear
-#ggplot(res_df) +
-#  geom_line(aes(x = n, y = t))
+# n <- 8
+# lambda <- 100
+# p <- lambda / (lambda + 1)
+# res <- rates(n, lambda = lambda) / expected_visits(n, p = p)
+# res * res[n]
+#
+# rowMeans(replicate(10, rw_sim(n, p = p)))
+#
+#
+# x <- seq(0, 3, length.out = 1000)
+# plot(x, dexp(x, rate = 10000), type = "l")

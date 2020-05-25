@@ -1,3 +1,4 @@
+library(interparsys)
 library(ggplot2)
 library(latex2exp)
 
@@ -36,4 +37,4 @@ g <- ggplot(df) +
        panel.border = element_blank(),
        panel.background = element_blank())
 
-ggsave(plot = g, filename = "poisson_realization.png", path = here::here("figures"), dpi = 320, units = "mm", width = 200)
+ggsave(plot = g, filename = "poisson_realization.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)

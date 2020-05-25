@@ -4,7 +4,8 @@ library(ggpubr)
 
 #' Creates a visualzation of the voter model dual
 #' If pretty = TRUE, then does not actually use exponential distributions but attempt to "look" random
-vm_dual_sim <- function(n = 4, pretty = FALSE, delta = .1) {
+#' @param time The length of the time interval
+vm_dual_sim <- function(n = 4, pretty = FALSE, delta = .1, time = 1) {
   k <- 2 * n + 1
   m <- round(runif(k))
 
@@ -23,7 +24,10 @@ vm_dual_sim <- function(n = 4, pretty = FALSE, delta = .1) {
     arrow_df <- arrow_df[order(arrow_df$event_time), ]
     event_n <- nrow(arrow_df)
   } else {
+    # TODO: Should simulate according to
+    # https://en.wikipedia.org/wiki/Poisson_point_process#Simulation
     # Poisson superposition
+
     event_n <- rpois(1, lambda = k)
     event_time <- sort(rexp(event_n, rate = 1))
     # Randomly select which Poisson process the event came from
@@ -171,10 +175,12 @@ vm_dual_sim <- function(n = 4, pretty = FALSE, delta = .1) {
    scale_x_continuous("", breaks = seq_len(k), labels = x_indices) +
    scale_y_continuous(expand = expansion(mult = c(0, delta))) +
    coord_cartesian(xlim = c(1, k),clip = "off") +
+#   ylab("Time") +
    theme_minimal(base_size = 18) +
    theme_minimal() +
    theme(
     axis.line.x = element_line(colour = "grey", linetype = 2),
+#    axis.title.y = element_text(angle = 0, vjust = 0.5),
     axis.title.y = element_blank(),
     axis.text.y = element_blank(),
     panel.grid = element_blank(),
@@ -184,13 +190,4 @@ vm_dual_sim <- function(n = 4, pretty = FALSE, delta = .1) {
 
   list(dual_plot = dual_plot, voter_plot = voter_plot, example_path_plot = example_path_plot)
 }
-
-set.seed(13)
-v <- vm_dual_sim(n = 4, pretty = TRUE)
-g1 <- v$dual_plot
-g2 <- v$example_path_plot
-
-png(here("figures/voter_model_dual.png"))
-ggarrange(g1, g2, nrow = 1, common.legend = TRUE, legend="bottom")
-dev.off()
 

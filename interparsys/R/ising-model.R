@@ -58,7 +58,7 @@ simulate_ising <- function(J = 1, times = c(1, 2, 5), N = 25, animate = FALSE, t
   # Keep track of index in each parition
   while(total_time <= max_time) {
     # Always wait exp(1) ?
-    total_time <- total_time + rexp(1, N)
+    total_time <- total_time + rexp(1, N^2)
 
     # sample a random point on the grid
     s <- sample(1:N^2, 1)
@@ -86,28 +86,4 @@ simulate_ising <- function(J = 1, times = c(1, 2, 5), N = 25, animate = FALSE, t
     }
   }
 }
-
-#
-#dev.off()
-#ani.record(reset = TRUE)
-par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
-simulate_ising(times = seq(15, 1000, length.out = 3), J = .25)
-
-N <- 2
-m <- matrix(sample(c(-1, 1), size = N * N, replace = TRUE), ncol = N)
-m2 <- m
-m2[1,1] <- -m2[1,1]
-
-m
-m2
-sum(h_energy(m))
-sum(h_energy(m2))
-m - m2
-h_energy(m) - h_energy(m2)
-
-
-h_energy(m)
-h_energy(m2)
-
-2 * sum(nbhd(m, 1, 1)) * m[1,1]
 

@@ -134,32 +134,3 @@ ggplot(lim_res_df) +
 ggplot(lim_res_df) +
   geom_histogram(aes(time))
 
-mean(lim_res_df$std_time)
-
-library(libstableR)
-
-#  alpha, beta, sigma and mu estimates for stable distribution
-pars_est_M <- stable_fit_init(lim_res_df$std_time)
-
-pars_est_K <- stable_fit_koutrouvelis(lim_res_df$std_time, pars_est_M)
-# Using maximum likelihood estimator, with McCulloch estimation
-# as a starting point:
-pars_est_ML <- stable_fit_mle(lim_res_df$std_time, pars_est_M)
-# Using modified maximum likelihood estimator (See [1]):
-pars_est_ML2 <- stable_fit_mle2d(lim_res_df$std_time, pars_est_M)
-
-saveRDS(list(pars_est_M = pars_est_M, pars_est_K = pars_est_K, pars_est_ML = pars_est_ML, pars_est_ML2 = pars_est_ML2,
-     N = N, l = l, lim_res_df = lim_res_df), file = paste0("stableEstimates", N, ".rds"))
-
-# stableEst <- readRDS( paste0("stableEstimates", N, ".rds"))
-
-rnd <- data.frame(random = stable_rnd(N, pars_est_M))
-ggplot(lim_res_df) +
-  geom_histogram(aes(std_time), alpha = 0.5, fill = "blue") +
-  geom_histogram(data = rnd, aes(random), fill = "red", alpha = 0.5)
-
-
-library(MittagLeffleR)
-params <- logMomentEstimator(lim_res_df$time, alpha = 0.05)
-rml(params, params[1], params[2])
-
