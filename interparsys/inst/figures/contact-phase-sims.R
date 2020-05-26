@@ -27,7 +27,7 @@ contact_density <- function(df, title) {
     geom_line(aes(x = t, y = ft, color = as.factor(λ))) +
     #  facet_wrap(~ λ, nrow = 2, labeller=label_both) +
     labs(title = title, color="λ") +
-    ylab("") +
+    ylab("density") +
     xlab("time") +
     theme_minimal(base_size = 18) +
     theme(panel.spacing = unit(2, "lines"))
