@@ -12,7 +12,7 @@ $$
 \end{cases}
 $$
 
-If $S$ is a finite, e.g. a subset of $\{0,1\}^{\Z^d}$, then $\eta$ transitions to $\eta_x$ at a rate of
+If $S$ is a finite then $\eta$ transitions to $\eta_x$ at a rate of
 $$
 q(\eta, \eta_x) = \sum_{y : \eta(y) \not = \eta(x)} P(x,y)
 $$
@@ -170,7 +170,7 @@ Similarly to the two node case, if we initialize the voter model to state 1, the
 \subsection{Four node complete voter model \texorpdfstring{$C_4$}{VC4}}
 We will now see that when we move to $n = 4$, we will get a more interesting distribution for the absorption time.
 The state space in the projected four node voter model is $\{0,1,2\}$.
-When we are in state 2, then all nodes can switch from 1 to 0 or 0 to 1.
+When we are in state 2 all nodes can switch from 1 to 0 or 0 to 1 to go to state 1.
 Each of these switch at a rate of $2 \cdot 1/(4 - 1) = 2/3$ since they are connected to 2 other nodes with the opposite value.
 Thus, the rate from $2 \to 1$ is $8/3$.
 Similarly reasoning leads us to the rates in the form of the infinitesimal generator matrix
@@ -293,13 +293,13 @@ We can summarize the rates as follows:
 \begin{align*}
     i \to i - 1 &= \begin{cases}
         0 & i = 0\\
-        \frac{1}{n - 1} nk & i = k, n \text{ even}\\
-        \frac{1}{n - 1}k (n - k) & i = k, n \text{ odd}\\
-        \frac{1}{n - 1} i (n - i) & i \in \{1,\ldots, k - 1\}
+        \frac{nk}{n - 1}  & i = k, n \text{ even}\\
+        \frac{k (n - k)}{n - 1} & i = k, n \text{ odd}\\
+        \frac{i (n - i)}{n - 1}  & i \in \{1,\ldots, k - 1\}
     \end{cases}\\
     i \to i + 1 &= \begin{cases}
         0 & i \in \{0, k\}\\
-        \frac{1}{n - 1} i (n - i) & i \in \{1,\ldots, k - 1\}
+        \frac{i (n - i)}{n - 1}  & i \in \{1,\ldots, k - 1\}
     \end{cases}
 \end{align*}
 The embedded discrete Markov chain is just a random walk on $\{0, k\}$ where 0 is absorbing and $k$ reflects back.
@@ -415,7 +415,7 @@ E[X_i^{(j)}] = E[X^{(j)}] = \begin{cases}
 \end{cases}
 $$
 
-Assuming that we start in state $k$ we can represent $\tau_{C_n}$ as random sums
+\noindent Assuming that we start in state $k$ we can represent $\tau_{C_n}$ as random sums
 \begin{equation}\label{eq:wait_contact_sum_voter}
     \tau_{C_n} = \sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
 \end{equation}
@@ -449,6 +449,7 @@ Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is
     (n - 1) \left[H_{n - 1} - H_{n - k - 1}\right] & n \text{ odd}
 \end{cases}
 \end{align*}
+Note that this agrees with the result for the $n = 4$ case in which we found the time to absorption is $\frac{7}{4} = 3 (\frac{1}{4} + \frac{1}{3})$.
 In the limit, it does not matter if $n$ is even or odd.
 We have from Theorem \ref{thm:euler_harm_lim} that
 \begin{align*}

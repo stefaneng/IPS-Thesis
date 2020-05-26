@@ -15,6 +15,13 @@ If there already is a 1 at this spot then nothing happens.
 \subsection{Simulation of Linear Voter Model on \texorpdfstring{$\Z^2$}{Z2}}
 
 The behavior of the linear voter model can be described as each voter waits exponential time and then takes the opinion of one of its neighbors according to the transition probabilities.
-Assume that we are simulating on a $N \times N$ grid.
+Assume that we are simulating on an $N \times N$ grid.
 Using the exponential scaling property, this behavior is equivalent to waiting exponential time with rate $N^2$ and selecting a voter at random and updating their opinion.
 
+\subsection{Source Code}
+
+All of the R source code is available at \href{https://github.com/stefaneng/IPS-Thesis}{github.com/stefaneng/IPS-Thesis}
+
+\noindent This includes an R package for the various functions used for testing and plotting the figures.
+All plots are done using ggplot2 from \cite{ggplot2}.
+The phase-type distributions are computed using the \textit{actuaR} package from \cite{actuar2008}.

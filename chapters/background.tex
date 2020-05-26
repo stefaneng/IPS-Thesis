@@ -7,7 +7,7 @@ P(N = n) = (1 - p)^{n - 1} p
 $$
 for $n \in \{1,2,\ldots\}$.
 
-Unless otherwise specified, in this paper a geometric distribution is assumed to be supported on $\{1,2,\ldots\}$.
+Unless otherwise specified, in this paper a geometric distribution is assumed tox be supported on $\{1,2,\ldots\}$.
 \end{defn}
 
 \begin{defn}[Exponential Distribution]
@@ -200,7 +200,7 @@ $$
 Let $X_1,\ldots, X_n$ be random variables.
 We first sample from the random variables according to weights $\alpha = (\alpha_1, \ldots, \alpha_n)$ with $\sum_i \alpha_i = 1$ and $\alpha_i \geq 0$.
 Then choose a realization from the selected random variable.
-This new random variable $X$ is called a \textbf{mixture} of $X_1,\ldots, X_n$.
+This new random variable $X$ is called an $(\alpha_1, \ldots, \alpha_n)$ \textbf{mixture} of $X_1,\ldots, X_n$.
 
 Let $F_1, \ldots, F_n$ be the corresponding cumulative distribution functions (CDF) of $X_1, \ldots, X_n$ and $f_1, \ldots, f_n$ the probability density functions (if they exist).
 Then the CDF of $X$ is defined as
@@ -494,9 +494,9 @@ $$
 
 \begin{defn}[Absorbing State] \cite{grinstead2003}
 Let $(X_n)$ be a discrete-time Markov chain.
-A state $x \in \Omega$ is absorbing if and only if $P(x,x) = 1$.
+A state $x \in \Omega$ is absorbing if $P(x,x) = 1$.
 
-If $(X_t)$ is a continuous-time Markov chain then $i \in \Omega$ is absorbing if and only if $Q(x,x) = 0$.
+If $(X_t)$ is a continuous-time Markov chain then $i \in \Omega$ is absorbing if $Q(x,x) = 0$.
 \end{defn}
 
 \begin{defn}[Absorbing Markov Chain] \cite{grinstead2003}
@@ -563,7 +563,7 @@ Then $T$ is independent of $\{X < Y\}$.
 
 \begin{proof}
 Let $f(x,y)$ be the joint distribution of $X$ and $Y$.
-Since $X$ and $Y$ are independent, then $f(x,y) = \alpha \beta e^{-\alpha x} e^{-\beta y}, x,y \geq 0$.
+Since $X$ and $Y$ are independent, then $f(x,y) = \alpha \beta e^{-\alpha x} e^{-\beta y}$ for $x,y \geq 0$.
 \begin{align*}
     P((T > t) \cap (X < Y)) &= P((X > t) \cap (Y > t) \cap (X < Y))\\
     &= \int_t^\infty \int_t^y f(x,y) dx dy\\
@@ -691,8 +691,10 @@ $$
 \begin{theorem}[Poisson Thinning] \label{thm:poisson_thinning}
 Let $\{N(t), t \geq 0\}$ be a Poisson process with rate $\lambda$ and $\{X_n\}$ interarrival times.
 Assume that for each $X_n$ in the process, we classify as 1 with probability $p$ and 0 with probability $1 - p$.
+This classification must be done independently of the process $\{N(t), t \geq 0\}$.
 The set of all 1 classified points is a Poisson process $\{N_1(t), t \geq 0\}$ with rate $p \lambda$.
 Similarly the set of all 0 classified points is a Poisson process $\{N_0(t), t \geq 0\}$ with rate $(1 - p) \lambda$.
+The resulting processes
 $\{N_0(t), t \geq 0\}$ and $\{N_1(t), t \geq 0\}$ are also independent.
 \end{theorem}
 
@@ -706,7 +708,7 @@ Combining the points from each process we get a new Poisson process $\{N(t) = N_
 \begin{defn}[Matrix Exponential]
 The matrix exponential of a real or complex $n \times n$ matrix $A$ is defined as
 $$
-\exp(A) = \sum_{i = 0}^\infty \frac{1}{i!} A^i
+\exp(A) = \sum_{k = 0}^\infty \frac{1}{k!} A^k
 $$
 where $A^0 = I$, the $n \times n$ identity matrix.
 \end{defn}
