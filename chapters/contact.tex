@@ -45,17 +45,23 @@ For the contact process on d-dimensional lattice $\Z^d$ there is a critical valu
 \end{theorem}
 
 In the finite case, the system will eventually be $\equiv 0$ but \cite{Liggett1999} showed that for a finite subset $N^d$ of $Z^d$, then $\tau_{N^d}$ is logarithmic if $\lambda < \lambda_c(\Z^d)$, exponential if $\lambda > \lambda_c(\Z^d)$ and polynomial if $\lambda = \lambda_c(\Z^d)$.
+The precise theorems are given below without further comment or details.
+The reader may find all the details in \cite{Liggett1999} or \cite{Liggett2002}.
 
 \begin{theorem}[Subcritical Case]\cite{Liggett1999}
 If $\lambda < \lambda_c(\Z^d)$, then
 $$
-\frac{\tau_{N^d}}{\log(N)} \to \frac{d}{f(\lambda)}
+\frac{\tau_{N^d}}{\log(N)} \to \frac{d}{\gamma_{-}(\lambda)}
 $$
-where $f$ is decreasing in $\lambda$ with $f(0) = 1$.
+in probability, where $\gamma_{-}$ is decreasing in $\lambda$ with $f(0) = 1$.
 \end{theorem}
 
 \begin{theorem}[Supercritical Case]\cite{Liggett1999}
-TODO
+If $\lambda > \lambda_c$ and $\gamma > \gamma_+(\lambda)$ (The details of the function $\gamma_+(\lambda)$ are omitted), then
+$$
+P\left(\frac{\log(\tau_{N^d})}{N^d} \geq \gamma \right) \to 0
+$$
+as $N \to \infty$.
 \end{theorem}
 
 % Later, \cite{schapira2017}, \cite{mourrat2014phase}, and \cite{Mountford2016} showed bounds for general graphs with finite vertices.
@@ -122,13 +128,13 @@ First we investigate the behavior for a complete graph, in which each node is co
 
 The contact process on the finite graph with two nodes and one edge between them has the following transition rates
 
-\begin{align}
+\begin{align*}
     1 &\to 0 \text{ at rate } 1\\
     0 &\to 1 \text{ at rate } \begin{cases}
         \lambda & \text{ if neighbor is 1}\\
         0 & \text{ otherwise}
     \end{cases}
-\end{align}
+\end{align*}
 
 We can express the infinitesimal generator matrix $Q$ matrix as
 
@@ -738,8 +744,14 @@ The rate of going to state $i - 1$ in one step is $i$ since we have $i$ nodes th
     \end{cases}
 \end{align*}
 
-\begin{lemma}[This is a generalization of Lemma \ref{lem:rw_hit_zero}]\label{lem:rw_p_hit_zero}
-Assume that we have a random walk with $p \in (0, 1)$, $p \not = 1/2$, on $\{0,1,\ldots, n\}$ with transition probabilities
+\begin{remark}
+When computing the limiting distribution later we will only use the rates up to a constant of $lambda$.
+That means that the probability of transitioning from any $i \in \{1,\ldots,n - 1\}$ to $i - 1$ proportional to 1 and $i$ transitions to $i$ proportional to $\frac{1}{1 + \lambda}$.
+Hence we can use the follow lemma which assumes that the drifts of the random walk are constant.
+\end{remark}
+
+\begin{lemma}\label{lem:rw_p_hit_zero}
+Assume that we have a random walk with $p \in (0, 1)$, $p \not = 1/2$ (The case of $p = 1/2$ was proved in Lemma \ref{lem:rw_hit_zero}), on $\{0,1,\ldots, n\}$ with transition probabilities
 \begin{align*}
     i \to i - 1 &= \begin{cases}
         1 & i = n\\
@@ -775,11 +787,11 @@ The roots of this are
 $$
 x = 1 \text{ or } \frac{1 - p}{p}
 $$
-Thus $A_i$ has the form
+When $p \not = 1/2$ then $A_i$ has the form
 \begin{equation}\label{eq:rw_eq_1}
     A_i = a + b \left( \frac{1 - p}{p} \right)^i
 \end{equation}
-when $p \not = 1/2$. The case when $p = 1/2$ is solved in Lemma \ref{lem:rw_hit_zero}.
+The case when $p = 1/2$ is solved in Lemma \ref{lem:rw_hit_zero}.
 The boundary conditions form the equations
 \begin{align*}
     A_0 = 1 &= a + b\\
@@ -811,14 +823,14 @@ Plugging these back into Equation \ref{eq:rw_eq_1} we get the solution
 \end{proof}
 
 \begin{theorem}\label{thm:expected_visits_rw_p}
-Assume that we have a random walk with transition probabilities as defined in Lemma \ref{lem:rw_p_hit_zero} on $\{0,1,\ldots, k\}$ where 0 is absorbing and $k$ is reflecting.
+Assume that we have a random walk with transition probabilities as defined in Lemma \ref{lem:rw_p_hit_zero} on $\{0,1,\ldots, k\}$ where 0 is absorbing and $k$ is reflecting with $\lambda > 0$, e.g., $p > 1/2$.
 Let $N_1, N_2, \ldots, N_k$ be the geometric random variables for the number of visits to each state.
 Then,
 $$
-E[N_n] = \frac{
-        \left( \frac{1 - p}{p} \right)^{n} - 1
+E[N_k] = \frac{
+        \left( \frac{1 - p}{p} \right)^{k} - 1
     }{
-        \left( \frac{1 - p}{p} \right)^{n} - \left( \frac{1 - p}{p} \right)^{n - 1}
+        \left( \frac{1 - p}{p} \right)^{k} - \left( \frac{1 - p}{p} \right)^{k - 1}
     }
 $$
 and
@@ -832,7 +844,7 @@ $$
 \end{theorem}
 
 \begin{proof}
-Using Lemma \ref{lem:rw_p_hit_zero}, for state $i \in \{1, \ldots, n - 1\}$, the probability of never returning to state $i$, $\gamma_i$, is $1 - p$ time the probability of hitting 0 before $i$ when starting in state $i - 1$.
+Using Lemma \ref{lem:rw_p_hit_zero}, for state $i \in \{1, \ldots, n - 1\}$, the probability of never returning to state $i$, $\gamma_i$, is $1 - p$ times the probability of hitting 0 before $i$ when starting in state $i - 1$.
 If we are in state $n$, then we always move to state $n - 1$. That is,
 $$
 \gamma_i = (1 - p) \frac{
@@ -869,13 +881,13 @@ $$
 
 \begin{theorem}
 Let $\tau_{C_n}$ be the time until we reach state zero.
-Now let $N_1, N_2, \ldots, N_m$ be the number of visits to states $1, 2, \ldots, m$ respectively.
+Now let $N_1, N_2, \ldots, N_n$ be the number of visits to states $1, 2, \ldots, n$ respectively.
 
-For all $i = 1,2,\ldots, N_i$, $j = 1,2,\ldots, k$ and let
+For all $i = 1,2,\ldots, N_i$, $j = 1,2,\ldots, n$ and let
 $$
 X_i^{(j)} \sim \begin{cases}
   \exp\left( n \right) & j = n\\
-  \exp\left( j + (n - j)\lambda \right) & j \in \{1,\ldots, k - 1\}\\
+  \exp\left( j + (n - j)\lambda \right) & j \in \{1,\ldots, n - 1\}\\
 \end{cases}
 $$
 be i.i.d random variables representing the exponential waiting times at each state.
