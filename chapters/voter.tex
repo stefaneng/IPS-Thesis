@@ -132,7 +132,7 @@ Taking the limit as $t \to \infty$ the RHS goes to 0 by Theorem \ref{thm:rw_recu
 
 \section{Finite Voter Model}
 We will now look at the time for voter model on a finite cycle and complete graph to reach the configuration of all 1's or all 0's.
-In general there are $2^n$ configurations for the these graph but many of these have the same rates due to rotations and the property that interchanging 1's and 0's are equivalent.
+In general there are $2^n$ configurations but many of these have the same rates due to rotations and the property that interchanging 1's and 0's are equivalent.
 That is, if $\eta$ is a configuration then $1 - \eta$ should be in the same equivalence class.
 
 In the complete graph each node in a configuration is connected to all of the others, we can project a configuration $\eta$ to the minimum number of 1's in $\eta$ and $1 - \eta$.
@@ -142,14 +142,14 @@ $$
 We will have $\lfloor n/2 \rfloor + 1$ new projected states for a voter model on a complete graph with $n$ nodes which will be a Markov chain
 by Theorem \ref{thm:mc_projection}.
 
-For all of the following models we will be using the following transition probability matrix
+For all of the following models we will be using the following transition probability matrix in the general setting of the voter model
 $$
 P(x,y) = P(y,x) = \frac{1}{\deg(x)}
 $$
 Where $\deg(x)$ is the degree of the node $x$.
 So in the case of the cycle, $P(x,y) = 1/2$, and the complete graph with $n$ nodes $P(x,y) = 1/(n - 1)$.
 
-Denote $C_i$ as a complete graph with $i$ vertices.
+Denote $K_i$ as a complete graph with $i$ vertices.
 In the complete graph each vertex has an edge between all $i - 1$ other vertices in the graph.
 
 \begin{figure}[H]
@@ -161,13 +161,13 @@ In the complete graph each vertex has an edge between all $i - 1$ other vertices
 
 \subsection{Two node complete/cycle}
 A complete graph (or a cycle) with $n = 2$ nodes has two projected states, $\{0,1\}$.
-Assuming that we initialize the voter model to state 1, then we will just wait exponential time with rate 1 before going to the absorbing state 0.
+Assuming that we initialize the voter model to state 1, then we will just wait exponential time with rate 2 before going to the absorbing state 0.
 
 \subsection{Three node complete/cycle}
 A complete graph (or a cycle) with $n = 3$ nodes has two projected states, $\{0,1\}$.
 Similarly to the two node case, if we initialize the voter model to state 1, then we will just wait exponential time with rate 1 before going to the absorbing state 0.
 
-\subsection{Four node complete voter model \texorpdfstring{$C_4$}{VC4}}
+\subsection{Four node complete voter model \texorpdfstring{$K_4$}{VK4}}
 We will now see that when we move to $n = 4$, we will get a more interesting distribution for the absorption time.
 The state space in the projected four node voter model is $\{0,1,2\}$.
 When we are in state 2 all nodes can switch from 1 to 0 or 0 to 1 to go to state 1.
@@ -176,7 +176,7 @@ Thus, the rate from $2 \to 1$ is $8/3$.
 Similarly reasoning leads us to the rates in the form of the infinitesimal generator matrix
 % 2 -> 1 rate 2 * 1/(4 - 1) * 2 = 4/3 is
 $$
-Q_{C_4} = \begin{blockarray}{cccc}
+Q_{K_4} = \begin{blockarray}{cccc}
     & 2 & 1 & 0\\
     \begin{block}{c|ccc}
         \cline{2-4}
@@ -226,9 +226,9 @@ $$
     3 & 6
 \end{bmatrix}
 $$
-By Theorem \ref{thm:phase-type-pdf-cdf}, where $(\alpha_2, \alpha_1)$ is the probability of starting in state 2 and 1 respectively, we have the density of the absorption time $\tau_{C_4}$ is given as
+By Theorem \ref{thm:phase-type-pdf-cdf}, where $(\alpha_2, \alpha_1)$ is the probability of starting in state 2 and 1 respectively, we have the density of the absorption time $\tau_{K_4}$ is given as
 \begin{align*}
-    f_{C_4}(x) &= (\alpha_2, \alpha_1) \exp(x\mathbf{S}) \mathbf{S}_0\\
+    f_{K_4}(x) &= (\alpha_2, \alpha_1) \exp(x\mathbf{S}) \mathbf{S}_0\\
     &= \frac{1}{10} (\alpha_2, \alpha_1) \begin{bmatrix}
     -2 & 4/3\\
     1 & 1
@@ -260,10 +260,10 @@ By Theorem \ref{thm:phase-type-pdf-cdf}, where $(\alpha_2, \alpha_1)$ is the pro
 &= \frac{1}{5} \left[ (-4 \alpha_2 + 2 \alpha_1) \exp(-4x) + (4 \alpha_2 + 3 \alpha_1) \exp\left(-\frac{2}{3} x\right)\right]
 \end{align*}
 
-In Figure \ref{fig:voter_density_c4} we plot the density function for $\tau_{C_4}$ for varying $\boldsymbol{\alpha} = (\alpha_2, \alpha_1)$ values.
-The expected value of $\tau_{C_4}$ is given by Theorem \ref{thm:phase-moments}
+In Figure \ref{fig:voter_density_c4} we plot the density function for $\tau_{K_4}$ for varying $\boldsymbol{\alpha} = (\alpha_2, \alpha_1)$ values.
+The expected value of $\tau_{K_4}$ is given by Theorem \ref{thm:phase-moments}
 \begin{align*}
-    E[\tau_{C_4}] &= -1 (\alpha_2, \alpha_1) \mathbf{S}^{-1} (1, 1)^T\\
+    E[\tau_{K_4}] &= -1 (\alpha_2, \alpha_1) \mathbf{S}^{-1} (1, 1)^T\\
     &= \frac{1}{8} (\alpha_2, \alpha_1) \begin{bmatrix}
     6 & 8\\
     3 & 8
@@ -275,11 +275,11 @@ So when deterministically starting at state 2, we have that the expected value o
 \begin{figure}[H]
   \centering
     \includegraphics[width=.80\textwidth]{figures/voter_density_c4.png}
-   \caption{Density of the absorption time for the voter model on the complete graph with four nodes, $C_4$. The initial stating position is varied between always stating at state $2$, starting at start $1$ and an equal mixture of starting at either 1 or 2.}
+   \caption{Density of the absorption time for the voter model on the complete graph with four nodes, $K_4$. The initial stating position is varied between always stating at state $2$, starting at start $1$ and an equal mixture of starting at either 1 or 2.}
   \label{fig:voter_density_c4}
 \end{figure}
 
-\subsection{Complete voter model n nodes  \texorpdfstring{$C_n$}{VCn}}
+\subsection{Complete voter model n nodes  \texorpdfstring{$K_n$}{VKn}}
 If $n$ is even, then let $k = n / 2$ and if $n$ is odd then let $k = (n - 1)/2$.
 We have $\{0,\ldots, k\}$ projected states.
 Assume we are in state $i \not = k$.
@@ -395,7 +395,7 @@ where $\gamma \approx 0.5772$ is the Euler-Mascheroni constant.
 \end{theorem}
 
 \begin{theorem}
-Let $\tau_{C_n}$ be the time until the voter model on the complete graph with $n$ nodes reaches $\equiv 1$ or $\equiv 0$.
+Let $\tau_{K_n}$ be the time until the voter model on the complete graph with $n$ nodes reaches $\equiv 1$ or $\equiv 0$.
 Now let $N_1, N_2, \ldots, N_k$ be the number of visits to states $1, 2, \ldots, k$ respectively, which are geometrically distributed.
 For all $i = 1,2,\ldots, N_i$ and $j = 1,2,\ldots, k$, let
 
@@ -415,25 +415,25 @@ E[X_i^{(j)}] = E[X^{(j)}] = \begin{cases}
 \end{cases}
 $$
 
-\noindent Assuming that we start in state $k$ we can represent $\tau_{C_n}$ as random sums
+\noindent Assuming that we start in state $k$ we can represent $\tau_{K_n}$ as random sums
 \begin{equation}\label{eq:wait_contact_sum_voter}
-    \tau_{C_n} = \sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
+    \tau_{K_n} = \sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
 \end{equation}
 and
 \begin{align*}
-E[\tau_{C_n}] &= \begin{cases}
+E[\tau_{K_n}] &= \begin{cases}
     (n - 1) \left[H_{n} - H_{n - k}\right] & n \text{ even}\\
     (n - 1) \left[H_{n - 1} - H_{n - k - 1}\right] & n \text{ odd}
 \end{cases}\\
 \end{align*}
-Also, $E[\tau_{C_n}]$ is approximately (denoted $\approx$) $\ln(2) (n - 1)$ for large $n$.
+Also, $E[\tau_{K_n}]$ is approximately (denoted $\approx$) $\ln(2) (n - 1)$ for large $n$.
 \end{theorem}
 
 \begin{proof}
 The random sums are not independent and have rather complicated dependencies but the expected value can be computed without independence.
-Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is
+Using Theorem \ref{thm:random_sum_ev}, the expected value of the random sums is (using the fact that $N_j$ is independent of $(X_i^{(j)})$ for each $j$)
 \begin{align*}
-    E[\tau_{C_n}] &= E\left[\sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}\right]\\
+    E[\tau_{K_n}] &= E\left[\sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}\right]\\
     &= E[N_k] E[X^{(k)}] + E[N_{k - 1}] E[X^{(k - 1)}] + \cdots + E[N_1]E[X_i^{(1)}]\\
     &= E[N_k] E[X^{(k)}] + \sum_{j = 1}^{k - 1} E[N_j]E[X^{(j)}]\\
     &= k E[X^{(k)}] + \sum_{j = 1}^{k - 1} 2j \frac{n - 1}{2j (n - j)} \\
@@ -460,7 +460,7 @@ We have from Theorem \ref{thm:euler_harm_lim} that
 Convergence is quite quick and at $n = 30$ we have that $|[H_{n} - H_{n - k}] - ln(2)| = 0.016$.
 Therefore for large $n$ we can say that
 $$
-E[\tau_{C_n}] \approx \ln(2) (n - 1)
+E[\tau_{K_n}] \approx \ln(2) (n - 1)
 $$
 \end{proof}
 
