@@ -36,7 +36,7 @@ contact_density <- function(df, title) {
 #' Q matrix for complete contact process with 2 nodes
 #' Projected to the number of ones in the process
 #' onlyTrans=TRUE remove the absorbing states
-QC2 <- function(lambda, onlyTrans = FALSE) {
+QK2 <- function(lambda, onlyTrans = FALSE) {
   A <- matrix(c(
     -2, 2, 0,
     lambda, -(1 + lambda), 1,
@@ -50,9 +50,9 @@ QC2 <- function(lambda, onlyTrans = FALSE) {
   else A
 }
 
-# plot(t, hazard_phtype(t, pi2, QC2(lambda = .001, onlyTrans = TRUE)), type = "l")
+# plot(t, hazard_phtype(t, pi2, QK2(lambda = .001, onlyTrans = TRUE)), type = "l")
 
-df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = f(l, t), ft2 =  dphtype(t, pi2, QC2(l,onlyTrans = TRUE))))))
+df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = f(l, t), ft2 =  dphtype(t, pi2, QK2(l,onlyTrans = TRUE))))))
 
 contact_density(df, "Complete contact process 2 nodes")
 
@@ -72,14 +72,14 @@ c2_var <- function(L) {
 # Double check that algebra calculation of variance is the same
 # as the one computed numerically
 
-assertthat::are_equal(c2_var(2), var_phtype(pi2, QC2(2, onlyTrans = TRUE)))
-assertthat::are_equal(c2_var(3), var_phtype(pi2, QC2(3, onlyTrans = TRUE)))
-assertthat::are_equal(c2_var(15), var_phtype(pi2, QC2(15, onlyTrans = TRUE)))
+assertthat::are_equal(c2_var(2), var_phtype(pi2, QK2(2, onlyTrans = TRUE)))
+assertthat::are_equal(c2_var(3), var_phtype(pi2, QK2(3, onlyTrans = TRUE)))
+assertthat::are_equal(c2_var(15), var_phtype(pi2, QK2(15, onlyTrans = TRUE)))
 
 #' Q matrix for complete contact process with 3 nodes
 #' Projected to the number of ones in the process
 #' onlyTrans=TRUE remove the absorbing states
-QC3 <- function(lambda, onlyTrans=FALSE) {
+QK3 <- function(lambda, onlyTrans=FALSE) {
   # 3, 2, 1, 0
   A <- matrix(c(
     -3, 3, 0, 0,
@@ -92,14 +92,14 @@ QC3 <- function(lambda, onlyTrans=FALSE) {
   else A
 }
 
-df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = dphtype(t, pi3, QC3(l,onlyTrans = TRUE))))))
+df <- data.frame(do.call(rbind, lapply(lambdas, function(l) cbind(λ = l, t = t, ft = dphtype(t, pi3, QK3(l,onlyTrans = TRUE))))))
 
 contact_density(df, "Complete contact process 3 nodes")
 
 ggsave(filename = "complete_3_contact_phase_densities.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
 
 # Get the moments
-# mphtype(1, pi, QC3(3,onlyTrans = TRUE))
+# mphtype(1, pi, QK3(3,onlyTrans = TRUE))
 
 #' Q matrix for cycle contact process with 4 nodes
 #' onlyTrans=TRUE remove the absorbing states
@@ -148,15 +148,15 @@ ggsave(filename = "lattice_3_contact_phase_densities.png", path = here::here("..
 
 # Compute the means and variances
 mean_lambdas <- seq(.1, 15, length.out = 50)
-res_mean_c2 <-unlist(lapply(mean_lambdas, function(l) mphtype(1, pi2, QC2(l ,onlyTrans = TRUE))))
-res_mean_c3 <-  unlist(lapply(mean_lambdas, function(l) mphtype(1, pi3, QC3(l ,onlyTrans = TRUE))))
+res_mean_c2 <-unlist(lapply(mean_lambdas, function(l) mphtype(1, pi2, QK2(l ,onlyTrans = TRUE))))
+res_mean_c3 <-  unlist(lapply(mean_lambdas, function(l) mphtype(1, pi3, QK3(l ,onlyTrans = TRUE))))
 res_mean_s4 <- unlist(lapply(mean_lambdas, function(l) mphtype(1, pi5, QS4(l ,onlyTrans = TRUE))))
 res_mean_l3 <- unlist(lapply(mean_lambdas, function(l) mphtype(1, pi5, QL3(l ,onlyTrans = TRUE))))
 
-res_mean <- data.frame(lambda = mean_lambdas, C2 = res_mean_c2, C3 = res_mean_c3,
+res_mean <- data.frame(lambda = mean_lambdas, K2 = res_mean_c2, K3 = res_mean_c3,
                        L3 = res_mean_l3,
                        S4 = res_mean_s4)
-res_mean_long <- gather(res_mean, model, ev, C2:L3)
+res_mean_long <- gather(res_mean, model, ev, K2:L3)
 
 g1 <- ggplot(res_mean_long) +
  geom_line(aes(x = lambda, y = ev, color = model)) +
@@ -165,7 +165,7 @@ g1 <- ggplot(res_mean_long) +
  theme_minimal(base_size = 18)
 
 # Add S4 to the results
-res_mean_long_s4 <- gather(res_mean, model, ev, C2:S4)
+res_mean_long_s4 <- gather(res_mean, model, ev, K2:S4)
 
 g2 <-ggplot(res_mean_long_s4) +
  geom_line(aes(x = lambda, y = ev, color = model)) +
@@ -183,15 +183,15 @@ ggsave(plot = g1, filename = "ev_phase_comparison_3.png", path = here::here("../
 ggsave(plot = g2, filename = "ev_phase_comparison_4.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
 
 var_lambdas <- seq(.1, 15, length.out = 50)
-res_var_c2 <-unlist(lapply(mean_lambdas, function(l) var_phtype(pi2, QC2(l ,onlyTrans = TRUE))))
-res_var_c3 <-  unlist(lapply(mean_lambdas, function(l) var_phtype(pi3, QC3(l ,onlyTrans = TRUE))))
+res_var_c2 <-unlist(lapply(mean_lambdas, function(l) var_phtype(pi2, QK2(l ,onlyTrans = TRUE))))
+res_var_c3 <-  unlist(lapply(mean_lambdas, function(l) var_phtype(pi3, QK3(l ,onlyTrans = TRUE))))
 res_var_s4 <- unlist(lapply(mean_lambdas, function(l) var_phtype(pi5, QS4(l ,onlyTrans = TRUE))))
 res_var_l3 <- unlist(lapply(mean_lambdas, function(l) var_phtype(pi5, QL3(l ,onlyTrans = TRUE))))
 
-res_var <- data.frame(lambda = mean_lambdas, C2 = res_var_c2, C3 = res_var_c3,
+res_var <- data.frame(lambda = mean_lambdas, K2 = res_var_c2, K3 = res_var_c3,
                        L3 = res_var_l3,
                        S4 = res_var_s4)
-res_var_long <- gather(res_var, model, var, C2:L3)
+res_var_long <- gather(res_var, model, var, K2:L3)
 
 ggplot(res_var_long) +
  geom_line(aes(x = lambda, y = var, color = model)) +
