@@ -90,7 +90,7 @@ The probability generating function of a discrete random variable $X \in \{0,1,2
 $$
 G_X(z) = E[z^X] = \sum_{i = 0}^\infty z^i P(X = i)
 $$
-for all $z \in \R$ in which the sum converges.
+for all $z \in \R$ (or $z \in \mathbb C$) in which the sum converges.
 \end{defn}
 
 \begin{note}
@@ -107,7 +107,7 @@ $$
 \varphi_X(t) = E[e^{itX}]
 $$
 
-where $i = \sqrt{-1}$.
+where $i^2 = -1$.
 \end{defn}
 
 \begin{remark}
@@ -178,7 +178,7 @@ $$
 \begin{theorem}\label{thm:char_func_random_sum}
 Let $X_1, X_2, \ldots$ be i.i.d random variables with common characteristic function $\varphi_X(t)$.
 Let $N$ be a non-negative integer random variable, independent of the sequence $(X_n)$.
-Let $G_N(z) = E[z^N]$ be the probability generating function for $N$.
+Let $G_N(z) = E[z^N]$ be the probability generating function for $N$ with $z \in \mathbb C$.
 Let $S = \sum_{i = 1}^N X_i$.
 Then,
 $$
@@ -255,6 +255,10 @@ S = \sum_{i = i}^N X_i
 $$
 has an exponential distribution with rate $p \lambda$.
 \end{theorem}
+
+\begin{remark}
+If we have a Poisson process with rate $\lambda$ that is thinned with probability $p$, then this theorem says that the time between events in the thinned process is exponentially distributed with rate $p \lambda$.
+\end{remark}
 
 \begin{proof}
 Let $G_N(z)$ be the probability generating function of $N$ and $\varphi_X(t)$ be the characteristic function of each $X_i$.
@@ -384,6 +388,13 @@ $$
 \lim_{n \to \infty} F_n(x) = F(x)
 $$
 for all $x \in \R$ that are continuous for $F$.
+\end{defn}
+
+\begin{defn}
+If $X_n$ and $X$ are random variables with CDFs $F_n$ and $F$ then $X_n$ approaches in distribution to $X$, notated $X_n \Rightarrow X$, if
+$$
+\lim_{n \to \infty} F_n(x) = F(x)
+$$
 \end{defn}
 
 % \begin{theorem}
@@ -519,13 +530,13 @@ The first $t$ states are transient and the last $r$ states are absorbing.
 
 \begin{theorem}\label{thm:visits_geom}
 Let $(X_n)$ be a discrete-time Markov chain with countable state space $S$.
-The number of visits to each state is geometrically distributed, with parameter equal to the probability of never returning back to the state.
+Assuming that we start in a state $s$, the number of visits $s$ is geometrically distributed, with parameter equal to the probability of never returning back to the state.
 \end{theorem}
 
 \begin{theorem} \label{thm:fund_exp} \cite{grinstead2003}
 Assume that we have an absorbing Markov chain.
 Let $B$ be the  $t \times t$ matrix of transient states from the canonical form.
-Let $N$ be a matrix with the same dimensions as $B$.
+Let $N$ be a matrix with the same dimensions as $B$, where 
 $N_{ij}$ is the expected number of times the chain is in state j when starting in state i for transient states $i$ and $j$. Then,
 \begin{equation}
     N = I + B + B^2 + \cdots = (I - B)^{-1}
@@ -544,6 +555,8 @@ If $x \sim x'$ implies that $P(x,[y]) = P(x', [y])$ (where $P(x,A)$ is probabili
 The state space is the equivalence classes $\Omega'$ and transition matrix $P'$ defined as $P'([x],[y]) := P(x, [y])$.
 
 We call this new Markov chain $([X_n])$ a projection of $(X_n)$ and say that we projected $(X_n)$ onto $([X_n])$.
+
+Note that this is also referred to as a \textit{lumped} Markov chain.
 \end{theorem}
 
 \begin{theorem}\label{thm:x_N_indep}

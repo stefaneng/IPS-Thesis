@@ -1,0 +1,574 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+
+\usetheme[progressbar=frametitle]{metropolis}
+
+\usepackage{appendixnumberbeamer}
+
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+
+\usepackage{xspace}
+\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{mathrsfs}
+\usepackage{blkarray}
+\usepackage{mathtools}
+\usepackage{float}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\usepackage{tikz}
+\usetikzlibrary{calc, automata, chains, arrows, arrows.meta, graphs, graphs.standard, matrix, positioning, scopes}
+
+\makeatletter
+\tikzset{join/.code=\tikzset{after node path={%
+\ifx\tikzchainprevious\pgfutil@empty\else(\tikzchainprevious)%
+edge[every join]#1(\tikzchaincurrent)\fi}}}
+\makeatother
+\tikzstyle{labeled}=[execute at begin node=$\scriptstyle,
+   execute at end node=$]
+   
+\theoremstyle{definition}
+\newtheorem{defn}[theorem]{Definition}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rs}{\mathcal{R}}
+\newcommand{\Gs}{\mathcal{G}}
+\newcommand{\Cs}{\mathcal{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Zs}{{\{0,1\}^\mathbb{Z}}}
+\newcommand{\I}{\mathcal{I}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\B}{{\mathcal{B}_{\mathbb{R}}}}
+\newcommand{\BU}{{\mathcal{B}_{[0,1]}}}
+\newcommand{\loc}{L_{\text{loc}}^1}
+\newcommand{\powset}{\mathcal{P}}
+\newcommand{\outm}{\mu^{*}}
+\newcommand{\cdict}{\Rightarrow\!\Leftarrow}
+\newcommand{\Var}{\operatorname {Var}}
+
+% X_1, ..., X_n
+\newcommand{\Xn}{\ensuremath{X_1,\ldots,X_n}}
+\newcommand{\xn}{\ensuremath{x_1,\ldots,x_n}}
+
+\title{Phase-Type Distributions for Finite Interacting Particle Systems}
+\subtitle{Master's Thesis}
+\author{Stefan Eng\\
+    Advisor: Jeff Steif
+}
+\institute{Göteborgs Universitet}
+\date{June 9, 2020}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Table of contents}
+  \setbeamertemplate{section in toc}[sections numbered]
+  \tableofcontents%[hideallsubsections]
+\end{frame}
+
+\section{Background}
+
+\begin{frame}
+    \begin{theorem} \label{thm:geom_sum_exp}
+    Let $N$ be geometrically distributed ($N \in \{1,2,\ldots\})$ with probability of success $p$ and $X_1,X_2,\ldots$ i.i.d and independent of $N$ with each $X_i$ exponentially distributed with rate $\lambda$.
+    Then,
+    $$
+    S = \sum_{i = i}^N X_i
+    $$
+    has an exponential distribution with rate $p \lambda$.
+    \end{theorem}
+\end{frame}
+
+\begin{frame}{Markov Chain Projection}
+Let $(X_n)$ be a discrete-time Markov chain with state space $\Omega$ and transition matrix $P$.
+Let $\sim$ be an equivalence relation on $\Omega$ and denote the equivalences classes as $\Omega' = \{[x]: x \in \Omega\}$.
+
+If $x \sim x'$ implies that $P(x,[y]) = P(x', [y])$ (where $P(x,A)$ is probability that the chain moves in one step to one of the states $y \in A$ from $x$) then $([X_n])$  is a Markov chain.
+The state space is the equivalence classes $\Omega'$ and transition matrix $P'$ defined as $P'([x],[y]) := P(x, [y])$.
+
+We call this new Markov chain $([X_n])$ a projection of $(X_n)$ and say that we projected $(X_n)$ onto $([X_n])$.
+\end{frame}
+
+\begin{frame}{Matrix Exponential}
+    
+\begin{defn}[Matrix Exponential]
+The matrix exponential of a real or complex $n \times n$ matrix $A$ is defined as
+$$
+\exp(A) = \sum_{k = 0}^\infty \frac{1}{k!} A^k
+$$
+where $A^0 = I$, the $n \times n$ identity matrix.
+\end{defn}
+\end{frame}
+
+
+\begin{frame}{Matrix Exponential}
+\begin{theorem} \label{thm:eigen_matrix_exp}
+Assume that $A$ is a diagonalizable $n \times n$ matrix with eigenvalues $\lambda_1, \lambda_2, \ldots, \lambda_n$.
+Let $A = T \Lambda T^{-1}$ be the eigendecomposition of $A$ where $T$ is the $n \times n$ matrix of the eigenvectors and $\Lambda = \operatorname{diag}(\lambda_1, \ldots, \lambda_n)$.
+Then,
+\begin{align*}
+    \exp(A) &= T \exp(\Lambda) T^{-1}\\
+    &= T \operatorname{diag}(\exp(\lambda_1), \ldots, \exp(\lambda_n)) T^{-1}
+\end{align*}
+\end{theorem}
+\end{frame}
+
+\section{Phase-type distributions}
+
+\begin{frame}
+\begin{itemize}
+    \item For an absorbing Markov chain with exactly one absorbing state the time until absorption is called a phase-type distribution (denoted $PH_c$).
+    \item Let $\boldsymbol{\alpha}$ be the initial distribution.
+\end{itemize}
+Represent the infinitesimal generator matrix as
+$$
+Q = \begin{pmatrix}
+\mathbf{S} & \mathbf{S}_0\\
+\mathbf{0} & 0
+\end{pmatrix}
+$$
+where $\mathbf{S}$ is the transition rates between the transient state.
+Then $\mathbf{S}_0 = - \mathbf{S 1}$.
+\end{frame}
+
+\begin{frame}
+Let $\tau \sim PH_c(\boldsymbol{\alpha}, \mathbf{S})$.
+
+The CDF of $\tau$ is
+$$ 
+F(x) = 1 - \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{1}
+$$
+and the PDF of $\tau$ is
+$$
+f(x) = \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0
+$$  
+and the moments are
+$$
+E[\tau^{{n}}]=(-1)^{{n}}n!{\boldsymbol  {\alpha }}{S}^{{-n}}{\mathbf  {1}}
+$$
+\end{frame}
+
+\begin{frame}{Example - Exponential}
+The exponential distribution is a phase-type distribution:
+Let $\mathbf S = - \lambda$, $\mathbf{S}_0 = \lambda$ and $\boldsymbol{\alpha} = 1$.
+\end{frame}
+
+\begin{frame}{Example - Exponential Mixture}
+A mixture of 3 exponential distributions with rates $\lambda_1, \lambda_2, \lambda_3$ and weights $(\alpha_1, \alpha_2, \alpha_3)$ can be represented as a phase-type distribution:
+\begin{align*}
+    \mathbf S &= \begin{bmatrix}
+        -\lambda_1 & 0 & 0\\
+        0 & - \lambda_2 & 0\\
+        0 & 0 & - \lambda_3
+        \end{bmatrix}\\
+    \mathbf{S}_0 &= (\lambda_1, \lambda_2, \lambda_3)^T\\
+    \alpha &= (\alpha_1, \alpha_2, \alpha_3)
+\end{align*}
+\end{frame}
+
+\begin{frame}{Example - Erlang}
+The Erlang distribution (gamma with integer valued parameter) is a phase-type distribution.
+Assume we have an Erlang distribution with shape $4$ and rate $\lambda$.
+\begin{align*}
+    \mathbf S &= \begin{bmatrix}
+        -\lambda & \lambda & 0 & 0\\
+        0 & - \lambda & \lambda & 0\\
+        0 & 0 & -\lambda & \lambda\\
+        0 & 0 & 0 & -\lambda
+        \end{bmatrix}\\
+    \mathbf{S}_0 &= (0, 0, 0, \lambda)^T\\
+    \alpha &= (1,0,0,0)
+\end{align*}
+\end{frame}
+
+\begin{frame}
+Theorem 2.1 \cite{maier1992}
+$PH_c$ is the smallest family of positive, real-valued distributions which satisfy:
+\begin{enumerate}
+    \item Contains all exponential distributions and the point mass at 0
+    \item Closed under finite mixture and finite convolutions
+    \item Closed under geometric mixtures
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+    The set of all continuous phase-type distributions is dense in the class of all positive-valued distributions.
+\end{frame}
+
+
+\section{Voter Model}
+
+\begin{frame}{Voter Model}
+\begin{itemize}
+    \item Let $G = (V,E)$ be a graph with finite or countably infinite vertices (such as $\Z^d$) and 
+    \item $P$ be the transition probability matrix for a Markov chain on $G$
+    \item Then $S = \{0,1\}^{V}$ is the state space for voter model which is a continuous-time Markov chain.
+    \item For $\eta \in S$ denote $\eta(x)$ as the value of the node $x \in V$ in the configuration $\eta$.
+\end{itemize}
+
+Let $\eta_x$ be the configuration obtained by changing the value of $\eta$ at the site $x$. That is,
+$$
+\eta_x(y) = \begin{cases}
+    \eta(y) & x \not = y\\
+    1 - \eta(y) & x = y
+\end{cases}
+$$
+\end{frame}
+
+\begin{frame}{Voter Model}
+If $S$ is a finite then $\eta$ transitions to $\eta_x$ at a rate of
+$$
+q(\eta, \eta_x) = \sum_{y : \eta(y) \not = \eta(x)} P(x,y)
+$$
+Thus, for any $\eta, \delta \in S$ that differ by more than one sites,
+$$
+q(\eta, \delta) = 0
+$$
+and $\eta \in S$ transitions to $\delta \in S$ with probability
+$$
+P^\eta(\eta_t = \delta) = q(\eta, \delta) t + o(t)
+$$
+as $t \downarrow 0$.
+\end{frame}
+
+\begin{frame}
+TODO: Do we need these properties??
+The transition rates have the following properties:
+\begin{enumerate}
+    \item $q(\eta, \eta_x) = 0$ for each $x \in \Z^d$ if $\eta \equiv 0$ or $\eta \equiv 1$
+    \item $q(\eta, \eta_x) = q(\zeta, \zeta_x)$ for every $x \in \Z^d$ if $\eta(y) + \zeta(y) = 1$ for all $y \in \Z^d$. That is, the dynamics of the system are not changed by interchanging 1 and 0.
+    \item On a finite graph eventually the graph will be either $\equiv 0$ or $\equiv 1$.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Voter Model Simulation on $Z$}
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.6\textwidth]{figures/voter_simulation_1d_300.png}
+   \caption{Simulation for voter model with periodic boundary conditions on length 300 subset of $\Z$}
+  \label{fig:voter_sim_1d_torus.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Voter Model Simulation on $Z^2$}
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.6\textwidth]{figures/voter_simulation_torus_100.png}
+   \caption{Simulation for voter model with periodic boundary conditions on $100 \times 100$ grid.}
+  \label{fig:voter_sim_2d_torus.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Voter Model on Complete Graph}
+    \begin{itemize}
+        \item In the complete graph each node in a configuration is connected to all of the others
+        \item Project a configuration $\eta$ to the minimum number of 1's in $\eta$ and $1 - \eta$.
+        $$
+        \eta \mapsto \min\left(|\{x : \eta(x) = 1\}|, |\{x : \eta(x) = 0\}|  \right)
+        $$
+        \item We then have a new Markov chain with $\lfloor n/2 \rfloor + 1$ projected states.
+        $$
+        P(x,y) = P(y,x) = \frac{1}{\deg(x)} = \frac{1}{n - 1}
+        $$
+        \item Denote the complete graph with $i$ nodes as $K_i$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Voter Model Simulation on Complete Graph}
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.6\textwidth]{figures/voter_simulation_1d_complete_split_100.png}
+   \caption{Simulation for voter model on a complete graph with 100 nodes. The initial configuration is split with half 1's and half 0's.}
+  \label{fig:voter_sim_1d_complete.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Voter Model Complete Graph $n = 2,3$}
+    \begin{itemize}
+        \item A complete graph (or a cycle) with $n = 2$ or $n = 3$.
+        \item Two projected states, $\{0,1\}$
+        \item If we initialize the voter model to state 1, then we will just wait exponential time with rate 1 before going to the absorbing state 0. 
+    \end{itemize}
+    
+\begin{figure}[H]    
+       \begin{tikzpicture}[start chain = going right,
+   -Triangle, every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (0) {0};
+
+   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$1$} (0);
+    \end{tikzpicture}
+    \caption{Rates for two node projected voter model}
+    \label{fig:rates_mc_two_contact}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Voter Model Complete Graph $n = 4$}
+\begin{itemize}
+    \item The state space in the projected four node voter model is $\{0,1,2\}$.
+    \item When we are in state 2 all nodes can switch from 1 to 0 or 0 to 1 to go to state 1.
+    \item Each of these switch at a rate of $2 \cdot 1/(4 - 1) = 2/3$ since they are connected to 2 other nodes with the opposite value. Thus, the rate from $2 \to 1$ is $8/3$.
+    \item Similarly reasoning leads us to the rates in the form of the infinitesimal generator matrix
+
+$$
+Q_{K_4} = \begin{blockarray}{cccc}
+    & 2 & 1 & 0\\
+    \begin{block}{c|ccc}
+        \cline{2-4}
+        2 & -\frac{8}{3} & \frac{8}{3} & 0 \\
+        1 & 1 & -2 & 1\\
+        0 & 0 & 0 & 0\\
+    \end{block}
+\end{blockarray}
+$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Phase Type Distribution Voter Model $n = 4$}
+Now we can use the Phase-type distribution theory.
+Let
+    \begin{align*}
+    \mathbf{S} &= \begin{bmatrix}
+    -\frac{8}{3} & \frac{8}{3}\\
+    1 & -2\\
+    \end{bmatrix}\\
+    \mathbf{S}_0 &= (0, 1)^T
+\end{align*}
+
+The diagonalization of $S$ is
+$$
+\mathbf{S} = \frac{1}{10} \begin{bmatrix}
+    -2 & 4/3\\
+    1 & 1
+\end{bmatrix} \operatorname{diag}(-4x, - \frac{2}{3} x)
+ \begin{bmatrix}
+    -3 & 4\\
+    3 & 6
+\end{bmatrix}
+$$
+\end{frame}
+
+\begin{frame}{Phase Type Distribution Voter Model $n = 4$}
+    Let $(\alpha_2, \alpha_1)$ be the probability of starting in state 2 and 1 respectively.
+    The density of the absorption time $\tau_{K_4}$ is given as
+\begin{align*}
+    f_{K_4}(x) &= (\alpha_2, \alpha_1) \exp(x\mathbf{S}) \mathbf{S}_0\\
+    &= \frac{1}{5} \left[ \alpha_2 \left( -4 e^{-4x} + 4 e^{-\frac{2}{3} x} \right) + \alpha_1 \left( 2 e^{-4x} + 3 e^{-\frac{2}{3} x} \right) \right]\\
+&= \frac{1}{5} \left[ (-4 \alpha_2 + 2 \alpha_1) e^{-4x} + (4 \alpha_2 + 3 \alpha_1) e^{-\frac{2}{3} x}\right]
+\end{align*}
+\end{frame}
+
+\begin{frame}{Phase Type Distribution Voter Model $n = 4$}
+    The expected value of $\tau_{K_4}$ is then
+\begin{align*}
+    E[\tau_{K_4}] &= -1 (\alpha_2, \alpha_1) \mathbf{S}^{-1} (1, 1)^T\\
+    &= \frac{1}{8} (\alpha_2, \alpha_1) \begin{bmatrix}
+    6 & 8\\
+    3 & 8
+    \end{bmatrix} (1,1)^T\\
+    &= \frac{7}{4} \alpha_2 + \frac{11}{8} \alpha_1
+\end{align*}
+\end{frame}
+
+\begin{frame}{Phase Type Distribution Voter Model $n = 4$}
+    \begin{figure}[H]
+  \centering
+    \includegraphics[width=.9\textwidth]{figures/voter_density_c4.png}
+   \caption{Density of the absorption time for the voter model on the complete graph with four nodes, $K_4$.}
+  \label{fig:voter_density_c4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Phase Type Distribution Voter Model $n$ nodes}
+    \begin{itemize}
+        \item If $n$ is even, then let $k = n / 2$ and if $n$ is odd then let $k = (n - 1)/2$.
+        \item We have $\{0,\ldots, k\}$ projected states.
+    \end{itemize}
+
+The rates are summarized follows:
+\begin{align*}
+    i \to i - 1 &= \begin{cases}
+        0 & i = 0\\
+        \frac{nk}{n - 1}  & i = k, n \text{ even}\\
+        \frac{k (n - k)}{n - 1} & i = k, n \text{ odd}\\
+        \frac{i (n - i)}{n - 1}  & i \in \{1,\ldots, k - 1\}
+    \end{cases}\\
+    i \to i + 1 &= \begin{cases}
+        0 & i \in \{0, k\}\\
+        \frac{i (n - i)}{n - 1}  & i \in \{1,\ldots, k - 1\}
+    \end{cases}
+\end{align*}
+The embedded discrete Markov chain is just a random walk on $\{0, k\}$ where 0 is absorbing and $k$ reflects back.
+\end{frame}
+
+\begin{frame}{Phase Type Distribution Voter Model $n$ nodes}
+   Let $N_1, N_2, \ldots, N_k$ be the number of visits to states $1, 2, \ldots, k$ respectively, which are geometrically distributed.
+
+For all $i = 1,2,\ldots, N_i$ and $j = 1,2,\ldots, k$, let $X_i^{(j)}$ be i.i.d random variables representing the exponential waiting time at each state.
+
+Assuming that we start in state $k$ we can represent $\tau_{K_n}$ as random sums
+$$
+    \tau_{K_n} = \sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}
+$$
+\end{frame}
+
+\begin{frame}{Phase Type Distribution Voter Model $n$ nodes}
+    \begin{align*}
+    E[\tau_{K_n}] &= E\left[\sum_{i = 1}^{N_k} X_i^{(k)} + \sum_{i = 1}^{N_{k - 1}} X_i^{(k - 1)} + \cdots + \sum_{i = 1}^{N_1} X_i^{(1)}\right]\\
+    &= E[N_k] E[X^{(k)}] + E[N_{k - 1}] E[X^{(k - 1)}] + \cdots + E[N_1]E[X_i^{(1)}]\\
+    &= k E[X^{(k)}] + \sum_{j = 1}^{k - 1} 2j \frac{n - 1}{2j (n - j)}\\
+    &= \begin{cases}
+    (n - 1) \left[H_{n} - H_{n - k}\right] & n \text{ even}\\
+    (n - 1) \left[H_{n - 1} - H_{n - k - 1}\right] & n \text{ odd}
+    \end{cases}
+    \end{align*}
+Where $H_n$ is the $n$th harmonic number $H_n = \sum_{k = 1}^n \frac{1}{k}$
+
+For large $n$, $E[\tau_{K_n}] \approx ln(2) (n - 1)$.
+\end{frame}
+
+
+\section{Contact Process}
+
+\begin{frame}
+\begin{itemize}
+    \item The contact process $(\eta_t)$, is a continuous-time Markov chain on $S = \{0,1\}^V$.
+    \item Each 1 on the graph waits a random time, exponentially distributed, with rate 1 and then becomes a 0.
+    \item Every 0 waits exponentially with rate $k \lambda$, where $k$ is the number of edges shared with a 1.
+\end{itemize}
+
+If $S$ is finite $\eta$ transitions to $\delta$ with probability
+$$
+P^\eta(\eta_t = \delta) = q(\eta, \delta) t + o(t)
+$$
+
+Denote the extinction time (which always occurs when finite) of the process as
+$$
+\tau_{G} = \inf\{ t \geq 0 : \eta_t \equiv 0 \}
+$$
+\end{frame}
+
+\begin{frame}{Contact Process Supercritical Case}
+    \begin{figure}[H]
+  \centering
+    \includegraphics[width=.65\textwidth]{figures/contact_simulation_torus_25.png}
+   \caption{Simulation for contact process with $\lambda = 4$ and periodic boundary conditions on $50 \times 50$ grid.}
+  \label{fig:contact_sim_torus_above_crit.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Contact Process Subcritical Case}
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.65\textwidth]{figures/contact_simulation_torus_25_below_crit.png}
+   \caption{Simulation for contact process with $\lambda = 0.25$ on $\{0,1\}^{(\Z/50) \times (\Z/50)}$.}
+  \label{fig:contact_sim_torus_below_crit.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Contact process 2 nodes}
+The contact process with infection rate $\lambda$ on the finite graph with two nodes and one edge between them has the following transition rates
+
+\begin{align*}
+    1 &\to 0 \text{ at rate } 1\\
+    0 &\to 1 \text{ at rate } \begin{cases}
+        \lambda & \text{ if neighbor is 1}\\
+        0 & \text{ otherwise}
+    \end{cases}
+\end{align*}
+\end{frame}
+
+\begin{frame}
+    \begin{figure}[H]
+    \centering
+   \begin{tikzpicture}[start chain = going right,
+   -Triangle, every loop/.append style = {-Triangle}]
+   \node[state, on chain]  (2) {2};
+   \node[state, on chain]  (1) {1};
+   \node[state, on chain]  (0) {0};
+
+   \draw (2) edge[bend left] node[yshift=3mm]{$2$} (1);
+   \draw (1) edge[bend left] node[yshift=-3mm]{$\lambda$}(2);
+   \draw (1) edge[left] node[xshift=3mm, yshift=-3mm]{$1$} (0);
+
+\end{tikzpicture}
+    \caption{Rates for two node projected contact process}
+    \label{fig:rates_mc_two_contact}
+\end{figure}
+
+We can express $\tau_{K_2}$ as a random sum
+$$
+\tau_{K_2} = \sum_{i = 1}^N (X_i + Y_i)
+$$
+where 
+\begin{itemize}
+    \item $X_1, X_2, \ldots$ be i.i.d random variables with
+$X_i \sim \exp(2)$ for the waiting time at state 2
+    \item $Y_1, Y_2, \ldots$ with  $Y_i \sim \exp(1 + \lambda)$ (independent of $(X_n)$
+    \item $N$ is independent of both $(X_n)$ and $(Y_n)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Phase-type distribution}
+$$
+    \mathbf{S} = \begin{pmatrix}
+        -2 & 2\\
+        \lambda & - (1 + \lambda)
+    \end{pmatrix}, \quad
+    \mathbf{S}_0 = \begin{pmatrix}
+        0\\
+        1
+    \end{pmatrix}, \quad
+    \boldsymbol{\alpha} = \begin{pmatrix}
+    1 & 0
+    \end{pmatrix}
+$$
+and
+\begin{align*}
+ f(x; \lambda) &= \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{S}_0\\
+ &= \frac{2}{C} \left( e^{\frac{1}{2}(-3 - \lambda + C) x} - e^{\frac{1}{2}(-3 - \lambda - C) x} \right)
+\end{align*}
+where
+$$
+C = \sqrt{\lambda^2 + 6 \lambda + 1}
+$$
+\end{frame}
+
+\begin{frame}{Contact process 2 node Phase-type density}
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=.80\textwidth]{figures/complete_2_contact_phase_densities.png}
+   \caption{Density functions for $\tau_{K_2}$ for $\lambda = 0, 1, 2, 3, 4$}
+  \label{fig:contact_2_phase_densities}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Limiting Distribution}
+$$
+\tau_{K_2} = \sum_{i = 1}^N X_i +  \sum_{i = 1}^N  Y_i
+$$
+
+\begin{align*}
+    \sum_{i = 1}^N X_i &\sim \exp\left( \frac{2}{1 + \lambda} \right)\\
+    \sum_{i = 1}^N Y_i &\sim \exp( 1 )
+\end{align*}
+\end{frame}
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+\end{document}
