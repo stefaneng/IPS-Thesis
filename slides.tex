@@ -256,6 +256,13 @@ The transition rates have the following properties:
 \end{enumerate}
 \end{frame}
 
+\begin{frame}{Contact Process Transitions}
+    \begin{figure}[H]
+  \centering
+    \includegraphics[width=.65\textwidth]{figures/contact_simulation_torus_25.png}
+\end{figure}
+\end{frame}
+
 \begin{frame}{Voter Model Simulation on $Z$}
 \begin{figure}[H]
   \centering
@@ -302,7 +309,8 @@ The transition rates have the following properties:
     \begin{itemize}
         \item A complete graph (or a cycle) with $n = 2$ or $n = 3$.
         \item Two projected states, $\{0,1\}$
-        \item If we initialize the voter model to state 1, then we will just wait exponential time with rate 1 before going to the absorbing state 0. 
+        \item When $n = 2$, both nodes can change from $1 \to 0$, and $0 \to 1$, each at a rate of $1$ for a total rate of $2$.
+        \item When $n = 3$, then the one node that is different from the others can switch to agree with the others. It is connected to 2 other nodes each with a rate of $1/2$ for a total rate of 1.
     \end{itemize}
     
 \begin{figure}[H]    
