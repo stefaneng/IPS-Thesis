@@ -30,15 +30,15 @@ $\mathbf{S}_0 = - \mathbf{S 1}$.
 \end{theorem}
 
 \begin{proof}
-Let $P_t$ be the transition probabilities of the process restricted to the transient states.
-By the forward equations (Equation \eqref{eq:forward_eqs}), we have that $P_t' = P_t \mathbf{S}$ for $t > 0$.
+Let $P_x$ be the transition probabilities of the process restricted to the transient states at time $x$.
+By the forward equations (Equation \eqref{eq:forward_eqs}), we have that $P_x' = P_x \mathbf{S}$ for $x > 0$.
 The solution to the differential equation with initial condition $\boldsymbol{\alpha}$ is given by
 $$
 P_t = \boldsymbol{\alpha} \exp(x \mathbf{S})
 $$
 so
 $$
-F(x) = 1 - P_t \mathbf{1} = 1 - \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{1}
+F(x) = 1 - P_x \mathbf{1} = 1 - \boldsymbol{\alpha} \exp(x \mathbf{S}) \mathbf{1}
 $$
 It follows that
 $$
