@@ -19,11 +19,17 @@ Exact densities of the phase-type distribution are computed for simple cases and
 In the complete graph case we derive a formula for the expected value of the absorption time on a graph with N nodes for both the voter model and contact process.
 The limiting distribution of the contact process is computed for a fixed sized complete graph as the infection rate goes to infinity.
 
+### 1D Voter model Simulation
+
 ![1D Voter model Simulation](./figures/voter_simulation_1d_300.png)
 
-![2D Voter model Complete Simulation](./figures/voter_simulation_1d_complete_split_100.png)
+### 2D Voter model Complete Simulation
 
 ![2D Voter model Complete Simulation](./figures/voter_simulation_1d_complete_split_100.png)
+
+### Voter Model Dual Process
+
+![Voter model dual process](./figures/voter_model_dual.png)
 
 ## Introduction
 
