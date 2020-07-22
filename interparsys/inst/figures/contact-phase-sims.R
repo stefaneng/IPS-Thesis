@@ -102,23 +102,6 @@ create_hazard_init_df <- function(Q, t = seq(0, 10, length.out = 1000), lambda =
   lapply(inits, function(pi) hazard_phtype(t, pi, q))
 }
 
-#' Q matrix for complete contact process with 2 nodes
-#' Projected to the number of ones in the process
-#' onlyTrans=TRUE remove the absorbing states
-QK2 <- function(lambda, onlyTrans = FALSE) {
-  A <- matrix(c(
-    -2, 2, 0,
-    lambda, -(1 + lambda), 1,
-    0, 0, 0
-  ),
-  byrow=TRUE,
-  nrow=3
-  )
-
-  if(onlyTrans) A[-ncol(A), -ncol(A)]
-  else A
-}
-
 # plot(t, hazard_phtype(t, pi2, QK2(lambda = .001, onlyTrans = TRUE)), type = "l")
 
 k2_df <- create_df(lambdas, QK2, pi2)
@@ -153,22 +136,6 @@ assertthat::are_equal(c2_var(2), var_phtype(pi2, QK2(2, onlyTrans = TRUE)))
 assertthat::are_equal(c2_var(3), var_phtype(pi2, QK2(3, onlyTrans = TRUE)))
 assertthat::are_equal(c2_var(15), var_phtype(pi2, QK2(15, onlyTrans = TRUE)))
 
-#' Q matrix for complete contact process with 3 nodes
-#' Projected to the number of ones in the process
-#' onlyTrans=TRUE remove the absorbing states
-QK3 <- function(lambda, onlyTrans=TRUE) {
-  # 3, 2, 1, 0
-  A <- matrix(c(
-    -3, 3, 0, 0,
-    2 * lambda, -(2 + 2 *lambda), 2, 0,
-    0, 2 * lambda, -(1 + 2 * lambda), 1,
-    0, 0, 0, 0
-  ), byrow=TRUE, ncol = 4)
-
-  if(onlyTrans) A[-ncol(A), -ncol(A)]
-  else A
-}
-
 k3_df <- create_df(lambdas, QK3, pi3, t = seq(0, 30, length.out = 1000))
 
 contact_density(k3_df)
@@ -183,22 +150,6 @@ ggsave(filename = "complete_3_contact_survival.png", path = here::here("../figur
 # Get the moments
 # mphtype(1, pi, QK3(3,onlyTrans = TRUE))
 
-#' Q matrix for cycle contact process with 4 nodes
-#' onlyTrans=TRUE remove the absorbing states
-QS4 <- function(lambda, onlyTrans=TRUE) {
- A <- matrix(c(
-  -4, 4, 0, 0, 0, 0,
-  2 * lambda, -(2 * lambda + 3), 2, 1, 0, 0,
-  0, 2 * lambda, -(2 * lambda + 2), 0, 2, 0,
-  0, 4 * lambda, 0, -(4 * lambda + 2), 2, 0,
-  0, 0, 2 * lambda, 0, -(2 * lambda + 1), 1,
-  0, 0, 0, 0, 0, 0
- ), byrow = TRUE, ncol = 6)
-
- if(onlyTrans) A[-ncol(A), -ncol(A)]
- else A
-}
-
 s4_df <- create_df(lambdas, QS4, pi5)
 
 # lambda <- 2
@@ -209,21 +160,6 @@ ggsave(filename = "cycle_4_contact_phase_densities.png", path = here::here("../f
 
 # contact_hazard(s4_df)
 # ggsave(filename = "cycle_4_contact_hazard.png", path = here::here("../figures"), dpi = 320, units = "mm", width = 200)
-
-QL3 <- function(lambda, onlyTrans=TRUE) {
- A <- matrix(c(
-  -3, 2, 1, 0, 0, 0,
-  lambda, -(lambda + 2), 0, 1, 1, 0,
-  lambda, 0, -(lambda + 1), 1, 0, 0,
-  0, lambda, 0, -(lambda + 1), 0, 1,
-  0, 2 * lambda, 0, 0, -(2 * lambda + 1), 1,
-  0, 0, 0, 0, 0, 0
- ), byrow = TRUE, ncol = 6)
-
- if(onlyTrans) A[-ncol(A), -ncol(A)]
- else A
-}
-
 
 l3_df <- create_df(lambdas, QL3, pi5)
 

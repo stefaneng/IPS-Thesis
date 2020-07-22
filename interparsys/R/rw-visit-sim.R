@@ -1,3 +1,5 @@
+# Assorted functions for random walk experiments
+
 rw_expected_prob <- function(n, i, p) {
   odds <- (1 - p) / p
   if(p != 1/2) {

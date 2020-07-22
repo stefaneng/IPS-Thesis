@@ -7,8 +7,9 @@ index_to_xy <- function(m, i) {
   )
 }
 
-# Compute the variance of the phase-type distributions
-# var_phtype(pi5, QL3(4 ,onlyTrans = TRUE))
+#' Compute the variance of the phase-type distributions
+#' @examples
+#' var_phtype(pi5, QL3(4 ,onlyTrans = TRUE))
 var_phtype <- function(prob, rates) {
   mphtype(2, prob, rates) - mphtype(1, prob, rates)^2
 }

@@ -3,83 +3,23 @@ library(actuar)
 library(tidyr)
 library(here)
 
-#' Simulate one results from the contact process
-#' Only torus implemented now
-contact_1d <- function(row, lambda, torus=TRUE) {
- res <- list(
-  t = 0,
-  new_row = row,
-  suppressed = FALSE
- )
- # Sum of all the rates
- rate <- sum(lambda * row + m)
- if(rate > 0) {
-  res$t <- rexp(1, rate)
 
-  # Get the indices of the ones
-  ones <- which(as.logical(row))
-  if(length(ones) == 0) {
-   return(res)
-  } else {
-   # Sample uniformly from the infected sites
-   if(length(ones) == 1) {
-    s <- ones
-   } else {
-    # Sample from the ones
-    s <- sample(ones, 1)
-   }
-
-   # Turn the 1 into a 0
-   if (runif(1) < 1 / (1 + lambda)) {
-    res$new_row[s] <- 0
-   } else {
-    # Place a one on either the left or the right neighbor
-    ns <- s
-    if (runif(1) < .5) {
-     # Place 1 on left neighbor
-     if (torus) {
-      ns <- ifelse(s - 1 > 0, s - 1, length(row))
-     }
-    } else {
-     # Place 1 on right neighbor
-     if(torus) {
-      ns <- ifelse(s + 1 < length(row), s + 1, 1)
-     }
-    }
-
-    res$suppressed <- row[ns] == 1
-    res$new_row[ns] <- 1
-   }
-  }
- }
- res
-}
-
-# contact_1d(c(0,1,0), 2)
-
-simulate_contact_1d <-  function(lambda = 2, space = 500, time = 400, torus=FALSE, init_config=c("one", "random", "all"), include_config = FALSE) {
- # results <- matrix(0, nrow = time, ncol = space)
-
- if(init_config == "random") {
-  r <- round(runif(n))
- } else if (init_config == "all") {
-  r <- rep(1, 10)
- } else {
-  r <- matrix(0, nrow = n, ncol = n)
-  mid <- floor(n / 2)
-  r[mid] <- 1
- }
-
- i <- 1
- total_time <- 0
- # Set first time point
- results[time, ] <- r
-}
-
-# Each 1 waits exp(1) time then becomes a 0
-# Each 1 waits exp(lambda) time then places this 1 on to one of the neighbors with probability 1/2^d
-#  The birth is suppressed if there is already a 1 there.
-
+#' Simulates the 2D contact process and creates image plots at the given time points.
+#' The behavior is as follows:
+#' Each 1 waits exp(1) time then becomes a 0
+#' Each 1 waits exp(lambda) time then places this 1 on to one of the neighbors with probability 1/2^d
+#' The birth is suppressed if there is already a 1 there.
+#' @param lambda
+#' @param n the dimension for the n x n matrix of the contact process
+#' @param times the times that the images should be displayed at
+#' @param torus boolean representing if the edges should be wrapped around. If T then will wrap around.
+#' @param init_config controls the initial 1 and 0 placement. "one" places one 1 at the origin. "random" assigns each cell randomly to 1 or 0. "all" assigns all cells to 1.
+#' @param title adds the time in the title of the plots
+#' @examples
+#' \dontrun{
+#' par(mar=c(1, 1, 1, 1), mfrow=c(2,2))
+#' simulate_contact(lambda = 4, n = 50, torus = TRUE, times = c(5, 10, 30), init_config = "one")
+#' }
 simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE, init_config=c("one", "random", "all"), include_config = FALSE, title = TRUE) {
   if(init_config == "random") {
    m <- matrix(round(runif(n^2)),n,n)
@@ -212,4 +152,3 @@ simulate_contact <- function(lambda = 2, n = 50, times = c(1, 2, 5), torus=TRUE,
 
   res
 }
-
